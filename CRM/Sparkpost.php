@@ -24,8 +24,21 @@
 
 class CRM_Sparkpost {
   const SPARKPOST_EXTENSION_SETTINGS = 'SparkPost Extension Settings';
+  // cURL handle cache - see http://stackoverflow.com/questions/18046637/should-i-close-curl-or-not
+  private static $ch = NULL;
   // Indicates we need to try sending emails out through an alternate method
   const FALLBACK = 1;
+
+  static private function _getHandle() {
+    if (self::$ch == NULL) {
+      self::$ch = curl_init();
+      curl_setopt(self::$ch, CURLOPT_FORBID_REUSE, FALSE);
+      curl_setopt(self::$ch, CURLOPT_FRESH_CONNECT, FALSE);
+      curl_setopt(self::$ch, CURLOPT_RETURNTRANSFER, TRUE);
+      curl_setopt(self::$ch, CURLOPT_HEADER, FALSE);
+    }
+    return self::$ch;
+  }
 
   static function setSetting($setting, $value) {
     // Encrypt API key before storing in database
@@ -103,9 +116,13 @@ class CRM_Sparkpost {
 
   /**
    * Calls the SparkPost REST API v1
-   * @param $path    Method path
-   * @param $params  Method parameters (translated as GET arguments)
-   * @param $content Method content (translated as POST arguments)
+   *
+   * @param $path    string Method path
+   * @param $params  array  Method parameters (translated as GET arguments)
+   * @param $content array  Method content (translated as POST arguments)
+   *
+   * @return mixed Sparkpost's API response (decoded from json)
+   * @throws \Exception
    *
    * @see https://developers.sparkpost.com/api/
    */
@@ -122,14 +139,12 @@ class CRM_Sparkpost {
     }
 
     // Initialize connection and set headers
-    $ch = curl_init();
+    $ch = self::_getHandle();
     curl_setopt($ch, CURLOPT_URL, "https://api.sparkpost.com/api/v1/$path");
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
     $request_headers = array();
     $request_headers[] = 'Content-Type: application/json';
     $request_headers[] = 'Authorization: ' . $authorization;
     $request_headers[] = 'User-Agent: CiviCRM SparkPost extension (com.cividesk.email.sparkpost)';
-    curl_setopt($ch, CURLOPT_HEADER, FALSE);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $request_headers);
 
     if (!empty($content)) {
@@ -153,7 +168,6 @@ class CRM_Sparkpost {
       throw new Exception('Sparkpost curl error: ', curl_error($ch));
     }
     $curl_info = curl_getinfo($ch);
-    curl_close($ch);
 
     // Treat errors if any in the response ...
     $response = json_decode($data);
