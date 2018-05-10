@@ -144,6 +144,10 @@ class CRM_Sparkpost {
       }
       curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($content, JSON_UNESCAPED_SLASHES));
     }
+    elseif (substr($path, 0, strlen('suppression-list')) === 'suppression-list') {
+      // delete email from sparkpost suppression list
+      curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+    }
     $data = curl_exec($ch);
     if (curl_errno($ch)) {
       throw new Exception('Sparkpost curl error: ', curl_error($ch));
@@ -185,6 +189,8 @@ class CRM_Sparkpost {
           throw new Exception("Sparkpost error: Invalid request. Check that request $curl_info[url] is valid.");
         case 420 :
           throw new Exception("Sparkpost error: Sending limits exceeded. Check your limits in the Sparkpost console.", CRM_Sparkpost::FALLBACK);
+        case 204 :
+          throw new Exception("Sparkpost Message: Email removed from Suppression list");
       }
       throw new Exception("Sparkpost error: HTTP return code $curl_info[http_code], Sparkpost error code $error->code ($error->message: $error->description). Check https://support.sparkpost.com/customer/en/portal/articles/2140916-extended-error-codes for interpretation.");
     }
