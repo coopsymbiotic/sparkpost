@@ -308,7 +308,7 @@ function sparkpost_civicrm_pre( $op, $objectName, $objectId, &$objectRef ) {
    */
   global $resetHoldFlag;
   $resetHoldFlag = FALSE;
-  if ($objectName == 'Email' && $op == 'edit' && $objectId && $objectRef['on_hold'] == '0') {
+  if ($objectName == 'Email' && $op == 'edit' && $objectId && empty($objectRef['on_hold'])) {
     $resultEmail = civicrm_api3('Email', 'getsingle', array(
       'id' => $objectId,
     ));
@@ -328,7 +328,7 @@ function sparkpost_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
   global $resetHoldFlag;
   if ($objectName == 'Email' && $op == 'edit' && $resetHoldFlag) {
     try {
-      $result = CRM_Sparkpost::call('suppression-list/' . $objectRef->eamil);
+      $result = CRM_Sparkpost::call('suppression-list/' . $objectRef->email);
     } catch (Exception $e) {
       return new PEAR_Error($e->getMessage());
     }
