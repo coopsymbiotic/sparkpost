@@ -24,7 +24,7 @@ It currently is one of the [Top 10](https://stats.civicrm.org/?tab=sites) most u
 
 Full documentation (including installation instructions) can be found at https://docs.civicrm.org/sparkpost.
 
-# Show your support!
+## Show your support!
 
 Development of this extension was fully self-funded by Cividesk and equated to about 40 hours of work.
 

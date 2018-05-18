@@ -167,32 +167,35 @@ class CRM_Sparkpost {
 
       // See issue #5: http_code is more dicriminating than $error->message
       // https://support.sparkpost.com/customer/en/portal/articles/2140916-extended-error-codes
-      switch($curl_info['http_code']) {
-        case 400 :
-          switch($error->code) {
-            // Did the email bounce because one of the recipients is on the SparkPost rejection list?
-            // https://support.sparkpost.com/customer/portal/articles/2110621-sending-messages-to-recipients-on-the-exclusion-list
-            // AFAIK there can be multiple recipients and we don't know which caused the bounce, so cannot really do anything
-            case 1901:
-              throw new Exception("Sparkpost error: At least one recipient is on the Sparkpost Exclusion List for non-transactional emails.");
-            case 1902:
-              throw new Exception("Sparkpost error: At least one recipient is on the Sparkpost Exclusion List for transactional emails.");
-            case 7001:
-              throw new Exception("Sparkpost error: The sending or tracking domain is unconfigured or unverified in Sparkpost.", CRM_Sparkpost::FALLBACK);
-          }
-          break;
-        case 401 :
-          throw new Exception("Sparkpost error: Unauthorized. Check that the API key is valid, and allows IP $curl_info[local_ip].", CRM_Sparkpost::FALLBACK);
-        case 403 :
-          throw new Exception("Sparkpost error: Permission denied. Check that the API key is authorized for request $curl_info[url].", CRM_Sparkpost::FALLBACK);
-        case 404 :
-          throw new Exception("Sparkpost error: Invalid request. Check that request $curl_info[url] is valid.");
-        case 420 :
-          throw new Exception("Sparkpost error: Sending limits exceeded. Check your limits in the Sparkpost console.", CRM_Sparkpost::FALLBACK);
-        case 204 :
-          throw new Exception("Sparkpost Message: Email removed from Suppression list");
+      if (!in_array($curl_info['http_code'], array(
+        204, // HTTP status of 204 indicates a successful deletion
+      ))) {
+        switch ($curl_info['http_code']) {
+          case 400 :
+            switch ($error->code) {
+              // Did the email bounce because one of the recipients is on the SparkPost rejection list?
+              // https://support.sparkpost.com/customer/portal/articles/2110621-sending-messages-to-recipients-on-the-exclusion-list
+              // AFAIK there can be multiple recipients and we don't know which caused the bounce, so cannot really do anything
+              case 1901:
+                throw new Exception("Sparkpost error: At least one recipient is on the Sparkpost Exclusion List for non-transactional emails.");
+              case 1902:
+                throw new Exception("Sparkpost error: At least one recipient is on the Sparkpost Exclusion List for transactional emails.");
+              case 7001:
+                throw new Exception("Sparkpost error: The sending or tracking domain is unconfigured or unverified in Sparkpost.", CRM_Sparkpost::FALLBACK);
+            }
+            break;
+          case 401 :
+            throw new Exception("Sparkpost error: Unauthorized. Check that the API key is valid, and allows IP $curl_info[local_ip].", CRM_Sparkpost::FALLBACK);
+          case 403 :
+            throw new Exception("Sparkpost error: Permission denied. Check that the API key is authorized for request $curl_info[url].", CRM_Sparkpost::FALLBACK);
+          case 404 :
+            throw new Exception("Sparkpost error: Invalid request. Check that request $curl_info[url] is valid.");
+          case 420 :
+            throw new Exception("Sparkpost error: Sending limits exceeded. Check your limits in the Sparkpost console.", CRM_Sparkpost::FALLBACK);
+        }
+        // Don't have specifics, so throw a generic exception
+        throw new Exception("Sparkpost error: HTTP return code $curl_info[http_code], Sparkpost error code $error->code ($error->message: $error->description). Check https://support.sparkpost.com/customer/en/portal/articles/2140916-extended-error-codes for interpretation.");
       }
-      throw new Exception("Sparkpost error: HTTP return code $curl_info[http_code], Sparkpost error code $error->code ($error->message: $error->description). Check https://support.sparkpost.com/customer/en/portal/articles/2140916-extended-error-codes for interpretation.");
     }
 
     // Return (valid) response
