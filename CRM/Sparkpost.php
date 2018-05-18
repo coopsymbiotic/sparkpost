@@ -188,8 +188,6 @@ class CRM_Sparkpost {
             throw new Exception("Sparkpost error: Unauthorized. Check that the API key is valid, and allows IP $curl_info[local_ip].", CRM_Sparkpost::FALLBACK);
           case 403 :
             throw new Exception("Sparkpost error: Permission denied. Check that the API key is authorized for request $curl_info[url].", CRM_Sparkpost::FALLBACK);
-          case 404 :
-            throw new Exception("Sparkpost error: Invalid request. Check that request $curl_info[url] is valid.");
           case 420 :
             throw new Exception("Sparkpost error: Sending limits exceeded. Check your limits in the Sparkpost console.", CRM_Sparkpost::FALLBACK);
         }

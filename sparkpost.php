@@ -326,11 +326,11 @@ function sparkpost_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
    * Previous on hold flag = 1 and Current on hold flag = 0 then remove from sparkpost suppression list
    */
   global $resetHoldFlag;
-  if ($objectName == 'Email' && $op == 'edit' && $resetHoldFlag) {
+  if ($objectName == 'Email' && $op == 'edit' && $resetHoldFlag && !empty($objectRef->email)) {
     try {
       $result = CRM_Sparkpost::call('suppression-list/' . $objectRef->email);
     } catch (Exception $e) {
-      return new PEAR_Error($e->getMessage());
+      CRM_Core_Session::setStatus($e->getMessage(), "Sparkpost error", 'error');
     }
   }
 }
