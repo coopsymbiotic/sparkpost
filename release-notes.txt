@@ -1,3 +1,9 @@
+Version 1.2 - 2018/07/19
+- Ability to remove email from suppression list.
+- 5.* compatibility fixes
+- Custom callback URL
+- Documentation updates
+
 Version 1.1 - 2016/05/14
 - Send through a backup mailer if Sparkpost fails
   reasons for failure include unverified sender domain, sending quota exceeded, etc.
