@@ -31,11 +31,17 @@ class CRM_Sparkpost {
 
   static private function _getHandle() {
     if (self::$ch == NULL) {
+      // Handle does not exist, so create it
       self::$ch = curl_init();
       curl_setopt(self::$ch, CURLOPT_FORBID_REUSE, FALSE);
       curl_setopt(self::$ch, CURLOPT_FRESH_CONNECT, FALSE);
       curl_setopt(self::$ch, CURLOPT_RETURNTRANSFER, TRUE);
       curl_setopt(self::$ch, CURLOPT_HEADER, FALSE);
+    } else {
+      // Reset HTTP request method to GET as it might have been changed to POST or DELETE
+      // cf. https://stackoverflow.com/questions/4163865/how-to-reset-curlopt-customrequest
+      curl_setopt(self::$ch, CURLOPT_HTTPGET, TRUE);
+      curl_setopt(self::$ch, CURLOPT_CUSTOMREQUEST, NULL);
     }
     return self::$ch;
   }
@@ -148,19 +154,16 @@ class CRM_Sparkpost {
     curl_setopt($ch, CURLOPT_HTTPHEADER, $request_headers);
 
     if (!empty($content)) {
-      if (strpos($path, '/') !== false) {
-        // ie. webhook/id
-        // This is a modify operation so use PUT
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-      } else {
-        // ie. webhook, transmission
+      if (strpos($path, '/') === false) {
+        // ie. webhook, transmission but NOT webhook/id
         // This is a create operation so use POST
         curl_setopt($ch, CURLOPT_POST, TRUE);
       }
       curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($content, JSON_UNESCAPED_SLASHES));
     }
     elseif (substr($path, 0, strlen('suppression-list')) === 'suppression-list') {
-      // delete email from sparkpost suppression list
+      // ie. suppression-list/{recipient}
+      // This is a delete operation so use DELETE
       curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
     }
     $data = curl_exec($ch);
