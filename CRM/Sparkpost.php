@@ -24,27 +24,8 @@
 
 class CRM_Sparkpost {
   const SPARKPOST_EXTENSION_SETTINGS = 'SparkPost Extension Settings';
-  // cURL handle cache - see http://stackoverflow.com/questions/18046637/should-i-close-curl-or-not
-  private static $ch = NULL;
   // Indicates we need to try sending emails out through an alternate method
   const FALLBACK = 1;
-
-  static private function _getHandle() {
-    if (self::$ch == NULL) {
-      // Handle does not exist, so create it
-      self::$ch = curl_init();
-      curl_setopt(self::$ch, CURLOPT_FORBID_REUSE, FALSE);
-      curl_setopt(self::$ch, CURLOPT_FRESH_CONNECT, FALSE);
-      curl_setopt(self::$ch, CURLOPT_RETURNTRANSFER, TRUE);
-      curl_setopt(self::$ch, CURLOPT_HEADER, FALSE);
-    } else {
-      // Reset HTTP request method to GET as it might have been changed to POST or DELETE
-      // cf. https://stackoverflow.com/questions/4163865/how-to-reset-curlopt-customrequest
-      curl_setopt(self::$ch, CURLOPT_HTTPGET, TRUE);
-      curl_setopt(self::$ch, CURLOPT_CUSTOMREQUEST, NULL);
-    }
-    return self::$ch;
-  }
 
   static function setSetting($setting, $value) {
     // Encrypt API key before storing in database
@@ -81,13 +62,9 @@ class CRM_Sparkpost {
 
   /**
    * Calls the SparkPost REST API v1
-   *
-   * @param $path    string Method path
-   * @param $params  array  Method parameters (translated as GET arguments)
-   * @param $content array  Method content (translated as POST arguments)
-   *
-   * @return mixed Sparkpost's API response (decoded from json)
-   * @throws \Exception
+   * @param $path    Method path
+   * @param $params  Method parameters (translated as GET arguments)
+   * @param $content Method content (translated as POST arguments)
    *
    * @see https://developers.sparkpost.com/api/
    */
@@ -104,25 +81,30 @@ class CRM_Sparkpost {
     }
 
     // Initialize connection and set headers
-    $ch = self::_getHandle();
+    $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, "https://api.sparkpost.com/api/v1/$path");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
     $request_headers = array();
     $request_headers[] = 'Content-Type: application/json';
     $request_headers[] = 'Authorization: ' . $authorization;
     $request_headers[] = 'User-Agent: CiviCRM SparkPost extension (com.cividesk.email.sparkpost)';
+    curl_setopt($ch, CURLOPT_HEADER, FALSE);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $request_headers);
 
     if (!empty($content)) {
-      if (strpos($path, '/') === false) {
-        // ie. webhook, transmission but NOT webhook/id
+      if (strpos($path, '/') !== false) {
+        // ie. webhook/id
+        // This is a modify operation so use PUT
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+      } else {
+        // ie. webhook, transmission
         // This is a create operation so use POST
         curl_setopt($ch, CURLOPT_POST, TRUE);
       }
       curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($content, JSON_UNESCAPED_SLASHES));
     }
     elseif (substr($path, 0, strlen('suppression-list')) === 'suppression-list') {
-      // ie. suppression-list/{recipient}
-      // This is a delete operation so use DELETE
+      // delete email from sparkpost suppression list
       curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
     }
     $data = curl_exec($ch);
@@ -130,6 +112,7 @@ class CRM_Sparkpost {
       throw new Exception('Sparkpost curl error: ', curl_error($ch));
     }
     $curl_info = curl_getinfo($ch);
+    curl_close($ch);
 
     // Treat errors if any in the response ...
     $response = json_decode($data);
