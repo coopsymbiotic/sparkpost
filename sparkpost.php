@@ -330,7 +330,8 @@ function sparkpost_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
     try {
       $result = CRM_Sparkpost::call('suppression-list/' . $objectRef->email);
     } catch (Exception $e) {
-      CRM_Core_Session::setStatus($e->getMessage(), "Sparkpost error", 'error');
+      // don't show the error message to users
+      //CRM_Core_Session::setStatus($e->getMessage(), "Sparkpost error", 'error');
     }
   }
 }
