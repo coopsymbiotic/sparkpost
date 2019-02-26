@@ -12,7 +12,7 @@
                     <td class="label">{$form.sparkpost_apiKey.label}</td>
                     <td>{$form.sparkpost_apiKey.html}<br  />
                         <span class="description">{ts}You can create API keys at:{/ts}
-                            <a href="https://app.sparkpost.com/account/credentials" target="_blank">https://app.sparkpost.com/account/credentials</a>
+                            <a href="https://app.sparkpost.com/account/api-keys" target="_blank">https://app.sparkpost.com/account/api-keys</a>
                         </span>
                     </td>
                 </tr>

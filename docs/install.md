@@ -28,7 +28,7 @@ This extension requires:
 
         So if you define `info@example.org` as a sending address in CiviCRM, you would need to create and verify the domain `example.org` in SparkPost.
 
-    1. Create an API key at: https://app.sparkpost.com/account/credentials
+    1. Create an API key at: https://app.sparkpost.com/account/api-keys
 
         !!! attention
             The API key you create should at a minimum be granted the following permissions:
