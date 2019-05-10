@@ -266,12 +266,14 @@ function sparkpost_civicrm_alterMailParams(&$params, $context = NULL) {
 function sparkpost_civicrm_postEmailSend(&$params) {
   if (!empty($params['returnPath'])) {
     $header = explode(CRM_Core_Config::singleton()->verpSeparator, $params['returnPath']);
-    $params = array(
+
+    // Do not use $params, it would cause problems to other hooks
+    $p = array(
       'job_id' => $header[1],
       'event_queue_id' => $header[2],
       'hash' => $header[3],
     );
-    CRM_Mailing_Event_BAO_Delivered::create($params);
+    CRM_Mailing_Event_BAO_Delivered::create($p);
   }
 }
 
