@@ -3,6 +3,8 @@
  * Settings metadata file.
  */
 
+require_once(__DIR__ . "/../CRM/Sparkpost.php");
+
 return array(
   'sparkpost_apiKey' => array(
     'group_name' => CRM_Sparkpost::SPARKPOST_EXTENSION_SETTINGS,
