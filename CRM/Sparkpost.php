@@ -191,8 +191,12 @@ class CRM_Sparkpost {
           case 420 :
             throw new Exception("Sparkpost error: Sending limits exceeded. Check your limits in the Sparkpost console.", CRM_Sparkpost::FALLBACK);
         }
-        // Don't have specifics, so throw a generic exception
-        throw new Exception("Sparkpost error: HTTP return code $curl_info[http_code], Sparkpost error code $error->code ($error->message: $error->description). Check https://support.sparkpost.com/customer/en/portal/articles/2140916-extended-error-codes for interpretation.");
+        //If we don't get an error code OR description, this error is a 404 response for checking the suppression list for an email that isn't on it. See https://developers.sparkpost.com/api/suppression-list/#suppression-list-get-retrieve-a-suppression
+        //In that case it's an expected workflow and we don't want to return a blank error response to the user just for checking
+        if (property_exists($error, 'code') && property_exists($error, 'description')) {
+          // Don't have specifics, so throw a generic exception
+          throw new Exception("Sparkpost error: HTTP return code $curl_info[http_code], Sparkpost error code $error->code ($error->message: $error->description). Check https://support.sparkpost.com/customer/en/portal/articles/2140916-extended-error-codes for interpretation.");
+        }
       }
     }
 
