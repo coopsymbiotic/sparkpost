@@ -62,15 +62,19 @@ class CRM_Sparkpost_Page_callback extends CRM_Core_Page {
     $postdata = file_get_contents("php://input");
     $elements = json_decode($postdata);
 
-    $managed_events = ['bounce', 'spam_complaint', 'policy_rejection', 'open', 'click'];
-
     foreach ($elements as $element) {
       if ($element->msys && (($event = $element->msys->message_event) || ($event = $element->msys->track_event))) {
         // Sanity checks
-        if (!in_array($event->type, $managed_events)
-             || ($event->campaign_id && CRM_Sparkpost::getSetting('campaign') && ($event->campaign_id != CRM_Sparkpost::getSetting('campaign')))
-             || (!$event->rcpt_meta || !($civimail_bounce_id = $event->rcpt_meta->{'X-CiviMail-Bounce'}))
-           ) {
+        if (!in_array($event->type, array('bounce', 'spam_complaint', 'policy_rejection'))) {
+          continue;
+        }
+        if (property_exists($event, 'campaign_id') && ($event->campaign_id != CRM_Sparkpost::getSetting('sparkpost_campaign'))) {
+          continue;
+        }
+        if (!property_exists($event->rcpt_meta, 'X-CiviMail-Bounce')) {
+          continue;
+        }
+        if (!($civimail_bounce_id = $event->rcpt_meta->{'X-CiviMail-Bounce'})) {
           continue;
         }
 
