@@ -30,7 +30,7 @@ return array(
     'is_domain' => 1,
     'is_contact' => 0,
     'description' => 'SparkPost REST API key',
-    'help_text' => 'You can create API keys at: https://app.sparkpost.com/account/api-keys',
+    'help_text' => 'You can create API keys at: https://app.sparkpost.com/account/api-keys, or https://app.eu.sparkpost.com/account/api-keys if using the EU-hosted platform.',
   ),
   'sparkpost_customCallbackUrl' => array(
     'group_name' => CRM_Sparkpost::SPARKPOST_EXTENSION_SETTINGS,
