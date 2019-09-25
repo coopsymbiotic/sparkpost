@@ -30,6 +30,13 @@
                         </span>
                     </td>
                 </tr>
+                <tr class="crm-sparkpost-form-block-sparkpost_EUhost">
+                    <td class="label">{$form.sparkpost_EUhost.label}</td>
+                    <td>{$form.sparkpost_EUhost.html}<br  />
+                        <span class="description">{ts}Enable to use the EU-hosted platform. You will need an account with the <a href="https://app.eu.sparkpost.com">EU-hosted platform</a>.{/ts}
+                        </span>
+                    </td>
+                </tr>
                 <tr class="crm-sparkpost-form-block-sparkpost_customCallbackUrl">
                     <td class="label">{$form.sparkpost_customCallbackUrl.label}</td>
                     <td>{$form.sparkpost_customCallbackUrl.html}<br  />

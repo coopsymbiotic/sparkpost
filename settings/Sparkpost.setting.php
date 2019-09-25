@@ -6,6 +6,19 @@
 require_once(__DIR__ . "/../CRM/Sparkpost.php");
 
 return array(
+  'sparkpost_EUhost' => array(
+    'group_name' => CRM_Sparkpost::SPARKPOST_EXTENSION_SETTINGS,
+    'group' => 'com.cividesk.email.sparkpost',
+    'name' => 'sparkpost_EUhost',
+    'type' => 'Boolean',
+    'html_type' => 'radio',
+    'default' => FALSE,
+    'add' => '4.4',
+    'is_domain' => 1,
+    'is_contact' => 0,
+    'description' => 'EU-hosted platform',
+    'help_text' => 'European accounts have to use *.eu.sparkpost.com',
+  ),
   'sparkpost_apiKey' => array(
     'group_name' => CRM_Sparkpost::SPARKPOST_EXTENSION_SETTINGS,
     'group' => 'com.cividesk.email.sparkpost',
