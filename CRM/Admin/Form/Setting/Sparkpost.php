@@ -41,7 +41,7 @@ class CRM_Admin_Form_Setting_Sparkpost extends CRM_Admin_Form_Setting {
     $this->add('password', 'sparkpost_apiKey', ts('API Key'), '', TRUE);
     $this->add('text', 'sparkpost_ipPool', ts('IP pool'));
     $this->addYesNo('sparkpost_useBackupMailer', ts('Use backup mailer'));
-    $this->addYesNo('sparkpost_EUhost', ts('EU-hosted platform'));
+    $this->addYesNo('sparkpost_host', ts('Hosted platform'));
     $this->add('text', 'sparkpost_customCallbackUrl', ts('Custom callback URL'));
 
     $this->_testButtonName = $this->getButtonName('refresh', 'test');
@@ -92,7 +92,7 @@ class CRM_Admin_Form_Setting_Sparkpost extends CRM_Admin_Form_Setting {
     CRM_Utils_System::flushCache();
 
     $formValues = $this->controller->exportValues($this->_name);
-    foreach (array('sparkpost_apiKey', 'sparkpost_ipPool', 'sparkpost_useBackupMailer', 'sparkpost_customCallbackUrl', 'sparkpost_EUhost') as $name) {
+    foreach (array('sparkpost_apiKey', 'sparkpost_ipPool', 'sparkpost_useBackupMailer', 'sparkpost_customCallbackUrl', 'sparkpost_host') as $name) {
       CRM_Sparkpost::setSetting($name, $formValues[$name]);
     }
 
@@ -117,17 +117,13 @@ class CRM_Admin_Form_Setting_Sparkpost extends CRM_Admin_Form_Setting {
 
       // Test that the sending domain is correctly configured
       $domain = substr(strrchr($domainEmailAddress, "@"), 1);
-      $is_EU = CRM_Sparkpost::getSetting('sparkpost_EUhost');
-      $sparkpost_host = "sparkpost.com";
-      if ($is_EU) {
-        $sparkpost_host = "eu.sparkpost.com";
-      }
+      $sparkpost_host = CRM_Sparkpost::getSetting('sparkpost_host');
 
       try {
         $response = CRM_Sparkpost::call("sending-domains/$domain");
       } catch (Exception $e) {
         if (strpos($e->getMessage(), 'Invalid request') !== FALSE) {
-          $url = "https://app." . $sparkpost_host . "/account/sending-domains";
+          $url = "https://app.$sparkpost_host/account/sending-domains";
           CRM_Core_Session::setStatus(ts('Domain %1 is not created and not verified in Sparkpost. Please follow instructions at <a href="%2">%2</a>.',
             array(1 => $domain, 2 => $url)), ts('SparkPost error'), 'error');
           return;
@@ -138,7 +134,7 @@ class CRM_Admin_Form_Setting_Sparkpost extends CRM_Admin_Form_Setting {
         }
       }
       if (!$response->results || !$response->results->status || !$response->results->status->ownership_verified) {
-        $url = 'https://app.' . $sparkpost_host . '/account/sending-domains';
+        $url = "https://app.$sparkpost_host/account/sending-domains";
         CRM_Core_Session::setStatus(ts('The domain \'%1\' is not verified. Please follow instructions at <a href="%2">%2</a>.',
           array(1 => $domain, 2 => $url)), ts('SparkPost error'), 'errors');
         return;
