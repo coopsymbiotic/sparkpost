@@ -42,10 +42,10 @@ class CRM_Sparkpost {
     // Start with the default values for settings
     $settings = array(
       'sparkpost_useBackupMailer' => false,
-      'sparkpost_EUhost' => false,
+      'sparkpost_host' => 'sparkpost.com',
     );
     // Merge the settings defined in DB (no more groups in 4.7, so has to be one by one ...)
-    foreach (array('sparkpost_apiKey', 'sparkpost_useBackupMailer', 'sparkpost_campaign', 'sparkpost_ipPool', 'sparkpost_customCallbackUrl', 'sparkpost_EUhost' ) as $name) {
+    foreach (array('sparkpost_apiKey', 'sparkpost_useBackupMailer', 'sparkpost_campaign', 'sparkpost_ipPool', 'sparkpost_customCallbackUrl', 'sparkpost_host' ) as $name) {
       $value = CRM_Core_BAO_Setting::getItem(CRM_Sparkpost::SPARKPOST_EXTENSION_SETTINGS, $name);
       if (!is_null($value)) {
         $settings[$name] = $value;
@@ -123,13 +123,9 @@ class CRM_Sparkpost {
     }
 
     // Initialize connection and set headers
-    $is_EU = CRM_Sparkpost::getSetting('sparkpost_EUhost');
-    $sparkpost_host = "sparkpost.com";
-    if ($is_EU) {
-      $sparkpost_host = "eu.sparkpost.com";
-    }
+    $sparkpost_host = CRM_Sparkpost::getSetting('sparkpost_host');
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, 'https://api.' . $sparkpost_host . '/api/v1/' . $path);
+    curl_setopt($ch, CURLOPT_URL, "https://api.$sparkpost_host/api/v1/$path");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
     $request_headers = array();
     $request_headers[] = 'Content-Type: application/json';
@@ -208,5 +204,16 @@ class CRM_Sparkpost {
 
     // Return (valid) response
     return $response;
+  }
+
+  /**
+   * @return array
+   *   Array(string $value => string $label).
+   */
+  public static function getSparkpostHostOptions() {
+    return array(
+      'sparkpost.com' => ts('Main'),
+      'eu.sparkpost.com' => ts('Europe'),
+    );
   }
 }
