@@ -13,6 +13,8 @@
                     <td>{$form.sparkpost_apiKey.html}<br  />
                         <span class="description">{ts}You can create API keys at:{/ts}
                             <a href="https://app.sparkpost.com/account/api-keys" target="_blank">https://app.sparkpost.com/account/api-keys</a>
+                        {ts}or if using an EU-hosted platform:{/ts}
+                            <a href="https://app.eu.sparkpost.com/account/api-keys" target="_blank">https://app.eu.sparkpost.com/account/api-keys</a>
                         </span>
                     </td>
                 </tr>
