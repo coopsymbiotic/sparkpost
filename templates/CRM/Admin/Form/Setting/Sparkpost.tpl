@@ -35,7 +35,7 @@
                 <tr class="crm-sparkpost-form-block-sparkpost_host">
                     <td class="label">{$form.sparkpost_host.label}</td>
                     <td>{$form.sparkpost_host.html}<br  />
-                        <span class="description">{ts}Select the platform. If you are using an EU-hosted platform, you will need an account with the <a href="https://app.eu.sparkpost.com">EU-hosted platform</a>.{/ts}
+                        <span class="description">{ts}Select the host. If you are using an EU-hosted platform you will need an <a href="https://app.eu.sparkpost.com">European account</a>.{/ts}
                         </span>
                     </td>
                 </tr>

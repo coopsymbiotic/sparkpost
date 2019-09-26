@@ -41,7 +41,8 @@ class CRM_Admin_Form_Setting_Sparkpost extends CRM_Admin_Form_Setting {
     $this->add('password', 'sparkpost_apiKey', ts('API Key'), '', TRUE);
     $this->add('text', 'sparkpost_ipPool', ts('IP pool'));
     $this->addYesNo('sparkpost_useBackupMailer', ts('Use backup mailer'));
-    $this->addYesNo('sparkpost_host', ts('Hosted platform'));
+    $host_options = CRM_Sparkpost::getSparkpostHostOptions();
+    $this->add('select', 'sparkpost_host', ts('Sparkpost host'), $host_options);
     $this->add('text', 'sparkpost_customCallbackUrl', ts('Custom callback URL'));
 
     $this->_testButtonName = $this->getButtonName('refresh', 'test');
