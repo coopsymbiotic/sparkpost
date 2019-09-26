@@ -62,6 +62,17 @@ class CRM_Sparkpost {
   }
 
   /**
+   * @return array
+   *   Array(string $value => string $label).
+   */
+  public static function getSparkpostHostOptions() {
+    return array(
+      'sparkpost.com' => ts('Default'),
+      'eu.sparkpost.com' => ts('Europe'),
+    );
+  }
+
+  /**
    * Calls the SparkPost REST API v1
    * @param $path    Method path
    * @param $params  Method parameters (translated as GET arguments)
@@ -164,16 +175,5 @@ class CRM_Sparkpost {
 
     // Return (valid) response
     return $response;
-  }
-
-  /**
-   * @return array
-   *   Array(string $value => string $label).
-   */
-  public static function getSparkpostHostOptions() {
-    return array(
-      'sparkpost.com' => ts('Main'),
-      'eu.sparkpost.com' => ts('Europe'),
-    );
   }
 }

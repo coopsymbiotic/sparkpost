@@ -22,7 +22,7 @@ return array(
     'pseudoconstant' => array(
       'callback' => 'CRM_Sparkpost::getSparkpostHostOptions',
     ),
-    'description' => 'Enable to use the EU-hosted platform. You will need an account with the <a href="https://app.eu.sparkpost.com">EU-hosted platform</a>.',
+    'description' => 'Select the host. If you are using an EU-hosted platform you will need an <a href="https://app.eu.sparkpost.com">European account</a>.',
     'help_text' => 'European accounts have to use *.eu.sparkpost.com',
   ),
   'sparkpost_apiKey' => array(
