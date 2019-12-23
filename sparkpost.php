@@ -179,6 +179,7 @@ function sparkpost_civicrm_check(&$messages) {
   $messages += $sparkpost_messages;
 
   CRM_Sparkpost_Utils_Check_SendingDomains::check($messages);
+  CRM_Sparkpost_Utils_Check_Metrics::check($messages);
 }
 
 /**
