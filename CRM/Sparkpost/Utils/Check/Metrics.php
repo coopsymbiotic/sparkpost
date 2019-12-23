@@ -97,16 +97,7 @@ class CRM_Sparkpost_Utils_Check_Metrics {
           }
         }
 
-        $total_injected += $val['count_injected'];
-        $total_bounce += $val['count_bounce'];
-        $total_spam += $val['count_spam_complaint'];
-
         $output .= '<ul>' . implode('', $stats) . '</ul>';
-      }
-
-      // FIXME: settings (monthly quota, acceptable bounce rate, spam rate)
-      if ($total_injected > 65000 || $total_bounce > ($total_injected * 0.1) || $total_spam > ($total_injected * 0.05)) {
-        $log_level = \Psr\Log\LogLevel::CRITICAL;
       }
 
       $messages[] = new CRM_Utils_Check_Message(
