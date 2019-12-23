@@ -34,7 +34,9 @@ class CRM_Sparkpost_Utils_Check_Metrics {
         'from' => $date->format('Y-m-d') . 'T00:01',
         'metrics' => 'count_sent,count_bounce,count_rejected,count_admin_bounce,count_rejected,count_spam_complaint',
         'order_by' => 'count_sent',
-        'limit' => 10, // TODO most clients only have 1-2 domains and we may not want to split
+        // TODO This is mostly relevant for the master account, which sees all domains
+        // For now, we find it convenient to see stats for all domains.
+        // 'limit' => 20,
       ]);
 
       $body = $response->getBody();
@@ -43,6 +45,9 @@ class CRM_Sparkpost_Utils_Check_Metrics {
 
       // https://www.sparkpost.com/docs/reporting/metrics-definitions/
       $metrics = [
+        'sending_domain' => [
+          'label' => ts('Domain:'),
+        ],
         'count_sent' => [
           'quota_total' => 65000, // FIXME
           'label' => ts('Messages Sent:'),
@@ -69,8 +74,6 @@ class CRM_Sparkpost_Utils_Check_Metrics {
 
       foreach ($body['results'] as $key => $val) {
         $stats = [];
-        $dom = $val['sending_domain'];
-        unset($val['sending_domain']);
 
         foreach ($metrics as $mkey => $mval) {
           if (isset($mval['quota_total']) && $val[$mkey] > $mval['quota_total']) {

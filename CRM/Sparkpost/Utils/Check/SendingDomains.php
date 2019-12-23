@@ -30,10 +30,10 @@ class CRM_Sparkpost_Utils_Check_SendingDomains {
           $statuses[] = "$kk=$vv";
         }
 
-        $domains[] = $val['domain'] . ': ' . implode(', ', $statuses);
+        $domains[] = '<p>' . $val['domain'] . ': ' . implode(', ', $statuses) . '</p>';
       }
 
-      $output = implode("\n", $domains);
+      $output = implode('', $domains);
 
       $messages[] = new CRM_Utils_Check_Message(
         'sparkpost_sendingdomains',
