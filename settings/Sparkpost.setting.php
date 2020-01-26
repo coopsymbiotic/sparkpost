@@ -7,7 +7,7 @@ require_once(__DIR__ . "/../CRM/Sparkpost.php");
 
 return array(
   'sparkpost_apiKey' => array(
-    'group_name' => CRM_Sparkpost::SPARKPOST_EXTENSION_SETTINGS,
+    'group_name' => 'SparkPost Extension Settings',
     'group' => 'com.cividesk.email.sparkpost',
     'name' => 'sparkpost_apiKey',
     'type' => 'String',
@@ -20,7 +20,7 @@ return array(
     'help_text' => 'You can create API keys at: https://app.sparkpost.com/account/api-keys',
   ),
   'sparkpost_customCallbackUrl' => array(
-    'group_name' => CRM_Sparkpost::SPARKPOST_EXTENSION_SETTINGS,
+    'group_name' => 'SparkPost Extension Settings',
     'group' => 'com.cividesk.email.sparkpost',
     'name' => 'sparkpost_customCallbackUrl',
     'type' => 'String',
@@ -33,7 +33,7 @@ return array(
     'help_text' => 'A custom callback URL is useful when your site is behind a proxy (like CiviProxy)',
   ),
   'sparkpost_useBackupMailer' => array(
-    'group_name' => CRM_Sparkpost::SPARKPOST_EXTENSION_SETTINGS,
+    'group_name' => 'SparkPost Extension Settings',
     'group' => 'com.cividesk.email.sparkpost',
     'name' => 'sparkpost_useBackupMailer',
     'type' => 'Boolean',
