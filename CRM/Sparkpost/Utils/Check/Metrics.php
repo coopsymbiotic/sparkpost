@@ -84,7 +84,8 @@ class CRM_Sparkpost_Utils_Check_Metrics {
           elseif (isset($mval['quota_pct'])) {
             $pct_val = round($val[$mkey] / $val['count_sent'] * 100, 2);
 
-            if ($pct_val > $mval['quota_pct']) {
+            // For most metrics, under 50 complaints/bounces, there is too much of a high noize ratio.
+            if ($val[$mkey] > 50 && $pct_val > $mval['quota_pct']) {
               $stats[] = "<li><strong>{$mval['label']} {$val[$mkey]} ({$pct_val}%)</strong></li>";
               $log_level = \Psr\Log\LogLevel::CRITICAL;
             }
