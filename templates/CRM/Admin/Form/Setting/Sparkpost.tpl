@@ -13,6 +13,8 @@
                     <td>{$form.sparkpost_apiKey.html}<br  />
                         <span class="description">{ts}You can create API keys at:{/ts}
                             <a href="https://app.sparkpost.com/account/api-keys" target="_blank">https://app.sparkpost.com/account/api-keys</a>
+                        {ts}or if using an EU-hosted platform:{/ts}
+                            <a href="https://app.eu.sparkpost.com/account/api-keys" target="_blank">https://app.eu.sparkpost.com/account/api-keys</a>
                         </span>
                     </td>
                 </tr>
@@ -27,6 +29,13 @@
                     <td>{$form.sparkpost_useBackupMailer.html}<br  />
                         <span class="description">{ts 1=$smtpURL}You can define a backup mailer <a href='%1'>here</a>.{/ts}
                             {ts}It will be used if Sparkpost cannot send emails (unverified sending domain, sending limits exceeded, ...).{/ts}
+                        </span>
+                    </td>
+                </tr>
+                <tr class="crm-sparkpost-form-block-sparkpost_host">
+                    <td class="label">{$form.sparkpost_host.label}</td>
+                    <td>{$form.sparkpost_host.html}<br  />
+                        <span class="description">{ts}Select the host. If you are using an EU-hosted platform you will need an <a href="https://app.eu.sparkpost.com">European account</a>.{/ts}
                         </span>
                     </td>
                 </tr>
