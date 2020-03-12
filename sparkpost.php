@@ -338,3 +338,21 @@ function sparkpost_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
     }
   }
 }
+
+/**
+ * Implements hook_civicrm_alterAPIPermissions().
+ */
+function sparkpost_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
+  $permissions['sparkpost']['event'] = array('view all contacts');
+}
+
+/**
+ * Implements hook_civicrm_pageRun().
+ */
+function sparkpost_civicrm_pageRun(&$page) {
+  $pageName = get_class($page);
+
+  if ($pageName == 'CRM_Contact_Page_View_Summary') {
+    CRM_Sparkpost_Contact_Page_View_Summary::pageRun($page);
+  }
+}

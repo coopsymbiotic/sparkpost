@@ -12,4 +12,10 @@
     <access_callback>1</access_callback>
     <title>SparkPost callback</title>
   </item>
+  <item>
+    <path>civicrm/sparkpost/events</path>
+    <page_callback>CRM_Sparkpost_Page_Events</page_callback>
+    <title>Sparkpost_Events</title>
+    <access_arguments>view all contacts</access_arguments>
+  </item>
 </menu>
