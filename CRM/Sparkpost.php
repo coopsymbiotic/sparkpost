@@ -122,7 +122,7 @@ class CRM_Sparkpost {
     }
     $data = curl_exec($ch);
     if (curl_errno($ch)) {
-      throw new Exception('Sparkpost curl error: ', curl_error($ch));
+      throw new Exception('Sparkpost curl error: '. curl_error($ch));
     }
     $curl_info = curl_getinfo($ch);
     curl_close($ch);
