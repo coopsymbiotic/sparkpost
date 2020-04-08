@@ -23,6 +23,7 @@
  */
 
 require_once 'sparkpost.civix.php';
+use CRM_Sparkpost_ExtensionUtil as E;
 
 /**
  * Implementation of hook_civicrm_config
