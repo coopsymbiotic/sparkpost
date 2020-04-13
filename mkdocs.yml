@@ -4,7 +4,7 @@ theme: material
 markdown_extensions:
   - admonition
   - pymdownx.magiclink
-pages:
+nav:
 - About: index.md
 - Installation: install.md
 - Bounce processing: bounce-processing.md
