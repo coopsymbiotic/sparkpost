@@ -27,18 +27,15 @@ class CRM_Sparkpost {
   // Indicates we need to try sending emails out through an alternate method
   const FALLBACK = 1;
 
-  static function setSetting($setting, $value) {
+  public static function setSetting($setting, $value) {
     // Encrypt API key before storing in database
     if ($setting == 'sparkpost_apiKey') {
       $value = CRM_Utils_Crypt::encrypt($value);
     }
-    return CRM_Core_BAO_Setting::setItem(
-      $value,
-      CRM_Sparkpost::SPARKPOST_EXTENSION_SETTINGS,
-      $setting);
+    return Civi::settings()->set($setting, $value);
   }
 
-  static function getSetting($setting = NULL) {
+  public static function getSetting($setting = NULL) {
     // Start with the default values for settings
     $settings = array(
       'sparkpost_useBackupMailer' => false,
@@ -46,7 +43,7 @@ class CRM_Sparkpost {
     );
     // Merge the settings defined in DB (no more groups in 4.7, so has to be one by one ...)
     foreach (array('sparkpost_apiKey', 'sparkpost_useBackupMailer', 'sparkpost_campaign', 'sparkpost_ipPool', 'sparkpost_customCallbackUrl', 'sparkpost_host' ) as $name) {
-      $value = CRM_Core_BAO_Setting::getItem(CRM_Sparkpost::SPARKPOST_EXTENSION_SETTINGS, $name);
+      $value = Civi::settings()->get($name);
       if (!is_null($value)) {
         $settings[$name] = $value;
       }
@@ -56,7 +53,8 @@ class CRM_Sparkpost {
     // And finaly returm what was asked for ...
     if (!empty($setting)) {
       return CRM_Utils_Array::value($setting, $settings);
-    } else {
+    }
+    else {
       return $settings;
     }
   }
@@ -121,7 +119,7 @@ class CRM_Sparkpost {
    *
    * @see https://developers.sparkpost.com/api/
    */
-  static function call($path, $params = array(), $content = array()) {
+  public static function call($path, $params = array(), $content = array()) {
     // Get the API key from the settings
     $authorization = CRM_Sparkpost::getSetting('sparkpost_apiKey');
     if (empty($authorization)) {

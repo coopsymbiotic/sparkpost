@@ -37,7 +37,7 @@ class Mail_sparkpost extends Mail {
   /**
    * Send an email
    */
-  function send($recipients, $headers, $body) {
+  public function send($recipients, $headers, $body) {
     if (defined('CIVICRM_MAIL_LOG')) {
       CRM_Utils_Mail::logger($recipients, $headers, $body);
       if(!defined('CIVICRM_MAIL_LOG_AND SEND')) {
@@ -202,7 +202,7 @@ class Mail_sparkpost extends Mail {
    * @return array
    *   An array of recipients in the format that the SparkPost API expects.
    */
-  function formatRecipients($recipients) {
+  public function formatRecipients($recipients) {
     // CiviCRM passes the recipients as an array of string, each string potentially containing
     // multiple addresses in either abbreviated or full RFC822 format, e.g.
     // $recipients:
@@ -242,7 +242,7 @@ class Mail_sparkpost extends Mail {
     return $result;
   }
   
-  static function getMailing($jobId) {
+  public static function getMailing($jobId) {
     if (!$jobId) {
       return;
     }
