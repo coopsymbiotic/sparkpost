@@ -32,19 +32,19 @@ require_once 'Mail/RFC822.php';
 class Mail_Sparkpost extends Mail {
   // Variables used to redirect outgoing email to a backup mailer
   var $backupMailer;
-  static $unavailable = false; // static because each hook_alterMailer creates a different mailer object
+  static $unavailable = FALSE; // static because each hook_alterMailer creates a different mailer object
 
   /**
    * Sets a backup mailer
    */
-  function setBackupMailer($mailer) {
+  public function setBackupMailer($mailer) {
     $this->backupMailer = $mailer;
   }
 
   /**
    * Send an email
    */
-  function send($recipients, $headers, $body) {
+  public function send($recipients, $headers, $body) {
     if (defined('CIVICRM_MAIL_LOG')) {
       CRM_Utils_Mail::logger($recipients, $headers, $body);
       if(!defined('CIVICRM_MAIL_LOG_AND SEND')) {
@@ -105,7 +105,7 @@ class Mail_Sparkpost extends Mail {
     } catch (Exception $e) {
       if ($e->getCode() == CRM_Sparkpost::FALLBACK) {
         // Let's redirect this and all further sends to the backup mailer
-        Mail_Sparkpost::$unavailable = true;
+        Mail_Sparkpost::$unavailable = TRUE;
         return $this->send($recipients, $headers, $body);
       }
       return new PEAR_Error($e->getMessage());
@@ -122,7 +122,7 @@ class Mail_Sparkpost extends Mail {
    * @return array
    *   An array of recipients in the format that the SparkPost API expects.
    */
-  function formatRecipients($recipients) {
+  public function formatRecipients($recipients) {
     // CiviCRM passes the recipients as an array of string, each string potentially containing
     // multiple addresses in either abbreviated or full RFC822 format, e.g.
     // $recipients:
