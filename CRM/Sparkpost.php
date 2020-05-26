@@ -80,7 +80,7 @@ class CRM_Sparkpost {
   static function getPartsFromBounceID($civimail_bounce_id) {
     // Extract CiviMail parameters from header value
     // NB: the localpart might be empty, but the regexp should still work.
-    $localpart = CRM_Sparkpost::getDomainLocalpart();
+    $localpart = static::getDomainLocalpart();
     $rpRegex = '/^' . preg_quote($localpart) . '(b|c|e|o|r|u|m)\.(\d+)\.(\d+)\.([0-9a-f]{16})/';
 
     if (preg_match($rpRegex, $civimail_bounce_id, $matches)) {
@@ -121,18 +121,18 @@ class CRM_Sparkpost {
    */
   public static function call($path, $params = array(), $content = array()) {
     // Get the API key from the settings
-    $authorization = CRM_Sparkpost::getSetting('sparkpost_apiKey');
+    $authorization = static::getSetting('sparkpost_apiKey');
     if (empty($authorization)) {
       throw new Exception('No API key defined for SparkPost');
     }
 
     // Deal with the campaign setting
-    if (($path =='transmissions') && ($campaign = CRM_Sparkpost::getSetting('sparkpost_campaign'))) {
+    if (($path =='transmissions') && ($campaign = static::getSetting('sparkpost_campaign'))) {
       $content['campaign_id'] = $campaign;
     }
 
     // Initialize connection and set headers
-    $sparkpost_host = CRM_Sparkpost::getSetting('sparkpost_host');
+    $sparkpost_host = static::getSetting('sparkpost_host');
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, "https://api.$sparkpost_host/api/v1/$path");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
