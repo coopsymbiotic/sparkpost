@@ -7,6 +7,12 @@ It currently is one of the [Top 10](https://stats.civicrm.org/?tab=sites) most u
 
 Full documentation (including installation instructions) can be found at https://docs.civicrm.org/sparkpost.
 
+## Maintenance status
+
+As the number of voluntary donations to maintain & support the extension can still be counted with a single hand, maintenance of this extension is officially discontinued. You can still contract Cividesk, or any other CiviCRM provider, for any needed maintenance. Thanks for your understanding.
+
+But ... you can still show your support as indicated below. Hopefully that will make us change our minds ...
+
 ## Show your support!
 
 Development of this extension was fully self-funded by Cividesk and equated to about 40 hours of work.
