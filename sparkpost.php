@@ -246,7 +246,7 @@ function sparkpost_civicrm_alterMailParams(&$params, $context = NULL) {
       }
       
       if (!$contactId) {
-        CRM_Core_Error::debug_var('Contact Id not known to attach header for this transactional email by Sparkpost extension possbile duplicates email hence skiping', $contactId);
+        CRM_Core_Error::debug_var('Contact Id not known to attach header for this transactional email by Sparkpost extension possbile duplicates email hence skiping', CRM_Utils_Array::value('toEmail', $params));
         return;
       }
       
