@@ -246,11 +246,7 @@ function sparkpost_civicrm_alterMailParams(&$params, $context = NULL) {
       }
       
       if (!$contactId) {
-        CRM_Core_Error::backtrace('backtrace before return in sparkpost alterMailParams', TRUE);
-        // we need a better dedupe to avoid those errors but in the meantime, reduce the noise in the log
-        $p = $params;
-        unset($p['html']);
-        CRM_Core_Error::debug_var('Contact Id not known to attach header for this transactional email by Sparkpost extension possbile duplicates email hence skiping', $p);
+        CRM_Core_Error::debug_var('Contact Id not known to attach header for this transactional email by Sparkpost extension possbile duplicates email hence skiping', $contactId);
         return;
       }
       
