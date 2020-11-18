@@ -68,9 +68,6 @@ class CRM_Sparkpost_Page_callback extends CRM_Core_Page {
         if (!in_array($event->type, array('bounce', 'spam_complaint', 'policy_rejection'))) {
           continue;
         }
-        if (property_exists($event, 'campaign_id') && ($event->campaign_id != CRM_Sparkpost::getSetting('sparkpost_campaign'))) {
-          continue;
-        }
         if (!property_exists($event->rcpt_meta, 'X-CiviMail-Bounce')) {
           continue;
         }
