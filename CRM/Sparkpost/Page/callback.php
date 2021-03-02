@@ -42,7 +42,7 @@ class CRM_Sparkpost_Page_callback extends CRM_Core_Page {
     22 => array('Mailbox Full','The message bounced due to the remote mailbox being over quota.','Soft', 'Away'),
     23 => array('Too Large','The message bounced because it was too large for the recipient.','Soft', 'Away'),
     24 => array('Timeout','The message timed out.','Soft', 'Relay'),
-    25 => array('Admin Failure','The message was failed by Momentum\'s configured policies.','Admin', 'Spam'),
+    25 => array('Admin Failure', 'The message was failed by SparkPost\'s configured policies.', 'Admin', 'Invalid'),
     30 => array('Generic Bounce: No RCPT','No recipient could be determined for the message.','Hard', 'Invalid'),
     40 => array('Generic Bounce','The message failed for unspecified reasons.','Soft', 'Relay'),
     50 => array('Mail Block','The message was blocked by the receiver.','Block', 'Spam'),
