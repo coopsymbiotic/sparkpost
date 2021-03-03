@@ -1,5 +1,5 @@
 {crmScope extensionKey="sparkpost"}
-  <h3>{ts}Errors from the email delivery provider{/ts}</h3>
+  <h3>{ts}Events from the email delivery provider{/ts}</h3>
 
   {if $sparkpost_events}
     {foreach from=$sparkpost_events item=event}
