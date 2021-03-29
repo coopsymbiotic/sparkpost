@@ -228,7 +228,7 @@ function sparkpost_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
 
 function sparkpost_civicrm_alterMailParams(&$params, $context = NULL) {
   // Create meta data for transactional email
-  if ($context != 'civimail') {
+  if ($context != 'civimail' && $context != 'flexmailer') {
     $mail = new CRM_Mailing_DAO_Mailing();
     $mail->subject = "***All Transactional Emails Through SparkPost***";
     $mail->url_tracking = TRUE;
@@ -237,27 +237,33 @@ function sparkpost_civicrm_alterMailParams(&$params, $context = NULL) {
     $mail->open_tracking = TRUE;
 
     if ($mail->find(TRUE)) {
-      if (isset($params['contact_id']) && !empty($params['contact_id'])) {//We could bring contact_id in params by customizing activity bao file
-        $contactId = CRM_Utils_Array::value('contact_id', $params);
-      } else if (isset($params['contactId']) && !empty($params['contactId'])) {//Contribution/Event confirmation
-        $contactId = CRM_Utils_Array::value('contactId', $params);
-      } else {//As last option from emall address
-        $contactId = sparkpost_targetContactId($params);
+      if (!empty($params['contact_id'])) {
+        $contactId = $params['contact_id'];
+      }
+      elseif (!empty($params['contactId'])) {
+        // Contribution/Event confirmation
+        $contactId = $params['contactId'];
+      }
+      else {
+        // As last option from emall address
+        $contactId = sparkpost_targetContactId($params['toEmail']);
       }
       
       if (!$contactId) {
-        CRM_Core_Error::debug_var('Contact Id not known to attach header for this transactional email by Sparkpost extension possbile duplicates email hence skiping', CRM_Utils_Array::value('toEmail', $params));
+        // Not particularly useful, but devs can insert a backtrace here if they want to debug the cause.
+        Civi::log()->warning('ContactId not known to attach header for this transactional email by Sparkpost extension possible duplicates email hence skipping: ' . CRM_Utils_Array::value('toEmail', $params));
         return;
       }
       
       if ($contactId) {
-        $eventQueueParams = array(
+        $eventQueue = CRM_Mailing_Event_BAO_Queue::create([
           'job_id' => CRM_Core_DAO::getFieldValue('CRM_Mailing_DAO_MailingJob', $mail->id, 'id', 'mailing_id'),
           'contact_id' => $contactId,
           'email_id' => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Email', $contactId, 'id', 'contact_id'),
-        );
-        $eventQueue = CRM_Mailing_Event_BAO_Queue::create($eventQueueParams);
-        $params['returnPath'] = implode(CRM_Core_Config::singleton()->verpSeparator, array('m', $eventQueueParams['job_id'], $eventQueue->id, $eventQueue->hash));//Add m to differentiate from bulk mailing
+        ]);
+
+        // Add m to differentiate from bulk mailing
+        $params['returnPath'] = implode(CRM_Core_Config::singleton()->verpSeparator, array('m', $eventQueueParams['job_id'], $eventQueue->id, $eventQueue->hash));
       }
     }
   }
@@ -280,25 +286,25 @@ function sparkpost_civicrm_postEmailSend(&$params) {
   }
 }
 
-/*
+/**
+ * Returns the contact_id for a specific email address.
+ * Returns NULL if no contact was found, or if more than one
+ * contact was matched.
  *
- * Function to get contact id from email
- *
- * @param array $params - array of mail params
- *
- * return contact Id
+ * @return contact Id | NULL
  */
-function sparkpost_targetContactId($params) {
-  $emailParams = array( 
-    'email' => trim($params['toEmail']),
-    'version' => 3,
+function sparkpost_targetContactId($email) {
+  // @todo Does this exclude deleted contacts?
+  $result = civicrm_api3('email', 'get', [
+    'email' => trim($email),
     'sequential' => 1,
-  );
-  $result = civicrm_api('email', 'get', $emailParams);
-  if (!$result['is_error'] && $result['count'] == 1) {
-    $contactId = $result['values'][0]['contact_id'];
+  ]);
+
+  if ($result['count'] == 1) {
+    return $result['values'][0]['contact_id'];
   } 
-  return $contactId;
+
+  return NULL;
 }
 
 /**
