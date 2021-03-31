@@ -22,6 +22,11 @@
  * Contact: info@cividesk.com
  */
 
+use SparkPost\SparkPost;
+use GuzzleHttp\Client;
+use Http\Adapter\Guzzle6\Client as GuzzleAdapter;
+use CRM_Sparkpost_ExtensionUtil as E;
+
 class CRM_Sparkpost {
   const SPARKPOST_EXTENSION_SETTINGS = 'SparkPost Extension Settings';
   // Indicates we need to try sending emails out through an alternate method
@@ -98,6 +103,71 @@ class CRM_Sparkpost {
     ]);
 
     return NULL;
+  }
+
+  /**
+   * Verifies and caches the list of verified sending domains.
+   */
+  public static function getSparkpostVerifiedSendingDomains() {
+    $domains = Civi::cache('long')->get('sparkpost_verifiedsendingdomains');
+
+    if (!empty($domains)) {
+      return $domains;
+    }
+
+    $domains = [];
+
+    // TODO: Has some duplication with CRM_Sparkpost_Utils_Check_SendingDomains::check()
+    require_once __DIR__ . '/../../../../vendor/autoload.php';
+    $api_key = CRM_Sparkpost::getSetting('sparkpost_apiKey');
+    $httpClient = new GuzzleAdapter(new Client());
+    $sparky = new SparkPost($httpClient, ['key' => $api_key, 'async' => FALSE]);
+
+    try {
+      $response = $sparky->request('GET', 'sending-domains', [
+        'ownership_verified' => true,
+      ]);
+
+      $body = $response->getBody();
+      $domains = [];
+
+      foreach ($body['results'] as $key => $val) {
+        $domains[] = $val['domain'];
+      }
+    }
+    catch (Exception $e) {
+      $code = $e->getCode();
+      $body = $e->getBody();
+
+      CRM_Core_Session::setStatus(E::ts('The email was not sent. Failed to get the valid sending domains from Sparkpost: code %1, error: %2', [
+        1 => $e->getCode(),
+        2 => $body,
+      ]), E::ts('Email not sent'), 'error');
+
+      // nb: for now, we are not returning early, and caching this error.
+      // The email will still fail to validate against a verified domain.
+    }
+
+    Civi::cache('long')->set('sparkpost_verifiedsendingdomains', $domains);
+    return $domains;
+  }
+
+  /**
+   *
+   */
+  public static function isValidSparkpostVerifiedSendingEmail($email) {
+    $domains = self::getSparkpostVerifiedSendingDomains();
+
+    // I guess there are a few ways of doing this. We could also extract the domain from the email,
+    // but this can be buggy. So for now, just checking if an allowed domain name is part of the email.
+    // Ex: is "example.org" part of "Alice <alice@example.org>".
+    foreach ($domains as $domain) {
+      if (strpos($email, $domain) !== FALSE) {
+        return TRUE;
+      }
+    }
+
+    return FALSE;
   }
 
   /**

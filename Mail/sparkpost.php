@@ -32,6 +32,7 @@ require_once 'Mail/RFC822.php';
 use SparkPost\SparkPost;
 use GuzzleHttp\Client;
 use Http\Adapter\Guzzle6\Client as GuzzleAdapter;
+use CRM_Sparkpost_ExtensionUtil as E;
 
 class Mail_sparkpost extends Mail {
   /**
@@ -53,6 +54,17 @@ class Mail_sparkpost extends Mail {
 
     require_once __DIR__ . '/../vendor/autoload.php';
 
+    // Verify if the sending domain is valid
+    if (!empty($headers['From'])) {
+      if (!CRM_Sparkpost::isValidSparkpostVerifiedSendingEmail($headers['From'])) {
+        $error = E::ts('The email could not be sent because the sender (%1) email is not a verified domain.', [1 => htmlspecialchars($headers['From'])]);
+        Civi::log()->error($error);
+        CRM_Core_Session::setStatus($error, E::ts('Email not sent'), 'error');
+        return;
+      }
+    }
+
+    // Prepare to send the email
     $httpClient = new GuzzleAdapter(new Client());
     $sparky = new SparkPost($httpClient, ['key' => $api_key, 'async' => FALSE]);
 

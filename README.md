@@ -14,6 +14,9 @@ Some of the additional features included in this fork:
 
 * Uses the SparkPost PHP library (and Guzzle), instead of Curl
 * Track transactional email bounces (by Veda Consulting: https://github.com/cividesk/com.cividesk.email.sparkpost/pull/22)
+* Verify the 'verified sending domain' before sending an email, to provide more helpful errors when sending fails.
+* Implement CiviCRM 'system checks' to display the list of verified sending domains, and domain metrics, under CiviCRM > Administer > System Status.
+* Notably a system check will warn when the number of emails sent in the current month are over a certain quota (currently hardcoded to 65000! todo: add a setting).
 
 # Original README by CiviDesk
 
