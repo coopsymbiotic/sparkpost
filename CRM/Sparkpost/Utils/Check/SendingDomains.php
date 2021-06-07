@@ -13,8 +13,9 @@ class CRM_Sparkpost_Utils_Check_SendingDomains {
     // TODO: Refactor into a more generic function?
     require_once __DIR__ . '/../../../../vendor/autoload.php';
     $api_key = CRM_Sparkpost::getSetting('sparkpost_apiKey');
+    $api_host = Civi::settings()->get('sparkpost_host');
     $httpClient = new GuzzleAdapter(new Client());
-    $sparky = new SparkPost($httpClient, ['key' => $api_key, 'async' => FALSE]);
+    $sparky = new SparkPost($httpClient, ['key' => $api_key, 'async' => FALSE, 'host' => "api.$api_host"]);
 
     try {
       $response = $sparky->request('GET', 'sending-domains', [

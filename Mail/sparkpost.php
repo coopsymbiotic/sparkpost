@@ -47,6 +47,7 @@ class Mail_sparkpost extends Mail {
     }
 
     $api_key = CRM_Sparkpost::getSetting('sparkpost_apiKey');
+    $api_host = Civi::settings()->get('sparkpost_host');
 
     if (empty($api_key)) {
       throw new Exception('No API key defined for SparkPost');
@@ -66,7 +67,7 @@ class Mail_sparkpost extends Mail {
 
     // Prepare to send the email
     $httpClient = new GuzzleAdapter(new Client());
-    $sparky = new SparkPost($httpClient, ['key' => $api_key, 'async' => FALSE]);
+    $sparky = new SparkPost($httpClient, ['key' => $api_key, 'async' => FALSE, 'host' => "api.$api_host"]);
 
     // Sanitize and prepare headers for transmission
     if (!is_array($headers)) {

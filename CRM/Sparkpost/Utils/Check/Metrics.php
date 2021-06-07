@@ -13,8 +13,9 @@ class CRM_Sparkpost_Utils_Check_Metrics {
     // TODO: Refactor into a more generic function?
     require_once __DIR__ . '/../../../../vendor/autoload.php';
     $api_key = CRM_Sparkpost::getSetting('sparkpost_apiKey');
+    $api_host = Civi::settings()->get('sparkpost_host');
     $httpClient = new GuzzleAdapter(new Client());
-    $sparky = new SparkPost($httpClient, ['key' => $api_key, 'async' => FALSE]);
+    $sparky = new SparkPost($httpClient, ['key' => $api_key, 'async' => FALSE, 'host' => "api.$api_host"]);
 
     // FIXME Add cycle roll day setting
     // If it's before the 27th, then we search Y-[m-1]-27

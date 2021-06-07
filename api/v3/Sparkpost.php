@@ -5,7 +5,7 @@ use GuzzleHttp\Client;
 use Http\Adapter\Guzzle6\Client as GuzzleAdapter;
 
 /**
- * Sparkpost.showlog API
+ * Sparkpost.event API
  *
  * @param array $params
  * @return array API result descriptor
@@ -17,12 +17,13 @@ function civicrm_api3_sparkpost_event($params) {
   ];
 
   $api_key = CRM_Sparkpost::getSetting('sparkpost_apiKey');
+  $api_host = Civi::settings()->get('sparkpost_host');
 
   // FIXME: We should use Guzzle from core, and autoload from sparkpost.php?
   require_once __DIR__ . '/../../vendor/autoload.php';
 
   $httpClient = new GuzzleAdapter(new Client());
-  $sparky = new SparkPost($httpClient, ['key' => $api_key, 'async' => FALSE]);
+  $sparky = new SparkPost($httpClient, ['key' => $api_key, 'async' => FALSE, 'host' => "api.$api_host"]);
 
   $from = new DateTime();
   $from = $from->modify('-30 day');
