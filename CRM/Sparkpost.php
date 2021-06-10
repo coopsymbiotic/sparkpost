@@ -120,8 +120,9 @@ class CRM_Sparkpost {
     // TODO: Has some duplication with CRM_Sparkpost_Utils_Check_SendingDomains::check()
     require_once __DIR__ . '/../vendor/autoload.php';
     $api_key = CRM_Sparkpost::getSetting('sparkpost_apiKey');
+    $api_host = Civi::settings()->get('sparkpost_host');
     $httpClient = new GuzzleAdapter(new Client());
-    $sparky = new SparkPost($httpClient, ['key' => $api_key, 'async' => FALSE]);
+    $sparky = new SparkPost($httpClient, ['key' => $api_key, 'async' => FALSE, 'host' => "api.$api_host"]);
 
     try {
       $response = $sparky->request('GET', 'sending-domains', [
@@ -141,7 +142,7 @@ class CRM_Sparkpost {
 
       CRM_Core_Session::setStatus(E::ts('The email was not sent. Failed to get the valid sending domains from Sparkpost: code %1, error: %2', [
         1 => $e->getCode(),
-        2 => $body,
+        2 => $e->getMessage() . ' / ' . print_r($body, 1),
       ]), E::ts('Email not sent'), 'error');
 
       // nb: for now, we are not returning early, and caching this error.
