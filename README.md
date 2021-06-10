@@ -3,20 +3,23 @@
 This is a Coop SymbioTIC fork of the excellent SparkPost extension by CiviDesk:  
 https://github.com/cividesk/com.cividesk.email.sparkpost
 
-This is a slightly experimental fork to simplify our setup process and improve
-performance. For example, since SparkPost sends all events to all
-webhooks (for all subaccounts), we use [SparkPostRouter](https://github.com/coopsymbiotic/coop.symbiotic.sparkpostrouter).
-
 We strongly encourage you to use the official CiviDesk extension rather than this one,
 unless you are hosted by [Coop SymbioTIC](https://www.symbiotic.coop/en), of course! ;-)
 
 Some of the additional features included in this fork:
 
-* Uses the SparkPost PHP library (and Guzzle), instead of Curl
-* Track transactional email bounces (by Veda Consulting: https://github.com/cividesk/com.cividesk.email.sparkpost/pull/22)
+* Uses the SparkPost PHP library (and Guzzle), instead of direct Curl calls, which seems to improve performance.
+* Tracks transactional email bounces (based on work by Veda Consulting: https://github.com/cividesk/com.cividesk.email.sparkpost/pull/22)
 * Verify the 'verified sending domain' before sending an email, to provide more helpful errors when sending fails.
-* Implement CiviCRM 'system checks' to display the list of verified sending domains, and domain metrics, under CiviCRM > Administer > System Status.
+* Implements various CiviCRM 'system checks' to display the list of verified sending domains, and domain metrics, under CiviCRM > Administer > System Status.
 * Notably a system check will warn when the number of emails sent in the current month are over a certain quota (currently hardcoded to 65000! todo: add a setting).
+
+Finally, this extension does not automatically create the webhook on Sparkpost,
+because we use a single webhook on our "router" CiviCRM instance. While
+Sparkpost now supports having a webhook per subaccount, our "router" extension
+supports things such as using a generic email domain with subaddresses (ex:
+`noreply+clientA@symbiotic-notifications.net`).  For more information, see
+[SparkPostRouter](https://github.com/coopsymbiotic/coop.symbiotic.sparkpostrouter).
 
 # Original README by CiviDesk
 
