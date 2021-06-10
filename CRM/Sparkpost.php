@@ -118,7 +118,7 @@ class CRM_Sparkpost {
     $domains = [];
 
     // TODO: Has some duplication with CRM_Sparkpost_Utils_Check_SendingDomains::check()
-    require_once __DIR__ . '/../../../../vendor/autoload.php';
+    require_once __DIR__ . '/../vendor/autoload.php';
     $api_key = CRM_Sparkpost::getSetting('sparkpost_apiKey');
     $httpClient = new GuzzleAdapter(new Client());
     $sparky = new SparkPost($httpClient, ['key' => $api_key, 'async' => FALSE]);
