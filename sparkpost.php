@@ -47,8 +47,6 @@ function sparkpost_civicrm_xmlMenu(&$files) {
 function sparkpost_civicrm_install() {
   _sparkpost_civix_civicrm_install();
 
-  // Check dependencies and display error messages
-  sparkpost_check_dependencies();
   $mailingParams = array(
     'subject' => '***All Transactional Emails Through Sparkpost***',
     'name' => ts('Transaction Emails Sparkpost'),
@@ -157,50 +155,12 @@ function sparkpost_civicrm_alterMailer(&$mailer, $driver, $params) {
 }
 
 /**
- * Implementation of hook_civicrm_check (4.6.3+)
+ * Implementation of hook_civicrm_check
  */
 function sparkpost_civicrm_check(&$messages) {
-  $sparkpost_messages = sparkpost_check_dependencies(FALSE);
-
-  // We need to add the severity (only for 4.7+)
-  $version = CRM_Utils_System::version();
-
-  if (version_compare($version, '4.7') >= 0) {
-    foreach ($sparkpost_messages as &$message) {
-      $message->setLevel(5); // Cannot use \Psr\Log\LogLevel::CRITICAL as this is not in 4.6 code base
-    }
-  }
-
-  $messages += $sparkpost_messages;
-
   CRM_Sparkpost_Utils_Check_SendingDomains::check($messages);
   CRM_Sparkpost_Utils_Check_Metrics::check($messages);
-}
-
-/**
- * Checks all dependencies for the extension
- *
- * @returns array  Array with one CRM_Utils_Check_Message object for each unmet dependency
- */
-function sparkpost_check_dependencies($display = TRUE) {
-  // Note: CRM_Utils_Check_Message exists in 4.4+, but does not include severity attribute
-  $messages = array();
-  $trailer = ts('This requirement is not met in your current configuration, the extension will not work.');
-  // Make sure the curl extension is enabled
-  if (!function_exists('curl_version')) {
-    $messages[] = new CRM_Utils_Check_Message(
-      'sparkpost_curlextension',
-      ts('The SparkPost extension requires the PHP curl library.') . ' ' . $trailer,
-      ts('SparkPost requirements not met')
-    );
-  }
-  // Now display a nice alert for all these messages
-  if ($display) {
-    foreach ($messages as $message) {
-      CRM_Core_Session::setStatus($message->getMessage(), $message->getTitle(), 'error');
-    }
-  }
-  return $messages;
+  CRM_Sparkpost_Utils_Check_Environment::check($messages);
 }
 
 /**
