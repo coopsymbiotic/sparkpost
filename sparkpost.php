@@ -46,6 +46,7 @@ function sparkpost_civicrm_xmlMenu(&$files) {
  */
 function sparkpost_civicrm_install() {
   _sparkpost_civix_civicrm_install();
+
   // Check dependencies and display error messages
   sparkpost_check_dependencies();
   $mailingParams = array(
@@ -60,13 +61,6 @@ function sparkpost_civicrm_install() {
 
   // Create entry in civicrm_mailing
   $mailing = CRM_Mailing_BAO_Mailing::add($mailingParams, CRM_Core_DAO::$_nullArray);
-
-  // FIXME: what is this for?
-  $changeENUM = FALSE;
-  if (version_compare('4.5alpha1', $civiVersion) > 0) {
-    $changeENUM = TRUE;
-  }
-  CRM_Core_Smarty::singleton()->assign('changeENUM', $changeENUM);
 
   // Add entry in civicrm_mailing_job
   $saveJob = new CRM_Mailing_DAO_MailingJob();
@@ -192,14 +186,6 @@ function sparkpost_check_dependencies($display = TRUE) {
   // Note: CRM_Utils_Check_Message exists in 4.4+, but does not include severity attribute
   $messages = array();
   $trailer = ts('This requirement is not met in your current configuration, the extension will not work.');
-  // Make sure the PHP version is 5.4+
-  if (version_compare(PHP_VERSION, '5.4') < 0) {
-    $messages[] = new CRM_Utils_Check_Message(
-      'sparkpost_phpversion',
-      ts('The SparkPost extension requires PHP version 5.4 or higher.') . ' ' . $trailer,
-      ts('SparkPost requirements not met')
-    );
-  }
   // Make sure the curl extension is enabled
   if (!function_exists('curl_version')) {
     $messages[] = new CRM_Utils_Check_Message(
