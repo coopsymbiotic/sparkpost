@@ -46,41 +46,22 @@ function sparkpost_civicrm_xmlMenu(&$files) {
  */
 function sparkpost_civicrm_install() {
   _sparkpost_civix_civicrm_install();
-
-  $mailingParams = array(
-    'subject' => '***All Transactional Emails Through Sparkpost***',
-    'name' => ts('Transaction Emails Sparkpost'),
-    'url_tracking' => TRUE,
-    'forward_replies' => FALSE,
-    'auto_responder' => FALSE,
-    'open_tracking' => TRUE,
-    'is_completed' => FALSE,
-  );
-
-  // Create entry in civicrm_mailing
-  $mailing = CRM_Mailing_BAO_Mailing::add($mailingParams, CRM_Core_DAO::$_nullArray);
-
-  // Add entry in civicrm_mailing_job
-  $saveJob = new CRM_Mailing_DAO_MailingJob();
-  $saveJob->start_date = $saveJob->end_date = date('YmdHis');
-  $saveJob->status = 'Complete';
-  $saveJob->job_type = "Special: All transactional emails being sent through SparkPost";
-  $saveJob->mailing_id = $mailing->id;
-  $saveJob->save();
+  CRM_Sparkpost::createTransactionalMailing();
 }
 
 /**
  * Implementation of hook_civicrm_uninstall
  */
 function sparkpost_civicrm_uninstall() {
-  return _sparkpost_civix_civicrm_uninstall();
+  _sparkpost_civix_civicrm_uninstall();
 }
 
 /**
  * Implementation of hook_civicrm_enable
  */
 function sparkpost_civicrm_enable() {
-  return _sparkpost_civix_civicrm_enable();
+  _sparkpost_civix_civicrm_enable();
+  CRM_Sparkpost::createTransactionalMailing();
 }
 
 /**
@@ -176,11 +157,7 @@ function sparkpost_civicrm_alterMailParams(&$params, $context = NULL) {
   // Create meta data for transactional email
   if ($context != 'civimail' && $context != 'flexmailer') {
     $mail = new CRM_Mailing_DAO_Mailing();
-    $mail->subject = "***All Transactional Emails Through SparkPost***";
-    $mail->url_tracking = TRUE;
-    $mail->forward_replies = FALSE;
-    $mail->auto_responder = FALSE;
-    $mail->open_tracking = TRUE;
+    $mail->name = 'Sparkpost Transactional Emails';
 
     if ($mail->find(TRUE)) {
       if (!empty($params['contact_id'])) {
@@ -209,8 +186,12 @@ function sparkpost_civicrm_alterMailParams(&$params, $context = NULL) {
         ]);
 
         // Add m to differentiate from bulk mailing
-        $params['returnPath'] = implode(CRM_Core_Config::singleton()->verpSeparator, array('m', $eventQueueParams['job_id'], $eventQueue->id, $eventQueue->hash));
+        $verpSeparator = CRM_Core_Config::singleton()->verpSeparator;
+        $params['returnPath'] = implode($verpSeparator, ['m', $eventQueue->job_id, $eventQueue->id, $eventQueue->hash]);
       }
+    }
+    else {
+      Civi::log()->debug('Sparkpost: the mailing for transactional emails was not found. Bounces will not be tracked. Disable/enable the sparkpost extension to re-create the mailing.');
     }
   }
 }

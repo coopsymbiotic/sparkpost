@@ -59,3 +59,20 @@ function civicrm_api3_sparkpost_event($params) {
 
   return $result;
 }
+
+/**
+ * Sparkpost.create_transactional_mailing API
+ *
+ * @param array $params
+ * @return array API result descriptor
+ * @throws API_Exception
+ */
+function civicrm_api3_sparkpost_create_transactional_mailing($params) {
+  $result = [
+    'values' => [],
+  ];
+
+  CRM_Sparkpost::createTransactionalMailing();
+
+  return $result;
+}

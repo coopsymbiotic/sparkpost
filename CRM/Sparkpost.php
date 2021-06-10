@@ -285,4 +285,45 @@ class CRM_Sparkpost {
     // Return (valid) response
     return $response;
   }
+
+
+  /**
+   * Creates the special Mailing for tracking transactional emails
+   *
+   * @return Boolean
+   *   True if the mailing was created.
+   */
+  public static function createTransactionalMailing() {
+    $result = civicrm_api3('Mailing', 'get', [
+      'name' => 'Sparkpost Transactional Emails',
+    ]);
+
+    if (empty($result['values'])) {
+      // Create entry in civicrm_mailing
+      $mailingParams = [
+        'subject' => E::ts('Sparkpost Transactional Emails (do not delete)'),
+        'name' => 'Sparkpost Transactional Emails',
+        'url_tracking' => TRUE,
+        'forward_replies' => FALSE,
+        'auto_responder' => FALSE,
+        'open_tracking' => TRUE,
+        'is_completed' => FALSE,
+      ];
+
+      $mailing = CRM_Mailing_BAO_Mailing::add($mailingParams);
+
+      // Add entry in civicrm_mailing_job
+      $saveJob = new CRM_Mailing_DAO_MailingJob();
+      $saveJob->start_date = $saveJob->end_date = date('YmdHis');
+      $saveJob->status = 'Complete';
+      $saveJob->job_type = "Special: All Sparkpost transactional emails";
+      $saveJob->mailing_id = $mailing->id;
+      $saveJob->save();
+
+      return TRUE;
+    }
+
+    return FALSE;
+  }
+
 }
