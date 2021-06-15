@@ -51,7 +51,7 @@ class CRM_Sparkpost_Page_callback extends CRM_Core_Page {
     53 => array('Prohibited Attachment','The message was blocked by the receiver because it contained an attachment.','Block', 'Spam'),
     54 => array('Relaying Denied','The message was blocked by the receiver because relaying is not allowed.','Block', 'Relay'),
     60 => array('Auto-Reply','The message is an auto-reply/vacation mail.','Soft', 'Away'),
-    70 => array('Transient Failure','Message transmission has been temporarily delayed.','Soft', 'Away'),
+    70 => array('Transient Failure','Message transmission has been temporarily delayed.','Soft', 'Relay'),
     80 => array('Subscribe','The message is a subscribe request.','Admin', ''),
     90 => array('Unsubscribe','The message is an unsubscribe request.','Hard', 'Spam'),
    100 => array('Challenge-Response','The message is a challenge-response probe.','Soft', ''),
