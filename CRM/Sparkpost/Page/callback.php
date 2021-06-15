@@ -25,37 +25,39 @@
 class CRM_Sparkpost_Page_callback extends CRM_Core_Page {
 
   // Yes, dirty ... but there is no pseudoconstant function and CRM_Mailing_BAO_BouncePattern is useless
-  var $_civicrm_bounce_types = array(
+  var $_civicrm_bounce_types = [
     'Away' => 2,    // soft, retry 30 times
     'Relay' => 9,   // soft, retry 3 times
     'Invalid' => 6, // hard, retry 1 time
     'Spam' => 10,   // hard, retry 1 time
-  );
+  ];
 
   // Source: https://support.sparkpost.com/customer/portal/articles/1929896
-  var $_sparkpost_bounce_types = array(
+  // See also: https://docs.civicrm.org/sysadmin/en/latest/setup/civimail/inbound/
+  // The CiviCRM equivalent will have a certain threshold before it flags an email On Hold.
+  var $_sparkpost_bounce_types = [
     // Name, Description, Category, CiviCRM equivalent (see above)
-     1 => array('Undetermined','The response text could not be identified.','Undetermined', ''),
-    10 => array('Invalid Recipient','The recipient is invalid.','Hard', 'Invalid'),
-    20 => array('Soft Bounce','The message soft bounced.','Soft', 'Relay'),
-    21 => array('DNS Failure','The message bounced due to a DNS failure.','Soft', 'Relay'),
-    22 => array('Mailbox Full','The message bounced due to the remote mailbox being over quota.','Soft', 'Away'),
-    23 => array('Too Large','The message bounced because it was too large for the recipient.','Soft', 'Away'),
-    24 => array('Timeout','The message timed out.','Soft', 'Relay'),
-    25 => array('Admin Failure', 'The message was failed by SparkPost\'s configured policies.', 'Admin', 'Invalid'),
-    30 => array('Generic Bounce: No RCPT','No recipient could be determined for the message.','Hard', 'Invalid'),
-    40 => array('Generic Bounce','The message failed for unspecified reasons.','Soft', 'Relay'),
-    50 => array('Mail Block','The message was blocked by the receiver.','Block', 'Spam'),
-    51 => array('Spam Block','The message was blocked by the receiver as coming from a known spam source.','Block', 'Spam'),
-    52 => array('Spam Content','The message was blocked by the receiver as spam.','Block', 'Spam'),
-    53 => array('Prohibited Attachment','The message was blocked by the receiver because it contained an attachment.','Block', 'Spam'),
-    54 => array('Relaying Denied','The message was blocked by the receiver because relaying is not allowed.','Block', 'Relay'),
-    60 => array('Auto-Reply','The message is an auto-reply/vacation mail.','Soft', 'Away'),
-    70 => array('Transient Failure','Message transmission has been temporarily delayed.','Soft', 'Relay'),
-    80 => array('Subscribe','The message is a subscribe request.','Admin', ''),
-    90 => array('Unsubscribe','The message is an unsubscribe request.','Hard', 'Spam'),
-   100 => array('Challenge-Response','The message is a challenge-response probe.','Soft', ''),
-  );
+     1 => ['Undetermined','The response text could not be identified.','Undetermined', ''],
+    10 => ['Invalid Recipient','The recipient is invalid.','Hard', 'Invalid'],
+    20 => ['Soft Bounce','The message soft bounced.','Soft', 'Relay'],
+    21 => ['DNS Failure','The message bounced due to a DNS failure.','Soft', 'Relay'],
+    22 => ['Mailbox Full','The message bounced due to the remote mailbox being over quota.','Soft', 'Away'],
+    23 => ['Too Large','The message bounced because it was too large for the recipient.','Soft', 'Away'],
+    24 => ['Timeout','The message timed out.','Soft', 'Relay'],
+    25 => ['Admin Failure', 'The message was failed by SparkPost\'s configured policies.', 'Admin', 'Invalid'],
+    30 => ['Generic Bounce: No RCPT','No recipient could be determined for the message.','Hard', 'Invalid'],
+    40 => ['Generic Bounce','The message failed for unspecified reasons.','Soft', 'Relay'],
+    50 => ['Mail Block','The message was blocked by the receiver.','Block', 'Spam'],
+    51 => ['Spam Block','The message was blocked by the receiver as coming from a known spam source.','Block', 'Spam'],
+    52 => ['Spam Content','The message was blocked by the receiver as spam.','Block', 'Spam'],
+    53 => ['Prohibited Attachment','The message was blocked by the receiver because it contained an attachment.','Block', 'Spam'],
+    54 => ['Relaying Denied','The message was blocked by the receiver because relaying is not allowed.','Block', 'Relay'],
+    60 => ['Auto-Reply','The message is an auto-reply/vacation mail.','Soft', 'Away'],
+    70 => ['Transient Failure','Message transmission has been temporarily delayed.','Soft', 'Relay'],
+    80 => ['Subscribe','The message is a subscribe request.','Admin', ''],
+    90 => ['Unsubscribe','The message is an unsubscribe request.','Hard', 'Spam'],
+   100 => ['Challenge-Response','The message is a challenge-response probe.','Soft', ''],
+  ];
 
   function run() {
     // The $_POST variable does not work because this is json data
