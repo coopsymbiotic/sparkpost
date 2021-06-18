@@ -35,9 +35,6 @@ class CRM_Admin_Form_Setting_Sparkpost extends CRM_Admin_Form_Setting {
    * @return void
    */
   public function buildQuickForm() {
-    // Check dependencies and display error messages
-    sparkpost_check_dependencies();
-
     $this->add('password', 'sparkpost_apiKey', ts('API Key'), '', TRUE);
     $this->add('text', 'sparkpost_ipPool', ts('IP pool'));
     $this->addYesNo('sparkpost_useBackupMailer', ts('Use backup mailer'));
