@@ -82,7 +82,7 @@ class CRM_Sparkpost_Utils_Check_Metrics {
             $stats[] = "<li><strong>{$mval['label']} {$val[$mkey]} (max: {$mval['quota_total']}, $pct %)</strong></li>"; // FIXME ts
             $log_level = \Psr\Log\LogLevel::CRITICAL;
           }
-          elseif (isset($mval['quota_pct'])) {
+          elseif (isset($mval['quota_pct']) && !empty($val['count_sent'])) {
             $pct_val = round($val[$mkey] / $val['count_sent'] * 100, 2);
 
             // For most metrics, under 50 complaints/bounces, there is too much of a high noize ratio.
