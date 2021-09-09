@@ -32,6 +32,42 @@ class CRM_Sparkpost {
   // Indicates we need to try sending emails out through an alternate method
   const FALLBACK = 1;
 
+  // For converting the Sparkpost 'bounce_class' to CiviCRM's codes
+  static public $_civicrm_bounce_types = [
+    'Away' => 2,    // soft, retry 30 times
+    'Relay' => 9,   // soft, retry 3 times
+    'Invalid' => 6, // hard, retry 1 time
+    'Spam' => 10,   // hard, retry 1 time
+  ];
+
+  // Source: https://support.sparkpost.com/customer/portal/articles/1929896
+  // See also: https://docs.civicrm.org/sysadmin/en/latest/setup/civimail/inbound/
+  // The CiviCRM equivalent will have a certain threshold before it flags an email On Hold.
+  static public $_sparkpost_bounce_types = [
+    // Name, Description, Category, CiviCRM equivalent (see above)
+     1 => ['Undetermined','The response text could not be identified.','Undetermined', ''],
+    10 => ['Invalid Recipient','The recipient is invalid.','Hard', 'Invalid'],
+    20 => ['Soft Bounce','The message soft bounced.','Soft', 'Relay'],
+    21 => ['DNS Failure','The message bounced due to a DNS failure.','Soft', 'Relay'],
+    22 => ['Mailbox Full','The message bounced due to the remote mailbox being over quota.','Soft', 'Away'],
+    23 => ['Too Large','The message bounced because it was too large for the recipient.','Soft', 'Away'],
+    24 => ['Timeout','The message timed out.','Soft', 'Relay'],
+    25 => ['Admin Failure', 'The message was failed by SparkPost\'s configured policies.', 'Admin', 'Invalid'],
+    30 => ['Generic Bounce: No RCPT','No recipient could be determined for the message.','Hard', 'Invalid'],
+    40 => ['Generic Bounce','The message failed for unspecified reasons.','Soft', 'Relay'],
+    50 => ['Mail Block','The message was blocked by the receiver.','Block', 'Spam'],
+    51 => ['Spam Block','The message was blocked by the receiver as coming from a known spam source.','Block', 'Spam'],
+    52 => ['Spam Content','The message was blocked by the receiver as spam.','Block', 'Spam'],
+    53 => ['Prohibited Attachment','The message was blocked by the receiver because it contained an attachment.','Block', 'Spam'],
+    54 => ['Relaying Denied','The message was blocked by the receiver because relaying is not allowed.','Block', 'Relay'],
+    60 => ['Auto-Reply','The message is an auto-reply/vacation mail.','Soft', 'Away'],
+    70 => ['Transient Failure','Message transmission has been temporarily delayed.','Soft', 'Relay'],
+    80 => ['Subscribe','The message is a subscribe request.','Admin', ''],
+    90 => ['Unsubscribe','The message is an unsubscribe request.','Hard', 'Spam'],
+   100 => ['Challenge-Response','The message is a challenge-response probe.','Soft', ''],
+  ];
+
+
   public static function setSetting($setting, $value) {
     // Encrypt API key before storing in database
     if ($setting == 'sparkpost_apiKey') {
@@ -189,6 +225,8 @@ class CRM_Sparkpost {
    * @param $content Method content (translated as POST arguments)
    *
    * @see https://developers.sparkpost.com/api/
+   *
+   * @deprecated Use CRM_Sparkpost::request()
    */
   public static function call($path, $params = array(), $content = array()) {
     // Get the API key from the settings
@@ -286,6 +324,34 @@ class CRM_Sparkpost {
     return $response;
   }
 
+  /**
+   * Wrapper around the Sparkpost API
+   */
+  public static function request(String $method, String $uri, Array $params = []) {
+    $api_key = CRM_Sparkpost::getSetting('sparkpost_apiKey');
+    $api_host = Civi::settings()->get('sparkpost_host');
+
+    require_once __DIR__ . '/../vendor/autoload.php';
+    $httpClient = new GuzzleAdapter(new Client());
+    $sparky = new SparkPost($httpClient, ['key' => $api_key, 'async' => FALSE, 'host' => "api.$api_host"]);
+
+    // Admitedly not ideal, since it assumes that the caller will not forget about paging
+    // but we are only using this for fetching events for now, so it's not a big deal.
+    if (!empty(\Civi::$statics[__CLASS__]['cursor'])) {
+      // The Sparkpost PHP library does not like it if we pass the cursor in the 'uri' param
+      // Sparkpost will throw a 403 Forbidden. We parse_str the cursor, and remove the 'uri' part.
+      $cursor = substr(\Civi::$statics[__CLASS__]['cursor'], strlen('/api/v1/events/message?'));
+      parse_str($cursor, $params);
+    }
+
+    $response = $sparky->request($method, $uri, $params);
+    $body = $response->getBody();
+
+    // Track paging. If there is no more data, the next will be empty.
+    \Civi::$statics[__CLASS__]['cursor'] = $body['links']['next'] ?? null;
+
+    return $body['results'];
+  }
 
   /**
    * Creates the special Mailing for tracking transactional emails
@@ -324,6 +390,118 @@ class CRM_Sparkpost {
     }
 
     return FALSE;
+  }
+
+  /**
+   * Process Sparkpost event
+   *
+   * This is used by the callback webhook, and by this extension's Sparkpost.event API
+   */
+  public static function processSparkpostEvent(Array $event) {
+    // Sanity checks
+    if (!in_array($event['type'], ['bounce', 'spam_complaint', 'policy_rejection'])) {
+      return;
+    }
+    if (empty($event['rcpt_meta']['X-CiviMail-Bounce'])) {
+      return;
+    }
+
+    $civimail_bounce_id = $event['rcpt_meta']['X-CiviMail-Bounce'];
+
+    // Extract CiviMail parameters from header value
+    $header = CRM_Sparkpost::getPartsFromBounceID($civimail_bounce_id);
+
+    if (empty($header)) {
+      Civi::log()->error('Failed to parse the email bounce ID {header}', [
+        'header' => $civimail_bounce_id,
+      ]);
+      return;
+    }
+
+    require_once 'Mail/sparkpost.php';
+    list($mailing_id, $mailing_name ) = Mail_sparkpost::getMailing($header['job_id']);
+
+    if (!$mailing_id) {
+      Civi::log()->warning('No mailing found for {matches} hence skiping in SparkPost extension call back', [
+        'matches' => $matches,
+      ]);
+      return;
+    }
+
+    $params = [
+      'job_id' => $header['job_id'],
+      'event_queue_id' => $header['event_queue_id'],
+      'hash' => $header['hash'],
+    ];
+
+    // Was SparkPost able to classify the message?
+    if (in_array($event['type'], ['spam_complaint','policy_rejection'])) {
+      $params['bounce_type_id'] = self::$_civicrm_bounce_types['Spam'];
+      $params['bounce_reason'] = $event['reason'] ?: 'Message has been flagged as Spam by the recipient';
+    }
+    elseif ($event['type'] == 'bounce') {
+      $sparkpost_bounce = CRM_Utils_Array::value($event['bounce_class'], self::$_sparkpost_bounce_types);
+      $params['bounce_type_id'] = CRM_Utils_Array::value($sparkpost_bounce[3], self::$_civicrm_bounce_types);
+      $params['bounce_reason'] = $event['reason'];
+    }
+    elseif ($event['type'] == 'open' || $event['type'] == 'click') {
+      switch ($event['type']) {
+        case 'open':
+          if ($header['action'] == 'b') {//Civi Mailing do not process as done by CiviCRM
+            break;
+          }
+          $oe = new CRM_Mailing_Event_BAO_Opened();
+          $oe->event_queue_id = $header['event_queue_id'];
+          $oe->time_stamp = date('YmdHis', $event['timestamp']);
+          $oe->save();
+          break;
+
+        case 'click':
+          if ($header['action'] == 'b') {//Civi Mailing do not process as done by CiviCRM
+            break;
+          }
+          $tracker = new CRM_Mailing_BAO_TrackableURL();
+          $tracker->url = $event['target_link_url'];
+          $tracker->mailing_id = $mailing_id;
+          if (!$tracker->find(TRUE)) {
+            $tracker->save();
+          }
+          $open = new CRM_Mailing_Event_BAO_TrackableURLOpen();
+          $open->event_queue_id = $header['event_queue_id'];
+          $open->trackable_url_id = $tracker->id;
+          $open->time_stamp = date('YmdHis', $event['timestamp']);
+          $open->save();
+          break;
+      }
+    }
+
+    if (!empty($params['bounce_type_id'])) {
+      if ($params['bounce_type_id'] == 10) {
+        // Don't create entries for spam bounces as this only puts the email on hold, opt out the contact instead.
+        // This is because the contact likely reported the email as spam as a way to unsubscribe.
+        // So opting out only the one email adress instead of the contact risks getting any emails  sent to their
+        // secondary adresses flagged as spam as well, which can hurt our spam score.
+        $sql = "SELECT cc.id FROM civicrm_contact cc INNER JOIN civicrm_mailing_event_queue cmeq ON cmeq.contact_id = cc.id WHERE cmeq.id = %1";
+        $sql_params = array(1 => array($params['event_queue_id'], 'Integer' ));
+
+        $contact_id = CRM_Core_DAO::singleValueQuery($sql, $sql_params);
+
+        if (!empty($contact_id)) {
+          $result = civicrm_api3('Contact', 'create', array(
+            'id' => $contact_id,
+            'is_opt_out' => 1,
+          ));
+        }
+      }
+      else {
+        CRM_Mailing_Event_BAO_Bounce::create($params);
+      }
+    }
+    elseif (in_array($event['type'], ['spam_complaint', 'policy_rejection', 'bounce'])) {
+      // Sparkpost was not able to detmine the bounce type, so let CiviCRM have a go at classifying it
+      $params['body'] = $event['raw_reason'];
+      civicrm_api3('Mailing', 'event_bounce', $params);
+    }
   }
 
 }
