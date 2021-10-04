@@ -172,7 +172,7 @@ class Mail_sparkpost extends Mail {
               'event_queue_id' => $header['event_queue_id'],
               'hash' => $header['hash'],
               'bounce_type_id' => 10, // Invalid recipient
-              'bounce_reason' => $e->getBody(),
+              'bounce_reason' => $val['error'],
             ];
 
             CRM_Mailing_Event_BAO_Bounce::create($params);
