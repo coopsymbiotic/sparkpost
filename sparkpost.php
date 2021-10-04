@@ -50,6 +50,13 @@ function sparkpost_civicrm_install() {
 }
 
 /**
+ * Implementation of hook_civicrm_postInstall
+ */
+function sparkpost_civicrm_postInstall() {
+  _sparkpost_civix_civicrm_postInstall();
+}
+
+/**
  * Implementation of hook_civicrm_uninstall
  */
 function sparkpost_civicrm_uninstall() {
