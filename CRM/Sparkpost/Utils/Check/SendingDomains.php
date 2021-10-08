@@ -14,6 +14,18 @@ class CRM_Sparkpost_Utils_Check_SendingDomains {
     require_once __DIR__ . '/../../../../vendor/autoload.php';
     $api_key = CRM_Sparkpost::getSetting('sparkpost_apiKey');
     $api_host = Civi::settings()->get('sparkpost_host');
+
+    if (!$api_key) {
+      $messages[] = new CRM_Utils_Check_Message(
+        'sparkpost_sendingdomains',
+        ts('The Sparkpost API Key is missing'),
+        ts('SparkPost - API Key'),
+        \Psr\Log\LogLevel::CRITICAL,
+        'fa-envelope'
+      );
+      return;
+    }
+
     $httpClient = new GuzzleAdapter(new Client());
     $sparky = new SparkPost($httpClient, ['key' => $api_key, 'async' => FALSE, 'host' => "api.$api_host"]);
 

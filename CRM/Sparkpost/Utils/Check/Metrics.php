@@ -14,6 +14,12 @@ class CRM_Sparkpost_Utils_Check_Metrics {
     require_once __DIR__ . '/../../../../vendor/autoload.php';
     $api_key = CRM_Sparkpost::getSetting('sparkpost_apiKey');
     $api_host = Civi::settings()->get('sparkpost_host');
+
+    if (!$api_key) {
+      // The SendingDomains check is already displaying an error
+      return;
+    }
+
     $httpClient = new GuzzleAdapter(new Client());
     $sparky = new SparkPost($httpClient, ['key' => $api_key, 'async' => FALSE, 'host' => "api.$api_host"]);
 
