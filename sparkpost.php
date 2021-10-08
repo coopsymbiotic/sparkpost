@@ -9,15 +9,15 @@
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  * Support: https://github.com/cividesk/com.cividesk.email.sparkpost/issues
  * Contact: info@cividesk.com
  */
@@ -47,6 +47,13 @@ function sparkpost_civicrm_xmlMenu(&$files) {
 function sparkpost_civicrm_install() {
   _sparkpost_civix_civicrm_install();
   CRM_Sparkpost::createTransactionalMailing();
+}
+
+/**
+ * Implementation of hook_civicrm_postInstall
+ */
+function sparkpost_civicrm_postInstall() {
+  _sparkpost_civix_civicrm_postInstall();
 }
 
 /**
@@ -91,7 +98,7 @@ function sparkpost_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
  * is installed, disabled, uninstalled.
  */
 function sparkpost_civicrm_managed(&$entities) {
-  return _sparkpost_civix_civicrm_managed($entities);
+  _sparkpost_civix_civicrm_managed($entities);
 }
 
 /**
@@ -171,13 +178,13 @@ function sparkpost_civicrm_alterMailParams(&$params, $context = NULL) {
         // As last option from emall address
         $contactId = sparkpost_targetContactId($params['toEmail']);
       }
-      
+
       if (!$contactId) {
         // Not particularly useful, but devs can insert a backtrace here if they want to debug the cause.
         Civi::log()->warning('ContactId not known to attach header for this transactional email by Sparkpost extension possible duplicates email hence skipping: ' . CRM_Utils_Array::value('toEmail', $params));
         return;
       }
-      
+
       if ($contactId) {
         $eventQueue = CRM_Mailing_Event_BAO_Queue::create([
           'job_id' => CRM_Core_DAO::getFieldValue('CRM_Mailing_DAO_MailingJob', $mail->id, 'id', 'mailing_id'),
@@ -229,7 +236,7 @@ function sparkpost_targetContactId($email) {
 
   if ($result['count'] == 1) {
     return $result['values'][0]['contact_id'];
-  } 
+  }
 
   return NULL;
 }
