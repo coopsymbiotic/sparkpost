@@ -402,7 +402,7 @@ class CRM_Sparkpost {
    */
   public static function processSparkpostEvent(Array $event) {
     // Sanity checks
-    if (!in_array($event['type'], ['bounce', 'spam_complaint', 'policy_rejection'])) {
+    if (!in_array($event['type'], ['bounce', 'spam_complaint', 'policy_rejection', 'list_unsubscribe'])) {
       return;
     }
     if (empty($event['rcpt_meta']['X-CiviMail-Bounce'])) {
@@ -502,8 +502,12 @@ class CRM_Sparkpost {
     }
     elseif (in_array($event['type'], ['spam_complaint', 'policy_rejection', 'bounce'])) {
       // Sparkpost was not able to detmine the bounce type, so let CiviCRM have a go at classifying it
-      $params['body'] = $event['raw_reason'];
+      $params['body'] = $event['raw_reason'] ?? $event['type'];
       civicrm_api3('Mailing', 'event_bounce', $params);
+    }
+    elseif ($event['type'] == 'list_unsubscribe') {
+      $params['body'] = $event['raw_reason'] ?? $event['type'];
+      CRM_Mailing_Event_BAO_Unsubscribe::unsub_from_mailing($header['job_id'], $header['event_queue_id'], $header['hash']);
     }
   }
 
