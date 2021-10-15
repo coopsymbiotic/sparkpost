@@ -50,6 +50,7 @@ function civicrm_api3_sparkpost_event($params) {
       $result['values'][] = [
         'event_id' => $val['event_id'],
         'friendly_from' => $val['friendly_from'],
+        'rcpt_to' => $val['rcpt_to'],
         'type' => $val['type'],
         'subject' => $val['subject'],
         'timestamp' => date('Y-m-d H:i'),
