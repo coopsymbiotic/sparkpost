@@ -426,7 +426,7 @@ class CRM_Sparkpost {
 
     if (!$mailing_id) {
       Civi::log()->warning('No mailing found for {matches} hence skiping in SparkPost extension call back', [
-        'matches' => $matches,
+        'event' => $event,
       ]);
       return;
     }

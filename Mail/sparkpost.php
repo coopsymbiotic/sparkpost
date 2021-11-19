@@ -260,8 +260,15 @@ class Mail_sparkpost extends Mail {
       return;
     }
 
-    $mailing_id = CRM_Core_DAO::getFieldValue('CRM_Mailing_DAO_MailingJob', $jobId, 'mailing_id');
-    $mailing_name = CRM_Core_DAO::getFieldValue('CRM_Mailing_DAO_Mailing', $mailing_id, 'name');
-    return array($mailing_id, $mailing_name);
+    try {
+      $mailing_id = CRM_Core_DAO::getFieldValue('CRM_Mailing_DAO_MailingJob', $jobId, 'mailing_id');
+      $mailing_name = CRM_Core_DAO::getFieldValue('CRM_Mailing_DAO_Mailing', $mailing_id, 'name');
+    }
+    catch (Exception $e) {
+      Civi::log()->debug('Sparkpost getMailing failed to getFieldValue for jobId : ' . $jobId . ', mailing was deleted?');
+      return [NULL,NULL];
+    }
+
+    return [$mailing_id, $mailing_name];
   }
 }
