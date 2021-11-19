@@ -450,7 +450,8 @@ class CRM_Sparkpost {
     elseif ($event['type'] == 'open' || $event['type'] == 'click') {
       switch ($event['type']) {
         case 'open':
-          if ($header['action'] == 'b') {//Civi Mailing do not process as done by CiviCRM
+          if ($header['action'] == 'b') {
+            // Civi Mailing do not process as done by CiviCRM
             break;
           }
           $oe = new CRM_Mailing_Event_BAO_Opened();
@@ -460,7 +461,8 @@ class CRM_Sparkpost {
           break;
 
         case 'click':
-          if ($header['action'] == 'b') {//Civi Mailing do not process as done by CiviCRM
+          if ($header['action'] == 'b') {
+            // Civi Mailing do not process as done by CiviCRM
             break;
           }
           $tracker = new CRM_Mailing_BAO_TrackableURL();
@@ -485,15 +487,16 @@ class CRM_Sparkpost {
         // So opting out only the one email adress instead of the contact risks getting any emails  sent to their
         // secondary adresses flagged as spam as well, which can hurt our spam score.
         $sql = "SELECT cc.id FROM civicrm_contact cc INNER JOIN civicrm_mailing_event_queue cmeq ON cmeq.contact_id = cc.id WHERE cmeq.id = %1";
-        $sql_params = array(1 => array($params['event_queue_id'], 'Integer' ));
 
-        $contact_id = CRM_Core_DAO::singleValueQuery($sql, $sql_params);
+        $contact_id = CRM_Core_DAO::singleValueQuery($sql, [
+          1 => [$params['event_queue_id'], 'Integer'],
+        ]);
 
         if (!empty($contact_id)) {
-          $result = civicrm_api3('Contact', 'create', array(
+          $result = civicrm_api3('Contact', 'create', [
             'id' => $contact_id,
             'is_opt_out' => 1,
-          ));
+          ]);
         }
       }
       else {
