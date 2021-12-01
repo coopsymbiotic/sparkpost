@@ -83,6 +83,15 @@ class CRM_Sparkpost_Upgrader extends CRM_Sparkpost_Upgrader_Base {
     return TRUE;
   }
 
+  public function upgrade_1102() {
+    CRM_Core_DAO::executeQuery('UPDATE civicrm_mailing set name = %1 WHERE name = %2', [
+      1 => ['Sparkpost Transactional Emails', 'String'],
+      2 => ['Transaction Emails Sparkpost', 'String'],
+    ]);
+
+    return TRUE;
+  }
+
   /**
    * Example: Run an external SQL script.
    *

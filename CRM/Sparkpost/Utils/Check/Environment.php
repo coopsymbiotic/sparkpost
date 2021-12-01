@@ -20,7 +20,7 @@ class CRM_Sparkpost_Utils_Check_Environment {
       return;
     }
 
-    // Check if the spacial mailing for transactional emails is present
+    // Check if the special mailing for transactional emails is present
     $result = civicrm_api3('Mailing', 'get', [
       'name' => 'Sparkpost Transactional Emails',
     ]);
