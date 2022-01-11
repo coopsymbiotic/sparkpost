@@ -13,8 +13,8 @@
     <author>Coop Symbiotic</author>
     <email>info@symbiotic.coop</email>
   </maintainer>
-  <releaseDate>2021-07-07</releaseDate>
-  <version>1.5</version>
+  <releaseDate>2022-01-11</releaseDate>
+  <version>1.6</version>
   <develStage>stable</develStage>
   <compatibility>
     <ver>5.29</ver>
