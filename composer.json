@@ -1,5 +1,5 @@
 {
     "require": {
-        "sparkpost/sparkpost": "^2.2"
+        "sparkpost/sparkpost": "^2.3"
     }
 }
