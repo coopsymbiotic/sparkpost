@@ -52,9 +52,6 @@ class CRM_Sparkpost_Utils_Check_Metrics {
 
       // https://www.sparkpost.com/docs/reporting/metrics-definitions/
       $metrics = [
-        'sending_domain' => [
-          'label' => ts('Domain:'),
-        ],
         'count_sent' => [
           'quota_total' => 65000, // FIXME
           'label' => ts('Messages Sent:'),
@@ -105,7 +102,7 @@ class CRM_Sparkpost_Utils_Check_Metrics {
           }
         }
 
-        $output .= '<ul>' . implode('', $stats) . '</ul>';
+        $output .= '<p>' . ts('Domain:') . ' ' . $val['sending_domain'] . '</p><ul>' . implode('', $stats) . '</ul>';
       }
 
       $messages[] = new CRM_Utils_Check_Message(
