@@ -194,6 +194,7 @@ function sparkpost_civicrm_alterMailParams(&$params, $context = NULL) {
         ]);
 
         // Add m to differentiate from bulk mailing
+        $emailDomain = CRM_Core_BAO_MailSettings::defaultDomain();
         $verpSeparator = CRM_Core_Config::singleton()->verpSeparator;
         $params['returnPath'] = implode($verpSeparator, ['m', $eventQueue->job_id, $eventQueue->id, $eventQueue->hash]) . "@$emailDomain";
       }
