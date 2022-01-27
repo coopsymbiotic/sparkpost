@@ -181,6 +181,7 @@ function sparkpost_civicrm_alterMailParams(&$params, $context = NULL) {
 
       if (!$contactId) {
         // Not particularly useful, but devs can insert a backtrace here if they want to debug the cause.
+        // Example: for context = singleEmail, we end up here. We should probably fix core.
         Civi::log()->warning('ContactId not known to attach header for this transactional email by Sparkpost extension possible duplicates email hence skipping: ' . CRM_Utils_Array::value('toEmail', $params));
         return;
       }
