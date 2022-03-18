@@ -96,14 +96,14 @@ class CRM_Sparkpost_Upgrader extends CRM_Sparkpost_Upgrader_Base {
     $cryptoRegistry = \Civi\Crypto\CryptoRegistry::createDefaultRegistry();
     $cryptoToken = new \Civi\Crypto\CryptoToken($cryptoRegistry);
     $keys = civicrm_api3('Setting', 'get', [
-      'domain_id' => 'all'
+      'domain_id' => 'all',
       'options' => ['limit' => 0],
     ]);
 
     foreach ($keys['values'] as $domain => $settings) {
       if (array_key_exists('sparkpost_apiKey', $settings)) {
         $key = CRM_Utils_Crypt::decrypt($settings['sparkpost_apiKey']);
-        if (!self::canbeStord($key, $registry) {
+        if (!self::canbeStored($key, $cryptoRegistry) {
           $key = '';
         }
         else {
