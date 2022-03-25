@@ -90,6 +90,15 @@ class Mail_Sparkpost extends Mail {
     } else {
       // Mark the email as transactional for SparkPost
       $request_body['options']['transactional'] = true;
+
+      // Attach metadata for transactional email
+      if (CRM_Utils_Array::value('Return-Path', $headers)) {
+        $metadata = explode(CRM_Core_Config::singleton()->verpSeparator, CRM_Utils_Array::value("Return-Path", $headers));
+        if ($metadata[0] == 'm') {
+          $request_body['metadata'] = array('X-CiviMail-Bounce' => CRM_Utils_Array::value("Return-Path", $headers));
+        }
+      }
+
     }
 
     // Capture the recipients
