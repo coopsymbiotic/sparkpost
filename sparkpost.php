@@ -234,10 +234,20 @@ function sparkpost_targetContactId($email) {
   $result = civicrm_api3('email', 'get', [
     'email' => trim($email),
     'sequential' => 1,
+    'options' => ['sort' => 'contact_id ASC'],
   ]);
 
   if ($result['count'] == 1) {
     return $result['values'][0]['contact_id'];
+  }
+  // contact with several times the same email (e.g. primary + billing)
+  elseif ($result['count'] > 1) {
+    $contactId = $result['values'][0]['contact_id'];
+    foreach ($result['values'] as $row) {
+      if ($row['contact_id'] != $contactId) return NULL;
+    }
+    // every emails found are on the same contact
+    return $contactId;
   }
 
   return NULL;
