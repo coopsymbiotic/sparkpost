@@ -4,21 +4,22 @@
   <name>SparkPost integration</name>
   <description>This extension allows CiviCRM to send emails and process bounces through the SparkPost service.</description>
   <urls>
-    <url desc="Main Extension Page">https://github.com/cividesk/com.cividesk.email.sparkpost</url>
+    <url desc="Main Extension Page">https://lab.civicrm.org/extensions/sparkpost/-/blob/master/README.md</url>
     <url desc="Documentation">https://docs.civicrm.org/sparkpost/en/latest/</url>
-    <url desc="Support">https://github.com/cividesk/com.cividesk.email.sparkpost/issues?state=open</url>
+    <url desc="Support">https://lab.civicrm.org/extensions/sparkpost/-/issues</url>
   </urls>
   <license>AGPL-3.0</license>
   <maintainer>
     <author>Cividesk</author>
     <email>info@cividesk.com</email>
   </maintainer>
-  <releaseDate>2020-05-07</releaseDate>
-  <version>1.4</version>
+  <releaseDate>2022-04-22</releaseDate>
+  <version>1.5</version>
   <develStage>stable</develStage>
   <compatibility>
     <ver>4.7</ver>
     <ver>5.19</ver>
+    <ver>5.37</ver>
   </compatibility>
   <comments>As always, read the documentation first! Once the extension is enabled, go to Administer &gt;&gt; System Settings &gt;&gt; Outbound Email (SparkPost) to configure and send a test email.</comments>
   <civix>
