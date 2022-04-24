@@ -103,7 +103,7 @@ class CRM_Sparkpost_Upgrader extends CRM_Sparkpost_Upgrader_Base {
     foreach ($keys['values'] as $domain => $settings) {
       if (array_key_exists('sparkpost_apiKey', $settings)) {
         $key = CRM_Utils_Crypt::decrypt($settings['sparkpost_apiKey']);
-        if (!self::canbeStored($key, $cryptoRegistry) {
+        if (!self::canbeStored($key, $cryptoRegistry)) {
           $key = '';
         }
         else {
