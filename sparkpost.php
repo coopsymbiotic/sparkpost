@@ -102,34 +102,20 @@ function sparkpost_civicrm_managed(&$entities) {
 }
 
 /**
- * Implementation of hook_civicrm_navigationMenu
+ * Implements hook_civicrm_navigationMenu().
  *
- * Locate the 'Outbound Email' navigation menu (recursive)
- * Replace the menu label and destination url with our own form
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_navigationMenu
  */
-function sparkpost_civicrm_navigationMenu( &$param ) {
-  foreach ($param as &$menu) {
-    if (CRM_Utils_Array::value('attributes', $menu) &&
-      CRM_Utils_Array::value('name', $menu['attributes']) == 'Outbound Email'
-    ) {
-      $menu['attributes']['url'] = 'civicrm/admin/setting/sparkpost';
-      $menu['attributes']['label'] = ts('Outbound Email (SparkPost)');
-    }
-    if (CRM_Utils_Array::value('child', $menu)) {
-      sparkpost_civicrm_navigationMenu($menu['child']);
-    }
-  }
-}
-
-/**
- * Implementation of hook_civicrm_alterContent
- *
- * Replace the link to Outbound Email Settings in the administration console
- */
-function sparkpost_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
-  if ($tplName == 'CRM/Admin/Page/Admin.tpl') {
-    $content = str_replace('civicrm/admin/setting/smtp', 'civicrm/admin/setting/sparkpost', $content);
-  }
+function sparkpost_civicrm_navigationMenu(&$menu) {
+  _sparkpost_civix_insert_navigation_menu($menu, 'Administer/CiviMail', [
+    'label' => E::ts('Sparkpost'),
+    'name' => 'sparkpost_settings',
+    'url' => 'civicrm/admin/setting/sparkpost',
+    'permission' => 'administer CiviCRM',
+    'operator' => 'OR',
+    'separator' => 0,
+  ]);
+  _sparkpost_civix_navigationMenu($menu);
 }
 
 /**
@@ -306,5 +292,17 @@ function sparkpost_civicrm_pageRun(&$page) {
 
   if ($pageName == 'CRM_Contact_Page_View_Summary') {
     CRM_Sparkpost_Contact_Page_View_Summary::pageRun($page);
+  }
+}
+
+/**
+ * Implements hook_civicrm_buildForm().
+ */
+function sparkpost_civicrm_buildForm($formName, &$form) {
+  if ($formName == 'CRM_Admin_Form_Setting_Smtp') {
+    CRM_Core_Region::instance('smtp-mailer-config')->add([
+      'template' => 'CRM/Sparkpost/Smtp-extra.tpl',
+      'weight' => -10,
+    ]);
   }
 }

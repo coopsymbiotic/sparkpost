@@ -4,7 +4,7 @@
     <path>civicrm/admin/setting/sparkpost</path>
     <page_callback>CRM_Admin_Form_Setting_Sparkpost</page_callback>
     <access_arguments>administer CiviCRM</access_arguments>
-    <title>Outbound Email (SparkPost)</title>
+    <title>SparkPost</title>
   </item>
   <item>
     <path>civicrm/sparkpost/callback</path>
