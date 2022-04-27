@@ -1,6 +1,3 @@
-{*
-
-*}
 {capture assign=smtpURL}{crmURL p='civicrm/admin/setting/smtp' q='reset=1'}{/capture}
 
 <div class="crm-block crm-form-block crm-sparkpost-form-block">
@@ -43,6 +40,13 @@
                     <td class="label">{$form.sparkpost_customCallbackUrl.label}</td>
                     <td>{$form.sparkpost_customCallbackUrl.html}<br  />
                         <span class="description">{ts 1=$smtpURL}A custom callback URL is useful when your site is behind a proxy (like CiviProxy). Leave this blank to use the default URL.{/ts}
+                        </span>
+                    </td>
+                </tr>
+                <tr class="crm-sparkpost-form-block-sparkpost_sending_quota">
+                    <td class="label">{$form.sparkpost_sending_quota.label}</td>
+                    <td>{$form.sparkpost_sending_quota.html}<br  />
+                        <span class="description">{ts}Monthly sending quota. This is checked against Sparkpost metrics. Above this number, a critical Status Check will be displayed, but it will not stop sending emails. It can be useful for monitoring.{/ts}
                         </span>
                     </td>
                 </tr>

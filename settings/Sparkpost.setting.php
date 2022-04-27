@@ -64,4 +64,14 @@ return array(
     'description' => 'Use backup mailer?',
     'help_text' => 'The backup mailer will be used if Sparkpost cannot send emails (unverified sending domain, sending limits exceeded, ...).',
   ),
+  'sparkpost_sending_quota' => [
+    'name' => 'sparkpost_sending_quota',
+    'type' => 'Integer',
+    'html_type' => 'text',
+    'default' => 65000,
+    'add' => '1.7',
+    'is_domain' => 1,
+    'is_contact' => 0,
+    'description' => 'Monthly sending quota. This is checked against Sparkpost metrics. Above this number, a critical Status Check will be displayed, but it will not stop sending emails. It can be useful for monitoring.',
+  ],
 );

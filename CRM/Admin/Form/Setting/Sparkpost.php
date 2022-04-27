@@ -41,6 +41,7 @@ class CRM_Admin_Form_Setting_Sparkpost extends CRM_Admin_Form_Setting {
     $host_options = CRM_Sparkpost::getSparkpostHostOptions();
     $this->add('select', 'sparkpost_host', ts('Sparkpost host'), $host_options);
     $this->add('text', 'sparkpost_customCallbackUrl', ts('Custom callback URL'));
+    $this->add('text', 'sparkpost_sending_quota', ts('Monthly Quota'));
 
     $this->_testButtonName = $this->getButtonName('refresh', 'test');
 
@@ -95,7 +96,7 @@ class CRM_Admin_Form_Setting_Sparkpost extends CRM_Admin_Form_Setting {
     CRM_Utils_System::flushCache();
 
     $formValues = $this->controller->exportValues($this->_name);
-    foreach (array('sparkpost_apiKey', 'sparkpost_ipPool', 'sparkpost_useBackupMailer', 'sparkpost_customCallbackUrl', 'sparkpost_host') as $name) {
+    foreach (array('sparkpost_apiKey', 'sparkpost_ipPool', 'sparkpost_useBackupMailer', 'sparkpost_customCallbackUrl', 'sparkpost_host', 'sparkpost_sending_quota') as $name) {
       CRM_Sparkpost::setSetting($name, $formValues[$name]);
     }
 

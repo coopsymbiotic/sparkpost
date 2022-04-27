@@ -14,6 +14,7 @@ class CRM_Sparkpost_Utils_Check_Metrics {
     require_once __DIR__ . '/../../../../vendor/autoload.php';
     $api_key = CRM_Sparkpost::getSetting('sparkpost_apiKey');
     $api_host = Civi::settings()->get('sparkpost_host');
+    $sending_quota = Civi::settings()->get('sparkpost_sending_quota');
 
     if (!$api_key) {
       // The SendingDomains check is already displaying an error
@@ -53,7 +54,7 @@ class CRM_Sparkpost_Utils_Check_Metrics {
       // https://www.sparkpost.com/docs/reporting/metrics-definitions/
       $metrics = [
         'count_sent' => [
-          'quota_total' => 65000, // FIXME
+          'quota_total' => $sending_quota,
           'label' => ts('Messages Sent:'),
         ],
         'count_bounce' => [
