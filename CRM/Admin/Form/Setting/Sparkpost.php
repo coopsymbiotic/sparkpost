@@ -47,7 +47,7 @@ class CRM_Admin_Form_Setting_Sparkpost extends CRM_Admin_Form_Setting {
     $this->addFormRule(array('CRM_Admin_Form_Setting_Sparkpost', 'formRule'));
     parent::buildQuickForm();
     $buttons = $this->getElement('buttons')->getElements();
-    $buttons[] = $this->createElement('submit', $this->_testButtonName, ts('Save & Send Test Email'), array('crm-icon' => 'mail-closed'));
+    $buttons[] = $this->addElement('xbutton', $this->_testButtonName, ts('Save and Send Test Email'), array('crm-icon' => 'mail-closed'));
     $this->getElement('buttons')->setElements($buttons);
 
     // Get the logged in user's email address
@@ -88,12 +88,10 @@ class CRM_Admin_Form_Setting_Sparkpost extends CRM_Admin_Form_Setting {
   /**
    * Process the form submission.
    *
-   *
    * @return void
    */
   public function postProcess() {
-    // flush caches so we reload details for future requests
-    // CRM-11967
+    // CRM-11967 Flush caches so we reload details if memcache is active
     CRM_Utils_System::flushCache();
 
     $formValues = $this->controller->exportValues($this->_name);
@@ -102,7 +100,8 @@ class CRM_Admin_Form_Setting_Sparkpost extends CRM_Admin_Form_Setting {
     }
 
     $buttonName = $this->controller->getButtonName();
-    // check if test button
+
+    // Check if test button
     if ($buttonName == $this->_testButtonName) {
       $session = CRM_Core_Session::singleton();
 
