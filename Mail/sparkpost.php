@@ -112,7 +112,8 @@ class Mail_sparkpost extends Mail {
       if (CRM_Utils_Array::value('Return-Path', $headers)) {
         $metadata = explode(CRM_Core_Config::singleton()->verpSeparator, CRM_Utils_Array::value("Return-Path", $headers));
         if ($metadata[0] == 'm') {
-          $sp['metadata'] = array('X-CiviMail-Bounce' => CRM_Utils_Array::value("Return-Path", $headers));
+          $localpart = CRM_Sparkpost::getDomainLocalpart();
+          $sp['metadata'] = array('X-CiviMail-Bounce' => $localpart . CRM_Utils_Array::value("Return-Path", $headers));
         }
       }
     }
