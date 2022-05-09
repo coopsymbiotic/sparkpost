@@ -122,10 +122,14 @@ function sparkpost_civicrm_navigationMenu(&$menu) {
  * Implementation of hook_civicrm_alterMailer
  */
 function sparkpost_civicrm_alterMailer(&$mailer, $driver, $params) {
-  require_once 'Mail/sparkpost.php';
-  $sparkpost = new Mail_sparkpost($params);
-  // $sparkpost->setBackupMailer($mailer);
-  $mailer = $sparkpost;
+  // Do not process emails "logged to DB", for example
+  if (in_array($driver, ['smtp', 'sendmail'])) {
+    require_once 'Mail/sparkpost.php';
+    $sparkpost = new Mail_sparkpost($params);
+    // [ML] We prefer that mails fail hard, rather than fallback to something unreliable
+    // $sparkpost->setBackupMailer($mailer);
+    $mailer = $sparkpost;
+  }
 }
 
 /**
