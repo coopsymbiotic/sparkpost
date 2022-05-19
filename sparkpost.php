@@ -123,7 +123,7 @@ function sparkpost_civicrm_navigationMenu(&$menu) {
  */
 function sparkpost_civicrm_alterMailer(&$mailer, $driver, $params) {
   // Do not process emails "logged to DB", for example
-  if (in_array($driver, ['smtp', 'sendmail'])) {
+  if (in_array($driver, ['smtp', 'sendmail', 'mail'])) {
     require_once 'Mail/sparkpost.php';
     $sparkpost = new Mail_sparkpost($params);
     // [ML] We prefer that mails fail hard, rather than fallback to something unreliable
