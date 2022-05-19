@@ -177,10 +177,28 @@ function sparkpost_civicrm_alterMailParams(&$params, $context = NULL) {
       }
 
       if ($contactId) {
+        // try to get email from the toEmail
+        $email_id = NULL;
+        try {
+          $email_id = civicrm_api3('Email', 'getvalue', [
+            'return' => "id",
+            'contact_id' => $contactId,
+            'email' => $params['toEmail'],
+          ]);
+        }
+        catch (CiviCRM_API3_Exception $e) {
+          // fail silently
+        }
+
+        // fallback - get primary email but there is a risk of disabling the wrong email in case of bouncing
+        if (empty($email_id)) {
+          $email_id = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Email', $contactId, 'id', 'contact_id');
+        }
+
         $eventQueue = CRM_Mailing_Event_BAO_Queue::create([
           'job_id' => CRM_Core_DAO::getFieldValue('CRM_Mailing_DAO_MailingJob', $mail->id, 'id', 'mailing_id'),
           'contact_id' => $contactId,
-          'email_id' => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Email', $contactId, 'id', 'contact_id'),
+          'email_id' => $email_id,
         ]);
 
         // Add m to differentiate from bulk mailing
