@@ -22,6 +22,8 @@
  * Contact: info@cividesk.com
  */
 
+use CRM_Sparkpost_ExtensionUtil as E;
+
 class CRM_Sparkpost {
   const SPARKPOST_EXTENSION_SETTINGS = 'SparkPost Extension Settings';
   // Indicates we need to try sending emails out through an alternate method
