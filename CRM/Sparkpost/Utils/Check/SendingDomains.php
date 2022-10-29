@@ -58,11 +58,11 @@ class CRM_Sparkpost_Utils_Check_SendingDomains {
     }
     catch (Exception $e) {
       $code = $e->getCode();
-      $body = $e->getBody();
+      $body = $e->getMessage();
 
       $messages[] = new CRM_Utils_Check_Message(
         'sparkpost_sendingdomains',
-        ts('Available sending domains: ERROR: %1, %2', [1 => $e->getCode(), 2 => print_r($body, 1)]),
+        ts('Available sending domains: ERROR: %1, %2', [1 => $code, 2 => print_r($body, 1)]),
         ts('SparkPost - Sending Domains'),
         \Psr\Log\LogLevel::CRITICAL,
         'fa-envelope'
