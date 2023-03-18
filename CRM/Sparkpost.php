@@ -500,7 +500,7 @@ class CRM_Sparkpost {
         }
       }
       else {
-        CRM_Mailing_Event_BAO_Bounce::create($params);
+        CRM_Mailing_Event_BAO_MailingEventBounce::recordBounce($params);
       }
     }
     elseif (in_array($event['type'], ['spam_complaint', 'policy_rejection', 'bounce'])) {
