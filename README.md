@@ -1,9 +1,9 @@
-# SparkPost email extension for CiviCRM
+# SparkPost email extension for CiviCRM (Symbiotic fork)
 
-This is a Coop SymbioTIC fork of the excellent SparkPost extension by CiviDesk:  
-https://github.com/cividesk/com.cividesk.email.sparkpost
+This is a Coop SymbioTIC fork of the SparkPost extension:  
+https://lab.civicrm.org/extensions/sparkpost
 
-We strongly encourage you to use the official CiviDesk extension rather than this one,
+We strongly encourage you to use the official extension rather than this one,
 unless you are hosted by [Coop SymbioTIC](https://www.symbiotic.coop/en), of course! ;-)
 
 Some of the additional features included in this fork:
@@ -22,7 +22,7 @@ supports things such as using a generic email domain with subaddresses (ex:
 `noreply+clientA@symbiotic-notifications.net`).  For more information, see
 [SparkPostRouter](https://github.com/coopsymbiotic/coop.symbiotic.sparkpostrouter).
 
-# Original README by CiviDesk
+## Original README (initially by CiviDesk, now community-maintained)
 
 This extension allows CiviCRM to send emails and process bounces through the SparkPost service.
 
