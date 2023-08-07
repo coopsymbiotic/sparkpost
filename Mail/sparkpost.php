@@ -35,6 +35,15 @@ use Http\Adapter\Guzzle6\Client as GuzzleAdapter;
 use CRM_Sparkpost_ExtensionUtil as E;
 
 class Mail_sparkpost extends Mail {
+  protected $backupMailer;
+
+  /**
+   * Sets a backup mailer
+   */
+  public function setBackupMailer($mailer) {
+    $this->backupMailer = $mailer;
+  }
+
   /**
    * Send an email
    */
@@ -44,6 +53,14 @@ class Mail_sparkpost extends Mail {
       if(!defined('CIVICRM_MAIL_LOG_AND SEND')) {
         return true;
       }
+    }
+
+    // Special bypass switch that alterMailParams can use to disable sparkpost
+    // we use this only for a very specific use-case, where for contact forms
+    // we send directly via SMTP so that we can change the "From" (Gitlab
+    // service desk)
+    if (!empty(Civi::$statics['sparkpost_bypass'])) {
+      return $this->backupMailer->send($recipients, $headers, $body);
     }
 
     $api_key = CRM_Sparkpost::getSetting('sparkpost_apiKey');

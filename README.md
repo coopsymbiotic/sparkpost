@@ -13,6 +13,7 @@ Some of the additional features included in this fork:
 * Verify the 'verified sending domain' before sending an email, to provide more helpful errors when sending fails.
 * Implements various CiviCRM 'system checks' to display the list of verified sending domains, and domain metrics, under CiviCRM > Administer > System Status.
 * Notably a system check will warn when the number of emails sent in the current month are over a certain quota (currently hardcoded to 65000! todo: add a setting).
+* Special `sparkpost_bypass` variable that can be used with the `alterMailParams` hook, to use the backup mailer instead (we use this for contacts forms that connect with Gitlab Service Desk)
 
 Finally, this extension does not automatically create the webhook on Sparkpost,
 because we use a single webhook on our "router" CiviCRM instance. While

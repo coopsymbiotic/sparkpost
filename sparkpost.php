@@ -126,8 +126,7 @@ function sparkpost_civicrm_alterMailer(&$mailer, $driver, $params) {
   if (in_array($driver, ['smtp', 'sendmail', 'mail'])) {
     require_once 'Mail/sparkpost.php';
     $sparkpost = new Mail_sparkpost($params);
-    // [ML] We prefer that mails fail hard, rather than fallback to something unreliable
-    // $sparkpost->setBackupMailer($mailer);
+    $sparkpost->setBackupMailer($mailer);
     $mailer = $sparkpost;
   }
 }
