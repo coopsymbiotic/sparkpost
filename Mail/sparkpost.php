@@ -49,8 +49,10 @@ class Mail_sparkpost extends Mail {
    */
   public function send($recipients, $headers, $body) {
     if (defined('CIVICRM_MAIL_LOG')) {
+      // FIXME This is broken (at least in CiviCRM 5.65). Why log?
+      // Maybe we can avoid changing the mailer if CIVICRM_MAIL_LOG is set?
       CRM_Utils_Mail::logger($recipients, $headers, $body);
-      if(!defined('CIVICRM_MAIL_LOG_AND SEND')) {
+      if (!defined('CIVICRM_MAIL_LOG_AND_SEND')) {
         return true;
       }
     }
