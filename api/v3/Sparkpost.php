@@ -68,6 +68,56 @@ function civicrm_api3_sparkpost_event($params) {
 }
 
 /**
+ * Sparkpost.suppression API
+ *
+ * Get information from the Sparkpost Suppression Lists.
+ *
+ * @param array $params
+ * @return array API result descriptor
+ * @throws API_Exception
+ */
+function civicrm_api3_sparkpost_suppression($params) {
+  $result = [
+    'values' => [],
+  ];
+
+  if (!empty($params['email'])) {
+    try {
+      $suppressions = CRM_Sparkpost::request('GET', 'suppression-list/' . $params['email']);
+      Civi::log()->debug('civicrm_api3_sparkpost_suppression: ' . print_r($suppressions, 1));
+      $result['values'][] = $suppressions;
+    }
+    catch (Exception $e) {
+      Civi::log()->debug('civicrm_api3_sparkpost_suppression exception: ' . $e->getMessage());
+    }
+  }
+  else {
+    $from = new DateTime();
+    $from = $from->modify('-30 day');
+    $from = $from->format('Y-m-d') . 'T00:00:01Z';
+
+    $sp_params = [];
+    $sp_params['from'] = $from;
+    $sp_params['per_page'] = 10000;
+    $sp_params['cursor'] = 'initial';
+
+    do {
+      $results = CRM_Sparkpost::request('GET', 'suppressions-list', $sp_params);
+      $continue = count($results) == 10000;
+
+      foreach ($results as $key => $val) {
+        $val['created'] = strftime($val['created']);
+        $val['updated'] = strftime($val['updated']);
+        $result['values'][] = $val;
+      }
+      sleep(1);
+    } while ($continue);
+  }
+
+  return $result;
+}
+
+/**
  * Sparkpost.create_transactional_mailing API
  *
  * @param array $params

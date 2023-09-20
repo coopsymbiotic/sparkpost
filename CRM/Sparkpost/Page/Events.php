@@ -24,6 +24,11 @@ class CRM_Sparkpost_Page_Events extends CRM_Core_Page {
 
     $this->assign('sparkpost_events', $events['values']);
 
+    // Fetch Sparkpost Supression Lists
+    $supressions = civicrm_api3('Sparkpost', 'suppression', [
+      'email' => $email,
+    ]);
+
     // Fetch CiviCRM bounce events
     $errors = [];
 
