@@ -168,7 +168,7 @@ class Mail_sparkpost extends Mail {
       $body = $e->getBody();
 
       // Most of the time we get an array, but sometimes we do not and need to investigate this more
-      if (empty($body['errors'])) {
+      if (empty($body['errors']) || !is_array($body['errors'])) {
         Civi::log()->error('SPARKPOST transmission error: ' . print_r($sp['recipients'], 1) . ' --- ' . print_r($body, 1));
         throw new Exception(print_r($sp, 1) . ' -- ' . print_r($body, 1) . ' -- ' . $e->getMessage());
       }
