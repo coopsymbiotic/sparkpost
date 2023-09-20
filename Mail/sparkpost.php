@@ -46,6 +46,10 @@ class Mail_sparkpost extends Mail {
 
   /**
    * Send an email
+   *
+   * The calling function in CRM_Utils_Mail::send() handles exceptions
+   * or if we return a PEAR_Error. This function either throws an Exception
+   * or returns TRUE.
    */
   public function send($recipients, $headers, $body) {
     if (defined('CIVICRM_MAIL_LOG')) {
@@ -205,25 +209,7 @@ class Mail_sparkpost extends Mail {
       }
     }
 
-/*
-    try {
-
-    $response = $promise->wait();
-    // dsm($response->getStatusCode());
-    // dsm($response->getBody(), 'body');
-
-    }
-    catch (Exception $e) {
-      // Check the suppression list status
- #     $status = $sparky->request('GET', 'suppression-list/' . , [
- #       'limit' => '5',
- #     ]);
-
-      throw new Exception($e->getMessage()); //  . ' -- [' . $e->getStatusCode() . '] ' . $e->getBody() . ' -- ' . $e->getAPIDescription() . ' -- ' . print_r($recipients, 1));
-    }
-*/
-
-  #  return $result;
+    return TRUE;
   }
 
   /**
