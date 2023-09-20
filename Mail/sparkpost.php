@@ -167,6 +167,12 @@ class Mail_sparkpost extends Mail {
     catch (Exception $e) {
       $body = $e->getBody();
 
+      // Most of the time we get an array, but sometimes we do not and need to investigate this more
+      if (empty($body['errors'])) {
+        Civi::log()->error('SPARKPOST transmission error: ' . print_r($sp['recipients'], 1) . ' --- ' . print_r($body, 1));
+        throw new Exception(print_r($sp, 1) . ' -- ' . print_r($body, 1) . ' -- ' . $e->getMessage());
+      }
+
       // https://www.sparkpost.com/docs/tech-resources/extended-error-codes/
       foreach ($body['errors'] as $key => $val) {
         // "recipient address suppressed due to customer policy"
