@@ -74,4 +74,14 @@ return array(
     'is_contact' => 0,
     'description' => 'Monthly sending quota. This is checked against Sparkpost metrics. Above this number, a critical Status Check will be displayed, but it will not stop sending emails. It can be useful for monitoring.',
   ],
+  'sparkpost_bounce_rate' => [
+    'name' => 'sparkpost_bounce_rate',
+    'type' => 'Integer',
+    'html_type' => 'text',
+    'default' => 10,
+    'add' => '1.7',
+    'is_domain' => 1,
+    'is_contact' => 0,
+    'description' => 'Raise a CiviCRM System Check alert if the perceptage of bounces is above a certain threshold. Set to 0 to disable.',
+  ],
 );

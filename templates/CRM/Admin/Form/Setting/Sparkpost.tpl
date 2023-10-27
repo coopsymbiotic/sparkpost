@@ -50,6 +50,13 @@
                         </span>
                     </td>
                 </tr>
+                <tr class="crm-sparkpost-form-block-sparkpost_bounce_rate">
+                    <td class="label">{$form.sparkpost_bounce_rate.label}</td>
+                    <td>{$form.sparkpost_bounce_rate.html}<br  />
+                        <span class="description">{ts}This is checked against Sparkpost metrics. Above this number, a critical Status Check will be displayed, but it will not stop sending emails. It can be useful for monitoring.{/ts}
+                        </span>
+                    </td>
+                </tr>
             </table>
 
             <p>{ts 1=$sparkpost_test_email}Test emails will be sent to: %1{/ts}</p>

@@ -62,7 +62,7 @@ class CRM_Sparkpost_Utils_Check_Metrics {
           'label' => ts('Bounces:'),
         ],
         'count_admin_bounce' => [
-          'quota_pct' => 10,
+          'quota_pct' => Civi::settings()->get('sparkpost_bounce_rate'),
           'label' => ts('Bounced by Sparkpost:'),
         ],
         'count_rejected' => [
