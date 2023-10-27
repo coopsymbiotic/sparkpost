@@ -50,6 +50,12 @@
                         </span>
                     </td>
                 </tr>
+                <tr class="crm-sparkpost-form-block-sparkpost_sending_quota_alert">
+                    <td class="label">{$form.sparkpost_sending_quota_alert.label}</td>
+                    <td>{$form.sparkpost_sending_quota_alert.html}<br/>
+                        <span class="description">{ts}Above this number, a critical Status Check will be displayed. For now, it will not stop sending emails. It can be useful for monitoring.{/ts}</span>
+                    </td>
+                </tr>
                 <tr class="crm-sparkpost-form-block-sparkpost_bounce_rate">
                     <td class="label">{$form.sparkpost_bounce_rate.label}</td>
                     <td>{$form.sparkpost_bounce_rate.html}<br  />

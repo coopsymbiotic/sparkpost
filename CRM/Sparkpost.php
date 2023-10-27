@@ -83,7 +83,7 @@ class CRM_Sparkpost {
       'sparkpost_host' => 'sparkpost.com',
     );
     // Merge the settings defined in DB (no more groups in 4.7, so has to be one by one ...)
-    foreach (array('sparkpost_apiKey', 'sparkpost_useBackupMailer', 'sparkpost_campaign', 'sparkpost_ipPool', 'sparkpost_customCallbackUrl', 'sparkpost_host', 'sparkpost_sending_quota', 'sparkpost_bounce_rate') as $name) {
+    foreach (array('sparkpost_apiKey', 'sparkpost_useBackupMailer', 'sparkpost_campaign', 'sparkpost_ipPool', 'sparkpost_customCallbackUrl', 'sparkpost_host', 'sparkpost_sending_quota', 'sparkpost_sending_quota_alert', 'sparkpost_bounce_rate') as $name) {
       $value = Civi::settings()->get($name);
       if (!is_null($value)) {
         $settings[$name] = $value;

@@ -72,7 +72,17 @@ return array(
     'add' => '1.7',
     'is_domain' => 1,
     'is_contact' => 0,
-    'description' => 'Monthly sending quota. This is checked against Sparkpost metrics. Above this number, a critical Status Check will be displayed, but it will not stop sending emails. It can be useful for monitoring.',
+    'description' => 'Monthly sending quota. This is checked against Sparkpost metrics. Above this number, a Status Check warning will be displayed, but it will not stop sending emails. It can be useful for monitoring.',
+  ],
+  'sparkpost_sending_quota_alert' => [
+    'name' => 'sparkpost_sending_quota_alert',
+    'type' => 'Integer',
+    'html_type' => 'text',
+    'default' => 100000,
+    'add' => '1.7',
+    'is_domain' => 1,
+    'is_contact' => 0,
+    'description' => 'Above this number, a critical Status Check will be displayed. For now, it will not stop sending emails. It can be useful for monitoring.',
   ],
   'sparkpost_bounce_rate' => [
     'name' => 'sparkpost_bounce_rate',
