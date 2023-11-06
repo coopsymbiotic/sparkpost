@@ -81,7 +81,7 @@ class CRM_Sparkpost_Utils_Check_Metrics {
         $stats = [];
 
         foreach ($metrics as $mkey => $mval) {
-          if ($mval['quota_total'] && $val[$mkey] > $mval['quota_total']) {
+          if (!empty($mval['quota_total']) && $val[$mkey] > $mval['quota_total']) {
             $pct = round($val[$mkey] / $mval['quota_total'] * 100, 2);
             $stats[] = "<li><strong>{$mval['label']} {$val[$mkey]} (max: {$mval['quota_total']}, $pct %)</strong></li>"; // FIXME ts
             $log_level = \Psr\Log\LogLevel::CRITICAL;
