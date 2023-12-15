@@ -4,7 +4,7 @@ stages:
   - build
   - release
 
-build-job:
+build_job:
   stage: build
   image: composer
   script:
@@ -24,11 +24,11 @@ build-job:
   tags:
     - test-1-docker
 
-release-job:
+release_job:
   stage: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
   needs:
-    - job: build-job
+    - job: build_job
       artifacts: true
   rules:
     - if: $CI_COMMIT_TAG
