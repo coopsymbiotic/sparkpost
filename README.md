@@ -1,10 +1,10 @@
 # SparkPost email extension for CiviCRM (Symbiotic fork)
 
-This is a Coop SymbioTIC fork of the SparkPost extension:  
+This is a Coop SymbioTIC fork of the SparkPost extension (initially developed by CiviDesk):  
 https://lab.civicrm.org/extensions/sparkpost
 
-We strongly encourage you to use the official extension rather than this one,
-unless you are hosted by [Coop SymbioTIC](https://www.symbiotic.coop/en), of course! ;-)
+This fork can be found here:  
+https://lab.civicrm.org/extensions/sparkpost-symbiotic
 
 Some of the additional features included in this fork:
 
@@ -22,23 +22,23 @@ supports things such as using a generic email domain with subaddresses (ex:
 `noreply+clientA@symbiotic-notifications.net`).  For more information, see
 [SparkPostRouter](https://github.com/coopsymbiotic/coop.symbiotic.sparkpostrouter).
 
-## Original README (initially by CiviDesk, now community-maintained)
+## Documentation
 
-This extension allows CiviCRM to send emails and process bounces through the SparkPost service.
+See: https://docs.civicrm.org/sparkpost/en/latest/  (documentation of the official/original extension)
 
-It was designed to seamlessly integrate in the CiviCRM UI, be fully documented and well maintained, be trivial to install and configure, be nimble and fast and accurately process bounces.
-It currently is one of the [Top 10](https://stats.civicrm.org/?tab=sites) most used extensions for CiviCRM.
+## Support
 
-Full documentation (including installation instructions) can be found at https://docs.civicrm.org/sparkpost.
+Please post bug reports in the issue tracker of this project on CiviCRM's Gitlab:  
+https://lab.civicrm.org/extensions/sparkpost-symbiotic/issues
 
-## Show your support!
+While we do our best to provide volunteer support for this extension, please
+consider financially contributing to support or development of this extension
+if you can.
 
-Development of this extension was fully self-funded by Cividesk and equated to about 40 hours of work.
+Commercial support available from Coop SymbioTIC:  
+https://www.symbiotic.coop/en
 
-You can show your support and appreciation for our work by making a donation at https://www.cividesk.com/pay and indicating 'SparkPost support' as the invoice id.
-
-Suggested donation amounts are _$40 for end-users_, and _$40 per client_ using this extension for service providers. With these suggested amounts, we would need 120 donations just to recoup our development costs. Needless to say we are far from that at the moment!
-
-These donations will fund maintenance and updates for this extension, as well as production of other extensions in the future.
-
-Thanks!
+Coop Symbiotic is a worker-owned co-operative based in Canada. We have a strong
+experience working with non-profits and CiviCRM. We provide affordable, fast,
+turn-key hosting with regular upgrades and proactive monitoring, as well as
+custom development and training.
