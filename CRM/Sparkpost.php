@@ -179,10 +179,15 @@ class CRM_Sparkpost {
       $code = $e->getCode();
       $body = $e->getBody();
 
-      CRM_Core_Session::setStatus(E::ts('The email was not sent. Failed to get the valid sending domains from Sparkpost: code %1, error: %2', [
+      $error = E::ts('The email was not sent. Failed to get the valid sending domains from Sparkpost: code %1, error: %2', [
         1 => $e->getCode(),
         2 => $e->getMessage() . ' / ' . print_r($body, 1),
-      ]), E::ts('Email not sent'), 'error');
+      ]);
+
+      // We log and also display on screen. It might not immediately be displayed because of the exception
+      // but at least it will be displayed on the next page load.
+      Civi::log()->error($error);
+      CRM_Core_Session::setStatus($error, E::ts('Email not sent'), 'error');
 
       // nb: for now, we are not returning early, and caching this error.
       // The email will still fail to validate against a verified domain.
@@ -206,6 +211,9 @@ class CRM_Sparkpost {
         return TRUE;
       }
     }
+
+    // We will throw an exception later, but having the list of domains will help debug
+    Civi::log()->debug('Sparkpost isValidSparkpostVerifiedSendingEmail failed for ' . $email . '. Available domains: ' . print_r($domains, 1));
 
     return FALSE;
   }
