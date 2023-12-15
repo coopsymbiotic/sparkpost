@@ -81,10 +81,7 @@ class Mail_sparkpost extends Mail {
     // Verify if the sending domain is valid
     if (!empty($headers['From'])) {
       if (!CRM_Sparkpost::isValidSparkpostVerifiedSendingEmail($headers['From'])) {
-        $error = E::ts('The email could not be sent because the sender (%1) email is not a verified domain.', [1 => htmlspecialchars($headers['From'])]);
-        Civi::log()->error($error);
-        CRM_Core_Session::setStatus($error, E::ts('Email not sent'), 'error');
-        return;
+        throw new Exception(E::ts('The email could not be sent because the sender (%1) email is not a verified domain.', [1 => htmlspecialchars($headers['From'])]));
       }
     }
 
