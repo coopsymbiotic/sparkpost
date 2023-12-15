@@ -2,9 +2,23 @@
 # https://docs.gitlab.com/ee/user/project/releases/release_cicd_examples.html
 # https://about.gitlab.com/blog/2023/11/01/tutorial-automated-release-and-release-notes-with-gitlab/
 stages:
+  - test
   - prepare
   - build
   - release
+
+run_tests:
+  stage: test
+  image: michaelmcandrew/civicrm-buildkit:latest
+  script:
+    - echo "Running phpcs-civi..."
+    - phpcs-civi --ignore=vendor --report=json --report-json=gl-code-quality-report-tmp.json .
+    - echo "Done"
+    - 'ls -la gl-code-quality-report-tmp.json'
+    - 'jq "[.files | keys[] as $file | .[] | .messages | .[] as $msg |  {type: \"issue\", check_name: $msg.source, categories: [\"PHP\", \"phpcs\"], fingerprint: (\"\($file):\($msg.line):\($msg.source)\"), description: $msg.message, location: { path: $file, lines: {begin: $msg.line, end: $msg.line }}}]" gl-code-quality-report-tmp.json > gl-code-quality-report.json'
+  artifacts:
+    reports:
+      codequality: gl-code-quality-report.json
 
 release_notes:
   stage: prepare
