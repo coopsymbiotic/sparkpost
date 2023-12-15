@@ -16,6 +16,8 @@ release_notes:
   artifacts:
     paths:
       - release_notes.md
+  tags:
+    - test-1-docker
 
 build_job:
   stage: build
