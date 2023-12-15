@@ -219,11 +219,13 @@ function sparkpost_civicrm_postEmailSend(&$params) {
   if (!empty($params['returnPath'])) {
     $header = explode(CRM_Core_Config::singleton()->verpSeparator, $params['returnPath']);
 
-    CRM_Mailing_Event_BAO_Delivered::recordDelivery([
+    // recordDelivery uses pass-by-ref for some reason
+    $p = [
       'job_id' => $header[1],
       'event_queue_id' => $header[2],
       'hash' => $header[3],
-    ]);
+    ];
+    CRM_Mailing_Event_BAO_Delivered::recordDelivery($p);
   }
 }
 
