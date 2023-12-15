@@ -1,5 +1,6 @@
 # Based on https://martin-renze.de/posts/gitlab-ci-releases/
 # https://docs.gitlab.com/ee/user/project/releases/release_cicd_examples.html
+# https://about.gitlab.com/blog/2023/11/01/tutorial-automated-release-and-release-notes-with-gitlab/
 stages:
   - prepare
   - build
