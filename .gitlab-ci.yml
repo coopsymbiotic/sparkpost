@@ -16,7 +16,7 @@ build_job:
     - echo BUILD_VERSION=$RELEASE_VERSION >> variables.env
   artifacts:
     paths:
-    - "build/${CI_PROJECT_NAME}-${RELEASE_VERSION}.zip"
+      - "build/${CI_PROJECT_NAME}-${RELEASE_VERSION}.zip"
     reports:
       dotenv: variables.env
   rules:
