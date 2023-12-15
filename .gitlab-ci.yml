@@ -1,26 +1,26 @@
 # Based on https://martin-renze.de/posts/gitlab-ci-releases/
+# https://docs.gitlab.com/ee/user/project/releases/release_cicd_examples.html
 stages:
   - build
   - release
 
 build-job:
   stage: build
+  image: composer
   script:
     - composer install
     - RELEASE_VERSION=$(grep '<version' info.xml | sed -e 's/.*<version>//' -e 's/<\/version>//')
     - mkdir build
     - zip -qr9 --exclude=.git* --exclude=build build/${CI_PROJECT_NAME}-${RELEASE_VERSION}.zip .
-    # Save the job id and as an environment statement
-    - echo BUILD_JOB_ID=$CI_JOB_ID >> CI_JOB_ID.env
-    - echo BUILD_VERSION=$RELEASE_VERSION >> CI_JOB_ID.env
+    - echo BUILD_JOB_ID=$CI_JOB_ID >> variables.env
+    - echo BUILD_VERSION=$RELEASE_VERSION >> variables.env
   artifacts:
     paths:
     - "build/${CI_PROJECT_NAME}-${RELEASE_VERSION}.zip"
     reports:
-      # export the environment statement so we can access it in the release stage
-      dotenv: CI_JOB_ID.env
-  only:
-    - tags
+      dotenv: variables.env
+  rules:
+    - if: $CI_COMMIT_TAG
   tags:
     - test-1-docker
 
@@ -30,13 +30,11 @@ release-job:
   needs:
     - job: build-job
       artifacts: true
-  script:
-    - echo "release application..."
-    - echo "Application successfully released."
+  rules:
+    - if: $CI_COMMIT_TAG
   release:
     name: 'Release Executables $CI_COMMIT_SHORT_SHA'
     description: 'Created using the release-cli'
-    # tag_name is a memandatory field and can not be an empty string
     tag_name: '$CI_COMMIT_SHORT_SHA'
     assets:
       links:
@@ -46,7 +44,5 @@ release-job:
           # ${BUILD_JOB_ID} is from the previous job,
           # the build stage, that contains the artifact
           url: '${CI_PROJECT_URL}/-/jobs/${BUILD_JOB_ID}/artifacts/file/build/${CI_PROJECT_NAME}-${RELEASE_VERSION}.zip'
-  only:
-    - tags
   tags:
     - test-1-docker
