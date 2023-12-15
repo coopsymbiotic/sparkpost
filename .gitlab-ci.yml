@@ -32,6 +32,8 @@ release_job:
       artifacts: true
   rules:
     - if: $CI_COMMIT_TAG
+  script:
+    - echo "running release_job for $TAG"
   release:
     name: 'Release Executables $CI_COMMIT_SHORT_SHA'
     description: 'Created using the release-cli'
@@ -39,10 +41,6 @@ release_job:
     assets:
       links:
         - name: '$CI_PROJECT_NAME release zip'
-          # Use variables to build a URL to access the artifacts
-          # ${CI_PROJECT_URL} is the repository URL
-          # ${BUILD_JOB_ID} is from the previous job,
-          # the build stage, that contains the artifact
           url: '${CI_PROJECT_URL}/-/jobs/${BUILD_JOB_ID}/artifacts/file/build/${CI_PROJECT_NAME}-${RELEASE_VERSION}.zip'
   tags:
     - test-1-docker
