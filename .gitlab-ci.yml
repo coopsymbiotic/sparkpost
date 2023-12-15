@@ -10,6 +10,7 @@ build_job:
   script:
     - composer install
     - RELEASE_VERSION=$(grep '<version' info.xml | sed -e 's/.*<version>//' -e 's/<\/version>//')
+    - echo "Found version $RELEASE_VERSION"
     - mkdir build
     - zip -qr9 --exclude=.git* --exclude=build build/${CI_PROJECT_NAME}-${RELEASE_VERSION}.zip .
     - echo BUILD_JOB_ID=$CI_JOB_ID >> variables.env
