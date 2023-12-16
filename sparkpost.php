@@ -1,48 +1,24 @@
 <?php
-/**
- * This extension allows CiviCRM to send emails and process bounces through
- * the SparkPost service.
- *
- * Copyright (c) 2016 IT Bliss, LLC
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Support: https://github.com/cividesk/com.cividesk.email.sparkpost/issues
- * Contact: info@cividesk.com
- */
 
 require_once 'sparkpost.civix.php';
 use CRM_Sparkpost_ExtensionUtil as E;
 
 /**
- * Implementation of hook_civicrm_config
+ * Implements hook_civicrm_config().
  */
 function sparkpost_civicrm_config(&$config) {
   _sparkpost_civix_civicrm_config($config);
 }
 
 /**
- * Implementation of hook_civicrm_xmlMenu
- *
- * @param $files array(string)
+ * Implements hook_civicrm_xmlMenu().
  */
 function sparkpost_civicrm_xmlMenu(&$files) {
   _sparkpost_civix_civicrm_xmlMenu($files);
 }
 
 /**
- * Implementation of hook_civicrm_install
+ * Implements hook_civicrm_install().
  */
 function sparkpost_civicrm_install() {
   _sparkpost_civix_civicrm_install();
@@ -50,21 +26,21 @@ function sparkpost_civicrm_install() {
 }
 
 /**
- * Implementation of hook_civicrm_postInstall
+ * Implements hook_civicrm_postInstall().
  */
 function sparkpost_civicrm_postInstall() {
   _sparkpost_civix_civicrm_postInstall();
 }
 
 /**
- * Implementation of hook_civicrm_uninstall
+ * Implements hook_civicrm_uninstall().
  */
 function sparkpost_civicrm_uninstall() {
   _sparkpost_civix_civicrm_uninstall();
 }
 
 /**
- * Implementation of hook_civicrm_enable
+ * Implements hook_civicrm_enable().
  */
 function sparkpost_civicrm_enable() {
   _sparkpost_civix_civicrm_enable();
@@ -72,27 +48,21 @@ function sparkpost_civicrm_enable() {
 }
 
 /**
- * Implementation of hook_civicrm_disable
+ * Implements hook_civicrm_disable().
  */
 function sparkpost_civicrm_disable() {
   return _sparkpost_civix_civicrm_disable();
 }
 
 /**
- * Implementation of hook_civicrm_upgrade
- *
- * @param $op string, the type of operation being performed; 'check' or 'enqueue'
- * @param $queue CRM_Queue_Queue, (for 'enqueue') the modifiable list of pending up upgrade tasks
- *
- * @return mixed  based on op. for 'check', returns array(boolean) (TRUE if upgrades are pending)
- *                for 'enqueue', returns void
+ * Implements hook_civicrm_upgrade().
  */
 function sparkpost_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
   return _sparkpost_civix_civicrm_upgrade($op, $queue);
 }
 
 /**
- * Implementation of hook_civicrm_managed
+ * Implements hook_civicrm_managed().
  *
  * Generate a list of entities to create/deactivate/delete when this module
  * is installed, disabled, uninstalled.
@@ -119,7 +89,7 @@ function sparkpost_civicrm_navigationMenu(&$menu) {
 }
 
 /**
- * Implementation of hook_civicrm_alterMailer
+ * Implements hook_civicrm_alterMailer().
  */
 function sparkpost_civicrm_alterMailer(&$mailer, $driver, $params) {
   // Do not process emails "logged to DB", for example
@@ -132,7 +102,7 @@ function sparkpost_civicrm_alterMailer(&$mailer, $driver, $params) {
 }
 
 /**
- * Implementation of hook_civicrm_check
+ * Implements hook_civicrm_check().
  */
 function sparkpost_civicrm_check(&$messages) {
   CRM_Sparkpost_Utils_Check_SendingDomains::check($messages);
@@ -141,7 +111,7 @@ function sparkpost_civicrm_check(&$messages) {
 }
 
 /**
- * Implementation of hook_civicrm_alterSettingsFolders
+ * Implements hook_civicrm_alterSettingsFolders().
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_alterSettingsFolders
  */
@@ -213,7 +183,7 @@ function sparkpost_civicrm_alterMailParams(&$params, $context = NULL) {
 }
 
 /**
- * Implementation of hook_civicrm_postEmailSend
+ * Implements hook_civicrm_postEmailSend().
  */
 function sparkpost_civicrm_postEmailSend(&$params) {
   if (!empty($params['returnPath'])) {
@@ -251,7 +221,9 @@ function sparkpost_targetContactId($email) {
   elseif ($result['count'] > 1) {
     $contactId = $result['values'][0]['contact_id'];
     foreach ($result['values'] as $row) {
-      if ($row['contact_id'] != $contactId) return NULL;
+      if ($row['contact_id'] != $contactId) {
+        return NULL;
+      }
     }
     // every emails found are on the same contact
     return $contactId;
@@ -261,19 +233,18 @@ function sparkpost_targetContactId($email) {
 }
 
 /**
- * Implementation of hook_civicrm_pre
+ * Implements hook_civicrm_pre().
  */
-function sparkpost_civicrm_pre( $op, $objectName, $objectId, &$objectRef ) {
-  /*
-   * When email is updated for contact, check on hold flag is changed?
-   * If changed (unchecked) then remove same email from sparkpost suppression list
-   */
+function sparkpost_civicrm_pre($op, $objectName, $objectId, &$objectRef) {
+  // When email is updated for contact, check on hold flag is changed?
+  // If changed (unchecked) then remove same email from sparkpost suppression list
   global $resetHoldFlag;
   $resetHoldFlag = FALSE;
+
   if ($objectName == 'Email' && $op == 'edit' && $objectId && empty($objectRef['on_hold'])) {
-    $resultEmail = civicrm_api3('Email', 'getsingle', array(
+    $resultEmail = civicrm_api3('Email', 'getsingle', [
       'id' => $objectId,
-    ));
+    ]);
     if ($resultEmail['on_hold'] == 1) {
       $resetHoldFlag = TRUE;
     }
@@ -281,17 +252,17 @@ function sparkpost_civicrm_pre( $op, $objectName, $objectId, &$objectRef ) {
 }
 
 /**
- * Implementation of hook_civicrm_post
+ * Implements hook_civicrm_post().
  */
-function sparkpost_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
-  /*
-   * Previous on hold flag = 1 and Current on hold flag = 0 then remove from sparkpost suppression list
-   */
+function sparkpost_civicrm_post($op, $objectName, $objectId, &$objectRef) {
+  // Previous on hold flag = 1 and Current on hold flag = 0 then remove from sparkpost suppression list
   global $resetHoldFlag;
+
   if ($objectName == 'Email' && $op == 'edit' && $resetHoldFlag && !empty($objectRef->email)) {
     try {
       $result = CRM_Sparkpost::call('suppression-list/' . $objectRef->email);
-    } catch (Exception $e) {
+    }
+    catch (Exception $e) {
       // don't show the error message to users
       //CRM_Core_Session::setStatus($e->getMessage(), "Sparkpost error", 'error');
     }

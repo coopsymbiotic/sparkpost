@@ -1,31 +1,28 @@
 <?php
-/**
- * Settings metadata file.
- */
 
-require_once(__DIR__ . "/../CRM/Sparkpost.php");
+use CRM_Sparkpost_ExtensionUtil as E;
 
-return array(
-  'sparkpost_host' => array(
+return [
+  'sparkpost_host' => [
     'group_name' => CRM_Sparkpost::SPARKPOST_EXTENSION_SETTINGS,
     'group' => 'com.cividesk.email.sparkpost',
     'name' => 'sparkpost_host',
     'type' => 'String',
     'quick_form_type' => 'Select',
     'html_type' => 'Select',
-    'html_attributes' => array(),
+    'html_attributes' => [],
     'default' => 'sparkpost.com',
     'add' => '4.7',
-    'title' => 'Sparkpost Host',
+    'title' => E::ts('Sparkpost Host'),
     'is_domain' => 1,
     'is_contact' => 0,
-    'pseudoconstant' => array(
+    'pseudoconstant' => [
       'callback' => 'CRM_Sparkpost::getSparkpostHostOptions',
-    ),
-    'description' => 'Select the host. If you are using an EU-hosted platform you will need an <a href="https://app.eu.sparkpost.com">European account</a>.',
-    'help_text' => 'European accounts have to use *.eu.sparkpost.com',
-  ),
-  'sparkpost_apiKey' => array(
+    ],
+    'description' => E::ts('Select the host. If you are using an EU-hosted platform you will need an <a %1>European account</a>.', [1 => 'href="https://app.eu.sparkpost.com"']),
+    'help_text' => E::ts('European accounts have to use *.eu.sparkpost.com'),
+  ],
+  'sparkpost_apiKey' => [
     'group_name' => 'SparkPost Extension Settings',
     'group' => 'com.cividesk.email.sparkpost',
     'name' => 'sparkpost_apiKey',
@@ -35,10 +32,10 @@ return array(
     'add' => '4.4',
     'is_domain' => 1,
     'is_contact' => 0,
-    'description' => 'SparkPost REST API key',
+    'description' => E::ts('SparkPost REST API key'),
     'help_text' => 'You can create API keys at: https://app.sparkpost.com/account/api-keys, or https://app.eu.sparkpost.com/account/api-keys if using the EU-hosted platform.',
-  ),
-  'sparkpost_customCallbackUrl' => array(
+  ],
+  'sparkpost_customCallbackUrl' => [
     'group_name' => 'SparkPost Extension Settings',
     'group' => 'com.cividesk.email.sparkpost',
     'name' => 'sparkpost_customCallbackUrl',
@@ -48,10 +45,10 @@ return array(
     'add' => '4.4',
     'is_domain' => 1,
     'is_contact' => 0,
-    'description' => 'A custom callback URL. Useful if your site is behind a proxy (like CiviProxy)',
-    'help_text' => 'A custom callback URL is useful when your site is behind a proxy (like CiviProxy)',
-  ),
-  'sparkpost_useBackupMailer' => array(
+    'description' => E::ts('A custom callback URL. Useful if your site is behind a proxy (like CiviProxy)'),
+    'help_text' => E::ts('A custom callback URL is useful when your site is behind a proxy (like CiviProxy)'),
+  ],
+  'sparkpost_useBackupMailer' => [
     'group_name' => 'SparkPost Extension Settings',
     'group' => 'com.cividesk.email.sparkpost',
     'name' => 'sparkpost_useBackupMailer',
@@ -61,9 +58,9 @@ return array(
     'add' => '4.4',
     'is_domain' => 1,
     'is_contact' => 0,
-    'description' => 'Use backup mailer?',
-    'help_text' => 'The backup mailer will be used if Sparkpost cannot send emails (unverified sending domain, sending limits exceeded, ...).',
-  ),
+    'description' => E::ts('Use backup mailer?'),
+    'help_text' => E::ts('The backup mailer will be used if Sparkpost cannot send emails (unverified sending domain, sending limits exceeded, ...).'),
+  ],
   'sparkpost_sending_quota' => [
     'name' => 'sparkpost_sending_quota',
     'type' => 'Integer',
@@ -94,4 +91,4 @@ return array(
     'is_contact' => 0,
     'description' => 'Raise a CiviCRM System Check alert if the perceptage of bounces is above a certain threshold. Set to 0 to disable.',
   ],
-);
+];

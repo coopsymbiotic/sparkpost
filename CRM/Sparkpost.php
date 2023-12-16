@@ -359,7 +359,7 @@ class CRM_Sparkpost {
     $body = $response->getBody();
 
     // Track paging. If there is no more data, the next will be empty.
-    \Civi::$statics[__CLASS__]['cursor'] = $body['links']['next'] ?? null;
+    \Civi::$statics[__CLASS__]['cursor'] = $body['links']['next'] ?? NULL;
 
     return $body['results'];
   }
