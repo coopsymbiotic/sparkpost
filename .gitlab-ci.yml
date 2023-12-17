@@ -27,6 +27,7 @@ release_notes:
   script:
     - apk add curl jq
     - 'curl -H "PRIVATE-TOKEN: $CI_API_TOKEN" "$CI_API_V4_URL/projects/$CI_PROJECT_ID/repository/changelog?version=$CI_COMMIT_TAG" | jq -r .notes > release_notes.md'
+    - cat release_notes.md
   artifacts:
     paths:
       - release_notes.md
@@ -47,6 +48,7 @@ build_job:
   artifacts:
     paths:
       - build
+    expire_in: 1 year
     reports:
       dotenv: variables.env
   rules:
@@ -70,9 +72,10 @@ release_job:
     name: 'Version $CI_COMMIT_TAG'
     description: release_notes.md
     tag_name: '$CI_COMMIT_TAG'
+    ref: '$CI_COMMIT_SHA'
     assets:
       links:
-        - name: '${CI_PROJECT_NAME}-${RELEASE_VERSION}.zip'
-          url: '${CI_PROJECT_URL}/-/jobs/${BUILD_JOB_ID}/artifacts/file/build/${CI_PROJECT_NAME}-${RELEASE_VERSION}.zip'
+        - name: '${CI_PROJECT_NAME}-${CI_COMMIT_TAG}.zip'
+          url: '${CI_PROJECT_URL}/-/jobs/${BUILD_JOB_ID}/artifacts/raw/build/${CI_PROJECT_NAME}-${CI_COMMIT_TAG}.zip'
   tags:
     - test-1-docker
