@@ -1,26 +1,4 @@
 <?php
-/**
- * This extension allows CiviCRM to send emails and process bounces through
- * the SparkPost service.
- *
- * Copyright (c) 2016 IT Bliss, LLC
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Support: https://github.com/cividesk/com.cividesk.email.sparkpost/issues
- * Contact: info@cividesk.com
- */
 
 use SparkPost\SparkPost;
 use GuzzleHttp\Client;
@@ -32,41 +10,48 @@ class CRM_Sparkpost {
   // Indicates we need to try sending emails out through an alternate method
   const FALLBACK = 1;
 
-  // For converting the Sparkpost 'bounce_class' to CiviCRM's codes
+  /**
+   * For converting the Sparkpost 'bounce_class' to CiviCRM's codes
+   */
   static public $_civicrm_bounce_types = [
-    'Away' => 2,    // soft, retry 30 times
-    'Relay' => 9,   // soft, retry 3 times
-    'Invalid' => 6, // hard, retry 1 time
-    'Spam' => 10,   // hard, retry 1 time
+    // Soft, retry 30 times
+    'Away' => 2,
+    // Soft, retry 3 times
+    'Relay' => 9,
+    // Hard, retry 1 time
+    'Invalid' => 6,
+    // Hard, retry 1 time
+    'Spam' => 10,
   ];
 
-  // Source: https://support.sparkpost.com/customer/portal/articles/1929896
-  // See also: https://docs.civicrm.org/sysadmin/en/latest/setup/civimail/inbound/
-  // The CiviCRM equivalent will have a certain threshold before it flags an email On Hold.
+  /**
+   * Source: https://support.sparkpost.com/customer/portal/articles/1929896
+   * See also: https://docs.civicrm.org/sysadmin/en/latest/setup/civimail/inbound/
+   * The CiviCRM equivalent will have a certain threshold before it flags an email On Hold.
+   */
   static public $_sparkpost_bounce_types = [
     // Name, Description, Category, CiviCRM equivalent (see above)
-     1 => ['Undetermined','The response text could not be identified.','Undetermined', ''],
-    10 => ['Invalid Recipient','The recipient is invalid.','Hard', 'Invalid'],
-    20 => ['Soft Bounce','The message soft bounced.','Soft', 'Relay'],
-    21 => ['DNS Failure','The message bounced due to a DNS failure.','Soft', 'Relay'],
-    22 => ['Mailbox Full','The message bounced due to the remote mailbox being over quota.','Soft', 'Away'],
-    23 => ['Too Large','The message bounced because it was too large for the recipient.','Soft', 'Away'],
-    24 => ['Timeout','The message timed out.','Soft', 'Relay'],
+    1 => ['Undetermined', 'The response text could not be identified.', 'Undetermined', ''],
+    10 => ['Invalid Recipient', 'The recipient is invalid.', 'Hard', 'Invalid'],
+    20 => ['Soft Bounce', 'The message soft bounced.', 'Soft', 'Relay'],
+    21 => ['DNS Failure', 'The message bounced due to a DNS failure.', 'Soft', 'Relay'],
+    22 => ['Mailbox Full', 'The message bounced due to the remote mailbox being over quota.', 'Soft', 'Away'],
+    23 => ['Too Large', 'The message bounced because it was too large for the recipient.', 'Soft', 'Away'],
+    24 => ['Timeout', 'The message timed out.', 'Soft', 'Relay'],
     25 => ['Admin Failure', 'The message was failed by SparkPost\'s configured policies.', 'Admin', 'Invalid'],
-    30 => ['Generic Bounce: No RCPT','No recipient could be determined for the message.','Hard', 'Invalid'],
-    40 => ['Generic Bounce','The message failed for unspecified reasons.','Soft', 'Relay'],
-    50 => ['Mail Block','The message was blocked by the receiver.','Block', 'Spam'],
-    51 => ['Spam Block','The message was blocked by the receiver as coming from a known spam source.','Block', 'Spam'],
-    52 => ['Spam Content','The message was blocked by the receiver as spam.','Block', 'Spam'],
-    53 => ['Prohibited Attachment','The message was blocked by the receiver because it contained an attachment.','Block', 'Spam'],
-    54 => ['Relaying Denied','The message was blocked by the receiver because relaying is not allowed.','Block', 'Relay'],
-    60 => ['Auto-Reply','The message is an auto-reply/vacation mail.','Soft', 'Away'],
-    70 => ['Transient Failure','Message transmission has been temporarily delayed.','Soft', 'Relay'],
-    80 => ['Subscribe','The message is a subscribe request.','Admin', ''],
-    90 => ['Unsubscribe','The message is an unsubscribe request.','Hard', 'Spam'],
-   100 => ['Challenge-Response','The message is a challenge-response probe.','Soft', ''],
+    30 => ['Generic Bounce: No RCPT', 'No recipient could be determined for the message.', 'Hard', 'Invalid'],
+    40 => ['Generic Bounce', 'The message failed for unspecified reasons.', 'Soft', 'Relay'],
+    50 => ['Mail Block', 'The message was blocked by the receiver.', 'Block', 'Spam'],
+    51 => ['Spam Block', 'The message was blocked by the receiver as coming from a known spam source.', 'Block', 'Spam'],
+    52 => ['Spam Content', 'The message was blocked by the receiver as spam.', 'Block', 'Spam'],
+    53 => ['Prohibited Attachment', 'The message was blocked by the receiver because it contained an attachment.', 'Block', 'Spam'],
+    54 => ['Relaying Denied', 'The message was blocked by the receiver because relaying is not allowed.', 'Block', 'Relay'],
+    60 => ['Auto-Reply', 'The message is an auto-reply/vacation mail.', 'Soft', 'Away'],
+    70 => ['Transient Failure', 'Message transmission has been temporarily delayed.', 'Soft', 'Relay'],
+    80 => ['Subscribe', 'The message is a subscribe request.', 'Admin', ''],
+    90 => ['Unsubscribe', 'The message is an unsubscribe request.', 'Hard', 'Spam'],
+    100 => ['Challenge-Response', 'The message is a challenge-response probe.', 'Soft', ''],
   ];
-
 
   public static function setSetting($setting, $value) {
     // Encrypt API key before storing in database
@@ -78,10 +63,11 @@ class CRM_Sparkpost {
 
   public static function getSetting($setting = NULL) {
     // Start with the default values for settings
-    $settings = array(
-      'sparkpost_useBackupMailer' => false,
+    $settings = [
+      'sparkpost_useBackupMailer' => FALSE,
       'sparkpost_host' => 'sparkpost.com',
-    );
+    ];
+
     // Merge the settings defined in DB (no more groups in 4.7, so has to be one by one ...)
     foreach (array('sparkpost_apiKey', 'sparkpost_useBackupMailer', 'sparkpost_campaign', 'sparkpost_ipPool', 'sparkpost_customCallbackUrl', 'sparkpost_host', 'sparkpost_sending_quota', 'sparkpost_sending_quota_alert', 'sparkpost_bounce_rate') as $name) {
       $value = Civi::settings()->get($name);
@@ -107,7 +93,7 @@ class CRM_Sparkpost {
    * Returns the CiviCRM localpart for the current domain.
    */
   static function getDomainLocalpart() {
-    $dao = new CRM_Core_DAO_MailSettings;
+    $dao = new CRM_Core_DAO_MailSettings();
     $dao->domain_id = CRM_Core_Config::domainID();
     $dao->is_default = TRUE;
 
@@ -165,7 +151,7 @@ class CRM_Sparkpost {
 
     try {
       $response = $sparky->request('GET', 'sending-domains', [
-        'ownership_verified' => true,
+        'ownership_verified' => TRUE,
       ]);
 
       $body = $response->getBody();
@@ -247,7 +233,7 @@ class CRM_Sparkpost {
     }
 
     // Deal with the campaign setting
-    if (($path =='transmissions') && ($campaign = static::getSetting('sparkpost_campaign'))) {
+    if (($path == 'transmissions') && ($campaign = static::getSetting('sparkpost_campaign'))) {
       $content['campaign_id'] = $campaign;
     }
 
@@ -264,11 +250,12 @@ class CRM_Sparkpost {
     curl_setopt($ch, CURLOPT_HTTPHEADER, $request_headers);
 
     if (!empty($content)) {
-      if (strpos($path, '/') !== false) {
+      if (strpos($path, '/') !== FALSE) {
         // ie. webhook/id
         // This is a modify operation so use PUT
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-      } else {
+      }
+      else {
         // ie. webhook, transmission
         // This is a create operation so use POST
         curl_setopt($ch, CURLOPT_POST, TRUE);
@@ -281,7 +268,7 @@ class CRM_Sparkpost {
     }
     $data = curl_exec($ch);
     if (curl_errno($ch)) {
-      throw new Exception('Sparkpost curl error: '. curl_error($ch));
+      throw new Exception('Sparkpost curl error: ' . curl_error($ch));
     }
     $curl_info = curl_getinfo($ch);
     curl_close($ch);
@@ -298,9 +285,8 @@ class CRM_Sparkpost {
 
       // See issue #5: http_code is more dicriminating than $error->message
       // https://support.sparkpost.com/customer/en/portal/articles/2140916-extended-error-codes
-      if (!in_array($curl_info['http_code'], array(
-        204, // HTTP status of 204 indicates a successful deletion
-      ))) {
+      // HTTP status of 204 indicates a successful deletion
+      if (!in_array($curl_info['http_code'], array(204))) {
         switch ($curl_info['http_code']) {
           case 400 :
             switch ($error->code) {
@@ -309,21 +295,27 @@ class CRM_Sparkpost {
               // AFAIK there can be multiple recipients and we don't know which caused the bounce, so cannot really do anything
               case 1901:
                 throw new Exception("Sparkpost error: At least one recipient is on the Sparkpost Exclusion List for non-transactional emails.");
+
               case 1902:
                 throw new Exception("Sparkpost error: At least one recipient is on the Sparkpost Exclusion List for transactional emails.");
+
               case 7001:
                 throw new Exception("Sparkpost error: The sending or tracking domain is unconfigured or unverified in Sparkpost.", CRM_Sparkpost::FALLBACK);
             }
             break;
+
           case 401 :
             throw new Exception("Sparkpost error: Unauthorized. Check that the API key is valid, and allows IP $curl_info[local_ip].", CRM_Sparkpost::FALLBACK);
+
           case 403 :
             throw new Exception("Sparkpost error: Permission denied. Check that the API key is authorized for request $curl_info[url].", CRM_Sparkpost::FALLBACK);
+
           case 420 :
             throw new Exception("Sparkpost error: Sending limits exceeded. Check your limits in the Sparkpost console.", CRM_Sparkpost::FALLBACK);
         }
-        //If we don't get an error code OR message, this error is a 404 response for checking the suppression list for an email that isn't on it. See https://developers.sparkpost.com/api/suppression-list/#suppression-list-get-retrieve-a-suppression
-        //In that case it's an expected workflow and we don't want to return a blank error response to the user just for checking
+
+        // If we don't get an error code OR message, this error is a 404 response for checking the suppression list for an email that isn't on it. See https://developers.sparkpost.com/api/suppression-list/#suppression-list-get-retrieve-a-suppression
+        // In that case it's an expected workflow and we don't want to return a blank error response to the user just for checking
         if (property_exists($error, 'code') && property_exists($error, 'message')) {
           // Don't have specifics, so throw a generic exception
           throw new Exception("Sparkpost error: HTTP return code $curl_info[http_code], Sparkpost error code $error->code ($error->message). Check https://support.sparkpost.com/customer/en/portal/articles/2140916-extended-error-codes for interpretation.");
@@ -430,7 +422,7 @@ class CRM_Sparkpost {
     }
 
     require_once 'Mail/sparkpost.php';
-    list($mailing_id, $mailing_name ) = Mail_sparkpost::getMailing($header['job_id']);
+    list($mailing_id, $mailing_name) = Mail_sparkpost::getMailing($header['job_id']);
 
     if (!$mailing_id) {
       Civi::log()->warning('No mailing found for {matches} hence skiping in SparkPost extension call back', [
@@ -446,7 +438,7 @@ class CRM_Sparkpost {
     ];
 
     // Was SparkPost able to classify the message?
-    if (in_array($event['type'], ['spam_complaint','policy_rejection'])) {
+    if (in_array($event['type'], ['spam_complaint', 'policy_rejection'])) {
       $params['bounce_type_id'] = self::$_civicrm_bounce_types['Spam'];
       $params['bounce_reason'] = $event['reason'] ?: 'Message has been flagged as Spam by the recipient';
     }

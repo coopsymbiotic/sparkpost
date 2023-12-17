@@ -9,15 +9,15 @@ stages:
 
 phpcs:
   stage: test
-  image: pipelinecomponents/php-codesniffer:latest
+  image: michaelmcandrew/civicrm-buildkit:latest
   script:
-    - test -f phpcs.xml.dist || wget https://git.drupalcode.org/project/gitlab_templates/-/raw/1.0.x/scripts/phpcs.xml.dist
-    - phpcs --report=junit --report-junit=phpcs-report.xml || true
+    - civilint
+    - phpcs-civi --ignore=vendor,docs --report-json=gl-code-quality-report-tmp.json --report-full=gl-fullreport.txt --report-junit=gl-report.xml . || true
+    - cat gl-fullreport.txt
   artifacts:
     reports:
-      junit:
-        - phpcs-report.xml
-  allow_failure: true
+      codequality: gl-report.xml
+      junit: gl-report.xml
 
 release_notes:
   stage: prepare
