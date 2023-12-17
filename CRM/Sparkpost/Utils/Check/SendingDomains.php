@@ -31,7 +31,7 @@ class CRM_Sparkpost_Utils_Check_SendingDomains {
 
     try {
       $response = $sparky->request('GET', 'sending-domains', [
-        'ownership_verified' => true,
+        'ownership_verified' => TRUE,
       ]);
 
       $body = $response->getBody();

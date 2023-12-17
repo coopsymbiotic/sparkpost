@@ -57,7 +57,7 @@ class Mail_sparkpost extends Mail {
       // Maybe we can avoid changing the mailer if CIVICRM_MAIL_LOG is set?
       CRM_Utils_Mail::logger($recipients, $headers, $body);
       if (!defined('CIVICRM_MAIL_LOG_AND_SEND')) {
-        return true;
+        return TRUE;
       }
     }
 
@@ -105,13 +105,13 @@ class Mail_sparkpost extends Mail {
 
     // NB: we disable any type of SparkPost tracking, because a few sources may
     // flag the links as spam. CiviCRM also does tracking anyway.
-    $sp = array(
-      'content' => array(),
-      'options' => array(
+    $sp = [
+      'content' => [],
+      'options' => [
         'open_tracking' => FALSE,
         'click_tracking' => FALSE,
-      ),
-    );
+      ],
+    ];
 
     // Should we send via a dedicated IP pool?
     $ip_pool = CRM_Sparkpost::getSetting('sparkpost_ipPool');
@@ -122,7 +122,7 @@ class Mail_sparkpost extends Mail {
     // Is this a CiviMail mailing or a transactional email?
     if (CRM_Utils_Array::value('X-CiviMail-Bounce', $headers)) {
       // Insert CiviMail header in the outgoing email's metadata
-      $sp['metadata'] = array('X-CiviMail-Bounce' => CRM_Utils_Array::value("X-CiviMail-Bounce", $headers));
+      $sp['metadata'] = ['X-CiviMail-Bounce' => CRM_Utils_Array::value("X-CiviMail-Bounce", $headers)];
     }
     else {
       // Mark the email as transactional for SparkPost
@@ -133,7 +133,7 @@ class Mail_sparkpost extends Mail {
         $metadata = explode(CRM_Core_Config::singleton()->verpSeparator, CRM_Utils_Array::value("Return-Path", $headers));
         if ($metadata[0] == 'm') {
           $localpart = CRM_Sparkpost::getDomainLocalpart();
-          $sp['metadata'] = array('X-CiviMail-Bounce' => $localpart . CRM_Utils_Array::value("Return-Path", $headers));
+          $sp['metadata'] = ['X-CiviMail-Bounce' => $localpart . CRM_Utils_Array::value("Return-Path", $headers)];
         }
       }
     }
@@ -198,7 +198,8 @@ class Mail_sparkpost extends Mail {
               'job_id' => $header['job_id'],
               'event_queue_id' => $header['event_queue_id'],
               'hash' => $header['hash'],
-              'bounce_type_id' => 10, // Invalid recipient
+              // 10 = Invalid recipient
+              'bounce_type_id' => 10,
               'bounce_reason' => $val['error'],
             ];
 
@@ -234,9 +235,9 @@ class Mail_sparkpost extends Mail {
     // [0] are the most common cases, [1] note the , inside the quoted name, [2] are edge cases
     // cf. CRM_Utils_Mail::send() lines 161, 171 and 174 (assignments to the $to variable)
     if (!is_array($recipients)) {
-      $recipients = array($recipients);
+      $recipients = [$recipients];
     }
-    $result = array();
+    $result = [];
 
     foreach ($recipients as $recipientString) {
       // Best is to use the PEAR::Mail package to decapsulate as they have a class just for that!
@@ -244,19 +245,20 @@ class Mail_sparkpost extends Mail {
       $matches = $rfc822->parseAddressList();
 
       foreach ($matches as $match) {
-        $address = array();
+        $address = [];
         if (!empty($match->mailbox) && !empty($match->host)) {
-          $address['email'] =  $match->mailbox . '@' . $match->host;
+          $address['email'] = $match->mailbox . '@' . $match->host;
         }
         if (!empty($match->personal)) {
           if ((substr($match->personal, 0, 1) == '"') && (substr($match->personal, -1) == '"')) {
             $address['name'] = substr($match->personal, 1, -1);
-          } else {
+          }
+          else {
             $address['name'] = $match->personal;
           }
         }
         if (!empty($address['email'])) {
-          $result[] = array('address' => $address);
+          $result[] = ['address' => $address];
         }
       }
     }
@@ -275,7 +277,7 @@ class Mail_sparkpost extends Mail {
     }
     catch (Exception $e) {
       Civi::log()->debug('Sparkpost getMailing failed to getFieldValue for jobId : ' . $jobId . ', mailing was deleted?');
-      return [NULL,NULL];
+      return [NULL, NULL];
     }
 
     return [$mailing_id, $mailing_name];
