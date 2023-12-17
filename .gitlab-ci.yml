@@ -7,18 +7,17 @@ stages:
   - build
   - release
 
-run_tests:
+phpcs:
   stage: test
-  image: michaelmcandrew/civicrm-buildkit:latest
+  image: pipelinecomponents/php-codesniffer:latest
   script:
-    - sudo apt update
-    - sudo apt -y install jq
-    - phpcs-civi --ignore=vendor --report=json --report-json=gl-code-quality-report-tmp.json . || true
-    - 'ls -la gl-code-quality-report-tmp.json'
-    - 'jq "[.files | keys[] as \$file | .[] | .messages | .[] as \$msg | {type: \"issue\", severity: \"info\", check_name: \$msg.source, categories: [\"PHP\", \"phpcs\"], fingerprint: (\"\(\$file):\(\$msg.line):\(\$msg.source)\"), description: \$msg.message, location: { path: \$file, lines: {begin: \$msg.line, end: \$msg.line }}}]" gl-code-quality-report-tmp.json > gl-code-quality-report.json'
+    - test -f phpcs.xml.dist || wget https://git.drupalcode.org/project/gitlab_templates/-/raw/1.0.x/scripts/phpcs.xml.dist
+    - phpcs --report=junit --report-junit=phpcs-report.xml || true
   artifacts:
     reports:
-      codequality: gl-code-quality-report.json
+      junit:
+        - phpcs-report.xml
+  allow_failure: true
 
 release_notes:
   stage: prepare

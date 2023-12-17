@@ -3,6 +3,7 @@
 use SparkPost\SparkPost;
 use GuzzleHttp\Client;
 use Http\Adapter\Guzzle6\Client as GuzzleAdapter;
+use CRM_Sparkpost_ExtensionUtil as E;
 
 class CRM_Sparkpost_Utils_Check_Metrics {
 
@@ -55,23 +56,23 @@ class CRM_Sparkpost_Utils_Check_Metrics {
       $metrics = [
         'count_sent' => [
           'quota_total' => $sending_quota,
-          'label' => ts('Messages Sent:'),
+          'label' => E::ts('Messages Sent:'),
         ],
         'count_bounce' => [
           'quota_pct' => 10,
-          'label' => ts('Bounces:'),
+          'label' => E::ts('Bounces:'),
         ],
         'count_admin_bounce' => [
           'quota_pct' => Civi::settings()->get('sparkpost_bounce_rate'),
-          'label' => ts('Bounced by Sparkpost:'),
+          'label' => E::ts('Bounced by Sparkpost:'),
         ],
         'count_rejected' => [
           'quota_pct' => 5,
-          'label' => ts('Rejected by Sparkpost:'),
+          'label' => E::ts('Rejected by Sparkpost:'),
         ],
         'count_spam_complaint' => [
           'quota_pct' => 5,
-          'label' => ts('Spam Complaints:'),
+          'label' => E::ts('Spam Complaints:'),
         ],
       ];
 
@@ -83,7 +84,8 @@ class CRM_Sparkpost_Utils_Check_Metrics {
         foreach ($metrics as $mkey => $mval) {
           if (!empty($mval['quota_total']) && $val[$mkey] > $mval['quota_total']) {
             $pct = round($val[$mkey] / $mval['quota_total'] * 100, 2);
-            $stats[] = "<li><strong>{$mval['label']} {$val[$mkey]} (max: {$mval['quota_total']}, $pct %)</strong></li>"; // FIXME ts
+            // FIXME ts
+            $stats[] = "<li><strong>{$mval['label']} {$val[$mkey]} (max: {$mval['quota_total']}, $pct %)</strong></li>";
             $log_level = \Psr\Log\LogLevel::CRITICAL;
             if ($key == 'count_sent') {
               $alert = Civi::settings()->get('sparkpost_sending_quota_alert');
@@ -109,13 +111,13 @@ class CRM_Sparkpost_Utils_Check_Metrics {
           }
         }
 
-        $output .= '<p>' . ts('Domain:') . ' ' . $val['sending_domain'] . '</p><ul>' . implode('', $stats) . '</ul>';
+        $output .= '<p>' . E::ts('Domain:') . ' ' . $val['sending_domain'] . '</p><ul>' . implode('', $stats) . '</ul>';
       }
 
       $messages[] = new CRM_Utils_Check_Message(
         'sparkpost_metrics',
-        ts('Emails sent from %1 to today: %2', [1 => $date->format('Y-m-d'), 2 => $output]), // FIXME E::ts
-        ts('SparkPost - Metrics'),
+        E::ts('Emails sent from %1 to today: %2', [1 => $date->format('Y-m-d'), 2 => $output]),
+        E::ts('SparkPost - Metrics'),
         $log_level,
         'fa-envelope'
       );
@@ -126,8 +128,8 @@ class CRM_Sparkpost_Utils_Check_Metrics {
 
       $messages[] = new CRM_Utils_Check_Message(
         'sparkpost_metrics',
-        ts('Metrics: ERROR: %1, %2', [1 => $code, 2 => print_r($body, 1)]),
-        ts('SparkPost - Metrics'),
+        E::ts('Metrics: ERROR: %1, %2', [1 => $code, 2 => print_r($body, 1)]),
+        E::ts('SparkPost - Metrics'),
         \Psr\Log\LogLevel::CRITICAL,
         'fa-envelope'
       );

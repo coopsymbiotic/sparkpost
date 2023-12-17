@@ -1,31 +1,7 @@
 <?php
-/**
- * This extension allows CiviCRM to send emails and process bounces through
- * the SparkPost service.
- *
- * Copyright (c) 2016 IT Bliss, LLC
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Support: https://github.com/cividesk/com.cividesk.email.sparkpost/issues
- * Contact: info@cividesk.com
- */
 
-/**
- * This class generates form components for the SparkPost settings form
- *
- */
+use CRM_Sparkpost_ExtensionUtil as E;
+
 class CRM_Admin_Form_Setting_Sparkpost extends CRM_Admin_Form_Setting {
   protected $_testButtonName;
 
@@ -35,22 +11,22 @@ class CRM_Admin_Form_Setting_Sparkpost extends CRM_Admin_Form_Setting {
    * @return void
    */
   public function buildQuickForm() {
-    $this->add('password', 'sparkpost_apiKey', ts('API Key'), '', TRUE);
-    $this->add('text', 'sparkpost_ipPool', ts('IP pool'));
-    $this->addYesNo('sparkpost_useBackupMailer', ts('Use backup mailer'));
+    $this->add('password', 'sparkpost_apiKey', E::ts('API Key'), '', TRUE);
+    $this->add('text', 'sparkpost_ipPool', E::ts('IP pool'));
+    $this->addYesNo('sparkpost_useBackupMailer', E::ts('Use backup mailer'));
     $host_options = CRM_Sparkpost::getSparkpostHostOptions();
-    $this->add('select', 'sparkpost_host', ts('Sparkpost host'), $host_options);
-    $this->add('text', 'sparkpost_customCallbackUrl', ts('Custom callback URL'));
-    $this->add('text', 'sparkpost_sending_quota', ts('Monthly Quota'));
-    $this->add('text', 'sparkpost_sending_quota_alert', ts('Monthly Quota Alert'));
-    $this->add('text', 'sparkpost_bounce_rate', ts('Bounce Rate'));
+    $this->add('select', 'sparkpost_host', E::ts('Sparkpost host'), $host_options);
+    $this->add('text', 'sparkpost_customCallbackUrl', E::ts('Custom callback URL'));
+    $this->add('text', 'sparkpost_sending_quota', E::ts('Monthly Quota'));
+    $this->add('text', 'sparkpost_sending_quota_alert', E::ts('Monthly Quota Alert'));
+    $this->add('text', 'sparkpost_bounce_rate', E::ts('Bounce Rate'));
 
     $this->_testButtonName = $this->getButtonName('refresh', 'test');
 
     $this->addFormRule(array('CRM_Admin_Form_Setting_Sparkpost', 'formRule'));
     parent::buildQuickForm();
     $buttons = $this->getElement('buttons')->getElements();
-    $buttons[] = $this->addElement('xbutton', $this->_testButtonName, ts('Save and Send Test Email'), array('crm-icon' => 'mail-closed'));
+    $buttons[] = $this->addElement('xbutton', $this->_testButtonName, E::ts('Save and Send Test Email'), ['crm-icon' => 'mail-closed']);
     $this->getElement('buttons')->setElements($buttons);
 
     // Get the logged in user's email address
@@ -112,14 +88,14 @@ class CRM_Admin_Form_Setting_Sparkpost extends CRM_Admin_Form_Setting {
       $userID = $session->get('userID');
       list($toDisplayName, $toEmail, $toDoNotEmail) = CRM_Contact_BAO_Contact::getContactDetails($userID);
       if (!$toEmail) {
-        CRM_Core_Error::statusBounce(ts('Cannot send a test email because your user record does not have a valid email address.'));
+        CRM_Core_Error::statusBounce(E::ts('Cannot send a test email because your user record does not have a valid email address.'));
       }
 
       // CRM-4250: Get the default domain email address
       list($domainEmailName, $domainEmailAddress) = CRM_Core_BAO_Domain::getNameAndEmail();
       if (!$domainEmailAddress || $domainEmailAddress == 'info@EXAMPLE.ORG') {
         $fixUrl = CRM_Utils_System::url("civicrm/admin/domain", 'action=update&reset=1');
-        CRM_Core_Error::fatal(ts('The site administrator needs to enter a valid \'FROM Email Address\' in <a href="%1">Administer CiviCRM &raquo; Communications &raquo; FROM Email Addresses</a>. The email address used may need to be a valid mail account with your email service provider.', array(1 => $fixUrl)));
+        CRM_Core_Error::fatal(E::ts('The site administrator needs to enter a valid \'FROM Email Address\' in <a href="%1">Administer CiviCRM &raquo; Communications &raquo; FROM Email Addresses</a>. The email address used may need to be a valid mail account with your email service provider.', [1 => $fixUrl]));
       }
 
       // Test that the sending domain is correctly configured
@@ -128,25 +104,26 @@ class CRM_Admin_Form_Setting_Sparkpost extends CRM_Admin_Form_Setting {
 
       try {
         $response = CRM_Sparkpost::call("sending-domains/$domain");
-      } catch (Exception $e) {
+      }
+      catch (Exception $e) {
         if (strpos($e->getMessage(), 'Invalid request') !== FALSE) {
           $url = "https://app.$sparkpost_host/account/sending-domains";
-          CRM_Core_Session::setStatus(ts('Domain %1 is not created and not verified in Sparkpost. Please follow instructions at <a href="%2">%2</a>.',
-            array(1 => $domain, 2 => $url)), ts('SparkPost error'), 'error');
+          CRM_Core_Session::setStatus(E::ts('Domain %1 is not created and not verified in Sparkpost. Please follow instructions at <a href="%2">%2</a>.', [1 => $domain, 2 => $url]), ts('SparkPost error'), 'error');
           return;
-        } else {
-          CRM_Core_Session::setStatus(ts('Could not check status for domain %1 (Exception %2).',
-            array(1 => $domain, 2 => $e->getMessage())), ts('SparkPost error'), 'error');
+        }
+        else {
+          CRM_Core_Session::setStatus(E::ts('Could not check status for domain %1 (Exception %2).', [1 => $domain, 2 => $e->getMessage()]), E::ts('SparkPost error'), 'error');
           return;
         }
       }
+
       if (!$response->results || !$response->results->status || !$response->results->status->ownership_verified) {
         $url = "https://app.$sparkpost_host/account/sending-domains";
-        CRM_Core_Session::setStatus(ts('The domain \'%1\' is not verified. Please follow instructions at <a href="%2">%2</a>.',
-          array(1 => $domain, 2 => $url)), ts('SparkPost error'), 'errors');
+        CRM_Core_Session::setStatus(E::ts('The domain \'%1\' is not verified. Please follow instructions at <a href="%2">%2</a>.', [1 => $domain, 2 => $url]), E::ts('SparkPost error'), 'errors');
         return;
-      } else {
-        CRM_Core_Session::setStatus(ts('The domain %1 is ready to send.', array(1 => $domain)), ts('SparkPost status'), 'info');
+      }
+      else {
+        CRM_Core_Session::setStatus(E::ts('The domain %1 is ready to send.', array(1 => $domain)), E::ts('SparkPost status'), 'info');
       }
 
       $campaign = CRM_Sparkpost::getSetting('sparkpost_campaign');
@@ -154,20 +131,21 @@ class CRM_Admin_Form_Setting_Sparkpost extends CRM_Admin_Form_Setting {
         // Get the id of (potentially) existing webhook
         try {
           $response = CRM_Sparkpost::call("webhooks");
-        } catch (Exception $e) {
-          CRM_Core_Session::setStatus(ts('Could not list webhooks (%1).', array(1 => $e->getMessage())), ts('SparkPost error'), 'error');
+        }
+        catch (Exception $e) {
+          CRM_Core_Session::setStatus(E::ts('Could not list webhooks (%1).', [1 => $e->getMessage()]), E::ts('SparkPost error'), 'error');
           return;
         }
         // Define parameters for our webhook
-        $my_webhook = array(
-          'name' => 'CiviCRM (com.cividesk)',
+        $my_webhook = [
+          'name' => 'CiviCRM (sparkpost-symbiotic)',
           'target' => CRM_Sparkpost::getSetting('sparkpost_customCallbackUrl') ?
             CRM_Sparkpost::getSetting('sparkpost_customCallbackUrl') :
             CRM_Utils_System::url('civicrm/sparkpost/callback', NULL, TRUE, NULL, FALSE, TRUE),
           'auth_type' => 'none',
           // Just bounce-related events as click and open tracking are still done by CiviCRM
-          'events' => array('bounce', 'spam_complaint', 'policy_rejection'),
-        );
+          'events' => ['bounce', 'spam_complaint', 'policy_rejection'],
+        ];
         // Has this webhook already been created?
         $webhook_id = FALSE;
         foreach ($response->results as $webhook) {
@@ -178,15 +156,17 @@ class CRM_Admin_Form_Setting_Sparkpost extends CRM_Admin_Form_Setting {
         // Install our webhook (or refresh it if already there)
         try {
           $response = CRM_Sparkpost::call('webhooks' . ($webhook_id ? "/$webhook_id" : ''), array(), $my_webhook);
-        } catch (Exception $e) {
-          CRM_Core_Session::setStatus(ts('Could not install webhook (%1).', array(1 => $e->getMessage())), ts('SparkPost error'), 'error');
+        }
+        catch (Exception $e) {
+          CRM_Core_Session::setStatus(E::ts('Could not install webhook (%1).', [1 => $e->getMessage()]), E::ts('SparkPost error'), 'error');
           return;
         }
         if (!$response->results || !$response->results->id) {
-          CRM_Core_Session::setStatus(ts('Could not install/refresh webhook.'), ts('SparkPost error'), 'error');
+          CRM_Core_Session::setStatus(E::ts('Could not install/refresh webhook.'), E::ts('SparkPost error'), 'error');
           return;
-        } else {
-          CRM_Core_Session::setStatus(ts('Webhook has been installed or refreshed.'), ts('SparkPost status'), 'info');
+        }
+        else {
+          CRM_Core_Session::setStatus(E::ts('Webhook has been installed or refreshed.'), E::ts('SparkPost status'), 'info');
         }
       }
 
@@ -195,41 +175,32 @@ class CRM_Admin_Form_Setting_Sparkpost extends CRM_Admin_Form_Setting {
       }
       $to = '"' . $toDisplayName . '"' . "<$toEmail>";
       $from = '"' . $domainEmailName . '" <' . $domainEmailAddress . '>';
-      $testMailStatusMsg = ts('Sending test email. FROM: %1 TO: %2.<br />', array(
+      $testMailStatusMsg = E::ts('Sending test email. FROM: %1 TO: %2.', [
         1 => $domainEmailAddress,
         2 => $toEmail,
-      ));
+      ]) . '<br/>';
 
-      $subject = ts('Test for SparkPost settings');
-      $message = ts('Your SparkPost settings are correct');
-      $headers = array(
+      $subject = E::ts('Test for SparkPost settings');
+      $message = E::ts('Your SparkPost settings are correct');
+      $headers = [
         'From' => $from,
         'To' => $to,
         'Subject' => $subject,
-      );
-      $mailer = Mail::factory('Sparkpost', array());
+      ];
+      $mailer = Mail::factory('Sparkpost', []);
 
-      $currentVer = CRM_Core_BAO_Domain::version();
-      if (version_compare($currentVer, '4.5') < 0) {
-        CRM_Core_Error::ignoreException();
-        $result = $mailer->send($toEmail, $headers, $message);
-        CRM_Core_Error::setCallback();
-      } else {
-        $errorScope = CRM_Core_TemporaryErrorScope::ignoreException();
-        $result = $mailer->send($toEmail, $headers, $message);
-        unset($errorScope);
-      }
+      $errorScope = CRM_Core_TemporaryErrorScope::ignoreException();
+      $result = $mailer->send($toEmail, $headers, $message);
+      unset($errorScope);
 
       if (!is_a($result, 'PEAR_Error')) {
-        CRM_Core_Session::setStatus($testMailStatusMsg . ts('Your %1 settings are correct. A test email has been sent to your email address.', array(1 => 'SparkPost')), ts("Mail Sent"), "success");
-
-        // Specific to SymbioTIC (see sparkpostrouter extension)
-        CRM_Core_Session::setStatus(ts('Do not forget to configure the bounce routing.'), '', 'warning');
+        CRM_Core_Session::setStatus($testMailStatusMsg . E::ts('Your %1 settings are correct. A test email has been sent to your email address.', [1 => 'SparkPost']), E::ts("Mail Sent"), 'success');
       }
       else {
         $message = CRM_Utils_Mail::errorMessage($mailer, $result);
-        CRM_Core_Session::setStatus($testMailStatusMsg . ts('Oops. Your %1 settings are incorrect. No test mail has been sent.', array(1 => 'SparkPost')) . $message, ts("Mail Not Sent"), "error");
+        CRM_Core_Session::setStatus($testMailStatusMsg . E::ts('Oops. Your %1 settings are incorrect. No test mail has been sent.', [1 => 'SparkPost']) . $message, E::ts("Mail Not Sent"), 'error');
       }
     }
   }
+
 }
