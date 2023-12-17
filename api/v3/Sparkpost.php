@@ -1,9 +1,5 @@
 <?php
 
-use SparkPost\SparkPost;
-use GuzzleHttp\Client;
-use Http\Adapter\Guzzle6\Client as GuzzleAdapter;
-
 /**
  * Sparkpost.event API
  *

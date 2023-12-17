@@ -288,7 +288,7 @@ class CRM_Sparkpost {
       // HTTP status of 204 indicates a successful deletion
       if (!in_array($curl_info['http_code'], array(204))) {
         switch ($curl_info['http_code']) {
-          case 400 :
+          case 400:
             switch ($error->code) {
               // Did the email bounce because one of the recipients is on the SparkPost rejection list?
               // https://support.sparkpost.com/customer/portal/articles/2110621-sending-messages-to-recipients-on-the-exclusion-list
@@ -304,13 +304,13 @@ class CRM_Sparkpost {
             }
             break;
 
-          case 401 :
+          case 401:
             throw new Exception("Sparkpost error: Unauthorized. Check that the API key is valid, and allows IP $curl_info[local_ip].", CRM_Sparkpost::FALLBACK);
 
-          case 403 :
+          case 403:
             throw new Exception("Sparkpost error: Permission denied. Check that the API key is authorized for request $curl_info[url].", CRM_Sparkpost::FALLBACK);
 
-          case 420 :
+          case 420:
             throw new Exception("Sparkpost error: Sending limits exceeded. Check your limits in the Sparkpost console.", CRM_Sparkpost::FALLBACK);
         }
 
