@@ -11,9 +11,7 @@ class CRM_Sparkpost_Utils_Check_SendingDomains {
    */
   public static function check(&$messages) {
     // TODO: Refactor into a more generic function?
-    require_once __DIR__ . '/../../../../vendor/autoload.php';
     $api_key = CRM_Sparkpost::getSetting('sparkpost_apiKey');
-    $api_host = Civi::settings()->get('sparkpost_host');
 
     if (!$api_key) {
       $messages[] = new CRM_Utils_Check_Message(
@@ -26,18 +24,14 @@ class CRM_Sparkpost_Utils_Check_SendingDomains {
       return;
     }
 
-    $httpClient = new GuzzleAdapter(new Client());
-    $sparky = new SparkPost($httpClient, ['key' => $api_key, 'async' => FALSE, 'host' => "api.$api_host"]);
-
     try {
-      $response = $sparky->request('GET', 'sending-domains', [
+      $response = CRM_Sparkpost::request('GET', 'sending-domains', [
         'ownership_verified' => TRUE,
       ]);
 
-      $body = $response->getBody();
       $domains = [];
 
-      foreach ($body['results'] as $key => $val) {
+      foreach ($response as $key => $val) {
         $statuses = [];
         foreach ($val['status'] as $kk => $vv) {
           $statuses[] = "$kk=$vv";
