@@ -11,13 +11,6 @@ function sparkpost_civicrm_config(&$config) {
 }
 
 /**
- * Implements hook_civicrm_xmlMenu().
- */
-function sparkpost_civicrm_xmlMenu(&$files) {
-  _sparkpost_civix_civicrm_xmlMenu($files);
-}
-
-/**
  * Implements hook_civicrm_install().
  */
 function sparkpost_civicrm_install() {
@@ -26,49 +19,11 @@ function sparkpost_civicrm_install() {
 }
 
 /**
- * Implements hook_civicrm_postInstall().
- */
-function sparkpost_civicrm_postInstall() {
-  _sparkpost_civix_civicrm_postInstall();
-}
-
-/**
- * Implements hook_civicrm_uninstall().
- */
-function sparkpost_civicrm_uninstall() {
-  _sparkpost_civix_civicrm_uninstall();
-}
-
-/**
  * Implements hook_civicrm_enable().
  */
 function sparkpost_civicrm_enable() {
   _sparkpost_civix_civicrm_enable();
   CRM_Sparkpost::createTransactionalMailing();
-}
-
-/**
- * Implements hook_civicrm_disable().
- */
-function sparkpost_civicrm_disable() {
-  return _sparkpost_civix_civicrm_disable();
-}
-
-/**
- * Implements hook_civicrm_upgrade().
- */
-function sparkpost_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
-  return _sparkpost_civix_civicrm_upgrade($op, $queue);
-}
-
-/**
- * Implements hook_civicrm_managed().
- *
- * Generate a list of entities to create/deactivate/delete when this module
- * is installed, disabled, uninstalled.
- */
-function sparkpost_civicrm_managed(&$entities) {
-  _sparkpost_civix_civicrm_managed($entities);
 }
 
 /**
@@ -108,15 +63,6 @@ function sparkpost_civicrm_check(&$messages) {
   CRM_Sparkpost_Utils_Check_SendingDomains::check($messages);
   CRM_Sparkpost_Utils_Check_Metrics::check($messages);
   CRM_Sparkpost_Utils_Check_Environment::check($messages);
-}
-
-/**
- * Implements hook_civicrm_alterSettingsFolders().
- *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_alterSettingsFolders
- */
-function sparkpost_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
-  _sparkpost_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
 
 function sparkpost_civicrm_alterMailParams(&$params, $context = NULL) {
