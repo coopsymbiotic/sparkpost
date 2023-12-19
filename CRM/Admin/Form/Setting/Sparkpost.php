@@ -23,7 +23,7 @@ class CRM_Admin_Form_Setting_Sparkpost extends CRM_Admin_Form_Setting {
 
     $this->_testButtonName = $this->getButtonName('refresh', 'test');
 
-    $this->addFormRule(array('CRM_Admin_Form_Setting_Sparkpost', 'formRule'));
+    $this->addFormRule(['CRM_Admin_Form_Setting_Sparkpost', 'formRule']);
     parent::buildQuickForm();
     $buttons = $this->getElement('buttons')->getElements();
     $buttons[] = $this->addElement('xbutton', $this->_testButtonName, E::ts('Save and Send Test Email'), ['crm-icon' => 'mail-closed']);
@@ -32,7 +32,7 @@ class CRM_Admin_Form_Setting_Sparkpost extends CRM_Admin_Form_Setting {
     // Get the logged in user's email address
     $session = CRM_Core_Session::singleton();
     $userID = $session->get('userID');
-    list($toDisplayName, $toEmail, $toDoNotEmail) = CRM_Contact_BAO_Contact::getContactDetails($userID);
+    [$toDisplayName, $toEmail, $toDoNotEmail] = CRM_Contact_BAO_Contact::getContactDetails($userID);
 
     $this->assign('sparkpost_test_email', $toEmail);
   }
@@ -58,6 +58,7 @@ class CRM_Admin_Form_Setting_Sparkpost extends CRM_Admin_Form_Setting {
    *   list of errors to be posted back to the form
    */
   public static function formRule($fields) {
+    $errors = [];
     if (empty($fields['sparkpost_apiKey'])) {
       $errors['sparkpost_apiKey'] = 'You must enter an API key.';
     }
@@ -74,7 +75,7 @@ class CRM_Admin_Form_Setting_Sparkpost extends CRM_Admin_Form_Setting {
     CRM_Utils_System::flushCache();
 
     $formValues = $this->controller->exportValues($this->_name);
-    foreach (array('sparkpost_apiKey', 'sparkpost_ipPool', 'sparkpost_useBackupMailer', 'sparkpost_customCallbackUrl', 'sparkpost_host', 'sparkpost_sending_quota', 'sparkpost_sending_quota_alert', 'sparkpost_bounce_rate') as $name) {
+    foreach (['sparkpost_apiKey', 'sparkpost_ipPool', 'sparkpost_useBackupMailer', 'sparkpost_customCallbackUrl', 'sparkpost_host', 'sparkpost_sending_quota', 'sparkpost_sending_quota_alert', 'sparkpost_bounce_rate'] as $name) {
       CRM_Sparkpost::setSetting($name, $formValues[$name]);
     }
 
@@ -86,13 +87,13 @@ class CRM_Admin_Form_Setting_Sparkpost extends CRM_Admin_Form_Setting {
 
       // Get the logged in user's email address
       $userID = $session->get('userID');
-      list($toDisplayName, $toEmail, $toDoNotEmail) = CRM_Contact_BAO_Contact::getContactDetails($userID);
+      [$toDisplayName, $toEmail, $toDoNotEmail] = CRM_Contact_BAO_Contact::getContactDetails($userID);
       if (!$toEmail) {
         CRM_Core_Error::statusBounce(E::ts('Cannot send a test email because your user record does not have a valid email address.'));
       }
 
       // CRM-4250: Get the default domain email address
-      list($domainEmailName, $domainEmailAddress) = CRM_Core_BAO_Domain::getNameAndEmail();
+      [$domainEmailName, $domainEmailAddress] = CRM_Core_BAO_Domain::getNameAndEmail();
       if (!$domainEmailAddress || $domainEmailAddress == 'info@EXAMPLE.ORG') {
         $fixUrl = CRM_Utils_System::url("civicrm/admin/domain", 'action=update&reset=1');
         CRM_Core_Error::fatal(E::ts('The site administrator needs to enter a valid \'FROM Email Address\' in <a href="%1">Administer CiviCRM &raquo; Communications &raquo; FROM Email Addresses</a>. The email address used may need to be a valid mail account with your email service provider.', [1 => $fixUrl]));
@@ -123,7 +124,7 @@ class CRM_Admin_Form_Setting_Sparkpost extends CRM_Admin_Form_Setting {
         return;
       }
       else {
-        CRM_Core_Session::setStatus(E::ts('The domain %1 is ready to send.', array(1 => $domain)), E::ts('SparkPost status'), 'info');
+        CRM_Core_Session::setStatus(E::ts('The domain %1 is ready to send.', [1 => $domain]), E::ts('SparkPost status'), 'info');
       }
 
       $campaign = CRM_Sparkpost::getSetting('sparkpost_campaign');
@@ -155,7 +156,7 @@ class CRM_Admin_Form_Setting_Sparkpost extends CRM_Admin_Form_Setting {
         }
         // Install our webhook (or refresh it if already there)
         try {
-          $response = CRM_Sparkpost::call('webhooks' . ($webhook_id ? "/$webhook_id" : ''), array(), $my_webhook);
+          $response = CRM_Sparkpost::call('webhooks' . ($webhook_id ? "/$webhook_id" : ''), [], $my_webhook);
         }
         catch (Exception $e) {
           CRM_Core_Session::setStatus(E::ts('Could not install webhook (%1).', [1 => $e->getMessage()]), E::ts('SparkPost error'), 'error');
