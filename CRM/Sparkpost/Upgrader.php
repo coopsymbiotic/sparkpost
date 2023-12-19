@@ -3,7 +3,7 @@
 /**
  * Collection of upgrade steps.
  */
-class CRM_Sparkpost_Upgrader extends CRM_Sparkpost_Upgrader_Base {
+class CRM_Sparkpost_Upgrader extends CRM_Extension_Upgrader_Base {
 
   // By convention, functions that look like "function upgrade_NNNN()" are
   // upgrade tasks. They are executed in order (like Drupal's hook_update_N).
@@ -34,9 +34,7 @@ class CRM_Sparkpost_Upgrader extends CRM_Sparkpost_Upgrader_Base {
   public function upgrade_1101() {
     $this->ctx->log->info('Applying update 1101 - Encrypt SparkPost API key');
 
-    $key = civicrm_api3('Setting', 'getvalue', array(
-      'name' => 'sparkpost_apiKey',
-    ));
+    $key = civicrm_api3('Setting', 'getvalue', ['name' => 'sparkpost_apiKey']);
     // don't try to encrypt the key if none has been set
     if ($key) {
       // The setSettings function will encrypt before saving
