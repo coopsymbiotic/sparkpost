@@ -120,6 +120,11 @@ function sparkpost_civicrm_alterMailParams(&$params, $context = NULL) {
         $emailDomain = CRM_Core_BAO_MailSettings::defaultDomain();
         $verpSeparator = CRM_Core_Config::singleton()->verpSeparator;
         $params['returnPath'] = implode($verpSeparator, ['m', $eventQueue->job_id, $eventQueue->id, $eventQueue->hash]) . "@$emailDomain";
+
+        // add a tracking img if enabled
+        if ($mail->open_tracking && !empty($params['html'])) {
+          $params['html'] .= "\n" . '<img src="' . CRM_Utils_System::externUrl('extern/open', "q=$eventQueue->id") . '" width="1" height="1" alt="" border="0">';
+        }
       }
     }
     else {
