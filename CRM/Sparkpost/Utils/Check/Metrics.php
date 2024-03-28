@@ -42,7 +42,6 @@ class CRM_Sparkpost_Utils_Check_Metrics {
       $response = $sparky->request('GET', 'metrics/deliverability/sending-domain', [
         'from' => $date->format('Y-m-d') . 'T00:01',
         'metrics' => 'count_sent,count_bounce,count_rejected,count_admin_bounce,count_rejected,count_spam_complaint',
-        'order_by' => 'count_sent',
         // TODO This is mostly relevant for the master account, which sees all domains
         // For now, we find it convenient to see stats for all domains.
         // 'limit' => 20,
