@@ -111,7 +111,7 @@ class CRM_Sparkpost {
     // Extract CiviMail parameters from header value
     // NB: the localpart might be empty, but the regexp should still work.
     $localpart = static::getDomainLocalpart();
-    $rpRegex = '/^' . preg_quote($localpart) . '(b|c|e|o|r|u|m)\.(\d+)\.(\d+)\.([0-9a-f]{16})/';
+    $rpRegex = '/^' . preg_quote($localpart) . '(b|c|e|o|r|u|m)\.(\d+)\.(\d+)\.([0-9a-z]{16})/';
 
     if (preg_match($rpRegex, $civimail_bounce_id, $matches)) {
       return [
