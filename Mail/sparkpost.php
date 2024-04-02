@@ -121,7 +121,10 @@ class Mail_sparkpost extends Mail {
 
       // Attach metadata for transactional email
       if (CRM_Utils_Array::value('Return-Path', $headers)) {
-        $metadata = explode(CRM_Core_Config::singleton()->verpSeparator, CRM_Utils_Array::value("Return-Path", $headers));
+        // On Standalone, during login, for some reason the verpSeparator might return empty sometimes
+        // which then causes a fatal on the explode(), so we make sure to have some default value
+        $verpSeparator = Civi::settings()->get('verpSeparator') ?: '.';
+        $metadata = explode($verpSeparator, CRM_Utils_Array::value("Return-Path", $headers));
         if ($metadata[0] == 'm') {
           $localpart = CRM_Sparkpost::getDomainLocalpart();
           $sp['metadata'] = ['X-CiviMail-Bounce' => $localpart . CRM_Utils_Array::value("Return-Path", $headers)];
