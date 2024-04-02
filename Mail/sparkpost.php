@@ -52,15 +52,6 @@ class Mail_sparkpost extends Mail {
    * or returns TRUE.
    */
   public function send($recipients, $headers, $body) {
-    if (defined('CIVICRM_MAIL_LOG')) {
-      // FIXME This is broken (at least in CiviCRM 5.65). Why log?
-      // Maybe we can avoid changing the mailer if CIVICRM_MAIL_LOG is set?
-      CRM_Utils_Mail::logger($recipients, $headers, $body);
-      if (!defined('CIVICRM_MAIL_LOG_AND_SEND')) {
-        return TRUE;
-      }
-    }
-
     // Special bypass switch that alterMailParams can use to disable sparkpost
     // we use this only for a very specific use-case, where for contact forms
     // we send directly via SMTP so that we can change the "From" (Gitlab
@@ -160,6 +151,9 @@ class Mail_sparkpost extends Mail {
 
     try {
       $promise = $sparky->transmissions->post($sp);
+      if (defined('CIVICRM_MAIL_LOG_AND_SEND')) {
+        CRM_Utils_Mail_Logger::filter($this, $sp['recipients'], $textHeaders, $body);
+      }
     }
     catch (Exception $e) {
       $body = $e->getBody();

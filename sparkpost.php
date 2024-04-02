@@ -47,6 +47,11 @@ function sparkpost_civicrm_navigationMenu(&$menu) {
  * Implements hook_civicrm_alterMailer().
  */
 function sparkpost_civicrm_alterMailer(&$mailer, $driver, $params) {
+  // If the mail log was enabled, and not "log and send", then return early
+  if (defined('CIVICRM_MAIL_LOG') && !defined('CIVICRM_MAIL_LOG_AND_SEND')) {
+    return;
+  }
+
   // Do not process emails "logged to DB", for example
   if (in_array($driver, ['smtp', 'sendmail', 'mail'])) {
     require_once 'Mail/sparkpost.php';
