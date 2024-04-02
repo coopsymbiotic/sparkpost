@@ -143,7 +143,10 @@ function sparkpost_civicrm_alterMailParams(&$params, $context = NULL) {
  */
 function sparkpost_civicrm_postEmailSend(&$params) {
   if (!empty($params['returnPath'])) {
-    $header = explode(CRM_Core_Config::singleton()->verpSeparator, $params['returnPath']);
+    // On Standalone, during login, for some reason the verpSeparator might return empty sometimes
+    // which then causes a fatal on the explode(), so we make sure to have some default value
+    $verpSeparator = Civi::settings()->get('verpSeparator') ?: '.';
+    $header = explode($verpSeparator, $params['returnPath']);
 
     // recordDelivery uses pass-by-ref for some reason
     $p = [
