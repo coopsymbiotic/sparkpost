@@ -139,7 +139,7 @@ class CRM_Admin_Form_Setting_Sparkpost extends CRM_Admin_Form_Setting {
         }
         // Define parameters for our webhook
         $my_webhook = [
-          'name' => 'CiviCRM (sparkpost-symbiotic)',
+          'name' => 'CiviCRM (symbiotic)',
           'target' => CRM_Sparkpost::getSetting('sparkpost_customCallbackUrl') ?
             CRM_Sparkpost::getSetting('sparkpost_customCallbackUrl') :
             CRM_Utils_System::url('civicrm/sparkpost/callback', NULL, TRUE, NULL, FALSE, TRUE),
