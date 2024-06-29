@@ -116,6 +116,7 @@ function sparkpost_civicrm_alterMailParams(&$params, $context = NULL) {
         }
 
         $eventQueue = CRM_Mailing_Event_BAO_Queue::create([
+          'mailing_id' => $mail->id,
           'job_id' => CRM_Core_DAO::getFieldValue('CRM_Mailing_DAO_MailingJob', $mail->id, 'id', 'mailing_id'),
           'contact_id' => $contactId,
           'email_id' => $email_id,

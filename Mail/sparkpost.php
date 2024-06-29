@@ -134,7 +134,8 @@ class Mail_sparkpost extends Mail {
 
     // Attach mailing name as campaign_id for sparkpost
     if (!empty($sp['metadata'])) {
-      $metadata = explode(CRM_Core_Config::singleton()->verpSeparator, $sp['metadata']['X-CiviMail-Bounce']);
+      $verpSeparator = Civi::settings()->get('verpSeparator') ?: '.';
+      $metadata = explode($verpSeparator, $sp['metadata']['X-CiviMail-Bounce']);
       list($mailing_id, $mailing_name) = self::getMailing($metadata[1]);
 
       if ($mailing_id) {
