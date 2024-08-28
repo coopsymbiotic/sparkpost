@@ -7,7 +7,7 @@ class CRM_Sparkpost_Contact_Page_View_Summary {
    */
   static public function pageRun(&$page) {
     $smarty = CRM_Core_Smarty::singleton();
-    $contact_id = $smarty->_tpl_vars['contactId'];
+    $contact_id = $smarty->get_template_vars()['contactId'];
 
     $result = civicrm_api3('Email', 'get', [
       'contact_id' => $contact_id,
