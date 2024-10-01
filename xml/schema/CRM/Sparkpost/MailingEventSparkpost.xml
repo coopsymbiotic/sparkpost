@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/Sparkpost</base>
+  <class>MailingEventSparkpost</class>
+  <name>civicrm_mailing_event_sparkpost</name>
+  <comment>FIXME</comment>
+  <log>false</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique MailingEventSparkpost ID</comment>
+    <html>
+      <type>Number</type>
+    </html>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>event_queue_id</name>
+    <title>Event Queue ID</title>
+    <type>int unsigned</type>
+    <comment>FK to EventQueue</comment>
+    <html>
+      <label>Recipient</label>
+    </html>
+  </field>
+  <foreignKey>
+    <name>event_queue_id</name>
+    <table>civicrm_mailing_event_queue</table>
+    <key>id</key>
+    <onDelete>SET NULL</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>contact_id</name>
+    <type>int unsigned</type>
+    <comment>FK to Contact</comment>
+    <html>
+      <label>Contact</label>
+    </html>
+  </field>
+  <foreignKey>
+    <name>contact_id</name>
+    <table>civicrm_contact</table>
+    <key>id</key>
+    <onDelete>SET NULL</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>activity_id</name>
+    <type>int unsigned</type>
+    <comment>FK to Activity</comment>
+    <html>
+      <label>Activity</label>
+    </html>
+  </field>
+  <foreignKey>
+    <name>activity_id</name>
+    <table>civicrm_activity</table>
+    <key>id</key>
+    <onDelete>SET NULL</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>sparkpost_event_id</name>
+    <type>int unsigned</type>
+    <comment>External Sparkpost Event ID</comment>
+    <html>
+      <type>Number</type>
+    </html>
+  </field>
+
+  <field>
+    <name>subject</name>
+    <type>varchar</type>
+    <length>128</length>
+    <comment>Subject line from the email header.</comment>
+    <html>
+      <type>Text</type>
+    </html>
+  </field>
+
+  <field>
+    <name>bounce_class</name>
+    <type>int unsigned</type>
+    <comment>Sparkpost bounce class</comment>
+    <html>
+      <type>Number</type>
+    </html>
+  </field>
+
+  <field>
+    <name>error_code</name>
+    <type>int unsigned</type>
+    <comment>Error code by which the remote server described a failed delivery attempt.</comment>
+    <html>
+      <type>Number</type>
+    </html>
+  </field>
+
+  <field>
+    <name>num_retries</name>
+    <type>int unsigned</type>
+    <comment>Sparkpost number of retries</comment>
+    <html>
+      <type>Number</type>
+    </html>
+  </field>
+
+  <field>
+    <name>friendly_from</name>
+    <type>varchar</type>
+    <length>254</length>
+    <comment>Friendly sender or 'From' header in the original email.</comment>
+    <html>
+      <type>Email</type>
+      <size>30</size>
+    </html>
+  </field>
+
+  <field>
+    <name>rcpt_to</name>
+    <type>varchar</type>
+    <length>254</length>
+    <comment>Lowercase version of recipient address used on this message's SMTP envelope.</comment>
+    <html>
+      <type>Email</type>
+      <size>30</size>
+    </html>
+  </field>
+
+  <field>
+    <name>raw_reason</name>
+    <type>varchar</type>
+    <length>254</length>
+    <comment>Unmodified, exact response returned by the remote server due to a failed delivery attempt</comment>
+    <html>
+      <type>Text</type>
+    </html>
+  </field>
+
+  <field>
+    <name>reason</name>
+    <type>varchar</type>
+    <length>254</length>
+    <comment>Canonicalized text of the response returned by the remote server due to a failed delivery attempt.</comment>
+    <html>
+      <type>Text</type>
+    </html>
+  </field>
+
+  <field>
+    <name>transactional</name>
+    <type>boolean</type>
+    <comment>Indicates if the transmission was marked as transactional.</comment>
+  </field>
+
+  <field>
+    <name>injection_time</name>
+    <type>datetime</type>
+    <comment>Time at which this message was injected into SparkPost.</comment>
+  </field>
+
+</table>
