@@ -5,8 +5,8 @@
   <description>Allows CiviCRM to send emails and process bounces through the SparkPost service. Fork maintained by Symbiotic.</description>
   <urls>
     <url desc="Main Extension Page">https://civicrm.org/extensions/sparkpost-symbiotic</url>
-    <url desc="Documentation">https://lab.civicrm.org/extensions/sparkpost</url>
-    <url desc="Support">https://lab.civicrm.org/extensions/sparkpost/-/issues</url>
+    <url desc="Documentation">https://lab.civicrm.org/extensions/sparkpost-symbiotic</url>
+    <url desc="Support">https://lab.civicrm.org/extensions/sparkpost-symbiotic/-/issues</url>
   </urls>
   <license>AGPL-3.0</license>
   <maintainer>
