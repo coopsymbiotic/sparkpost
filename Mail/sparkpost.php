@@ -238,6 +238,9 @@ class Mail_sparkpost extends Mail {
     $result = [];
 
     foreach ($recipients as $recipientString) {
+      // Workaround known bug: empty emails when using Send Email with a CC but no BCC
+      $recipientString = preg_replace('/, "" <>/', '', $recipientString);
+
       // Best is to use the PEAR::Mail package to decapsulate as they have a class just for that!
       $rfc822 = new Mail_RFC822($recipientString);
       $matches = $rfc822->parseAddressList();
