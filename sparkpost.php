@@ -193,38 +193,24 @@ function sparkpost_targetContactId($email) {
 }
 
 /**
- * Implements hook_civicrm_pre().
- */
-function sparkpost_civicrm_pre($op, $objectName, $objectId, &$objectRef) {
-  // When email is updated for contact, check on hold flag is changed?
-  // If changed (unchecked) then remove same email from sparkpost suppression list
-  global $resetHoldFlag;
-  $resetHoldFlag = FALSE;
-
-  if ($objectName == 'Email' && $op == 'edit' && $objectId && empty($objectRef['on_hold'])) {
-    $resultEmail = civicrm_api3('Email', 'getsingle', [
-      'id' => $objectId,
-    ]);
-    if ($resultEmail['on_hold'] == 1) {
-      $resetHoldFlag = TRUE;
-    }
-  }
-}
-
-/**
  * Implements hook_civicrm_post().
  */
 function sparkpost_civicrm_post($op, $objectName, $objectId, &$objectRef) {
-  // Previous on hold flag = 1 and Current on hold flag = 0 then remove from sparkpost suppression list
-  global $resetHoldFlag;
+  if ($objectName == 'Email' && $op == 'edit' && !empty($objectRef->email) && !empty($objectRef->reset_date) && ($objectRef->reset_date !== 'null')) {
+    // Make sure this happened (now/today)
+    $current = strtotime(date("Y-m-d"));
+    $date = strtotime($objectRef->reset_date);
 
-  if ($objectName == 'Email' && $op == 'edit' && $resetHoldFlag && !empty($objectRef->email)) {
-    try {
-      $result = CRM_Sparkpost::call('suppression-list/' . $objectRef->email);
-    }
-    catch (Exception $e) {
-      // don't show the error message to users
-      //CRM_Core_Session::setStatus($e->getMessage(), "Sparkpost error", 'error');
+    // If this just happened then we attempt to remove from the suppression list
+    if (floor(($current - $date)/(60*60*24))) {
+      try {
+        $result = CRM_Sparkpost::call('suppression-list/' . $objectRef->email);
+      }
+      catch (Exception $e) {
+        // don't show the error message to users
+        // reason being is that errors are returned if they aren't in this list
+        Civi::log()->warning('Sparkpost: Error removing from supression list '.$e->getMessage());
+      }
     }
   }
 }
