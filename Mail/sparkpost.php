@@ -283,4 +283,9 @@ class Mail_sparkpost extends Mail {
 
     return [$mailing_id, $mailing_name];
   }
+
+  public function getDriver() {
+    return 'Sparkpost';
+  }
+
 }
