@@ -111,23 +111,23 @@ class Mail_sparkpost extends Mail {
     }
 
     // Is this a CiviMail mailing or a transactional email?
-    if (CRM_Utils_Array::value('X-CiviMail-Bounce', $headers)) {
+    if (!empty($headers['X-CiviMail-Bounce'])) {
       // Insert CiviMail header in the outgoing email's metadata
-      $sp['metadata'] = ['X-CiviMail-Bounce' => CRM_Utils_Array::value("X-CiviMail-Bounce", $headers)];
+      $sp['metadata'] = ['X-CiviMail-Bounce' => $headers["X-CiviMail-Bounce"] ?? NULL];
     }
     else {
       // Mark the email as transactional for SparkPost
       $sp['options']['transactional'] = TRUE;
 
       // Attach metadata for transactional email
-      if (CRM_Utils_Array::value('Return-Path', $headers)) {
+      if (!empty($headers['Return-Path'])) {
         // On Standalone, during login, for some reason the verpSeparator might return empty sometimes
         // which then causes a fatal on the explode(), so we make sure to have some default value
         $verpSeparator = Civi::settings()->get('verpSeparator') ?: '.';
-        $metadata = explode($verpSeparator, CRM_Utils_Array::value("Return-Path", $headers));
+        $metadata = explode($verpSeparator, $headers["Return-Path"] ?? '');
         if ($metadata[0] == 'm') {
           $localpart = CRM_Sparkpost::getDomainLocalpart();
-          $sp['metadata'] = ['X-CiviMail-Bounce' => $localpart . CRM_Utils_Array::value("Return-Path", $headers)];
+          $sp['metadata'] = ['X-CiviMail-Bounce' => $localpart . ($headers["Return-Path"] ?? '')];
         }
       }
     }
