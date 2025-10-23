@@ -106,7 +106,7 @@ function sparkpost_civicrm_alterMailParams(&$params, $context = NULL) {
             'email' => $params['toEmail'],
           ]);
         }
-        catch (CiviCRM_API3_Exception $e) {
+        catch (CRM_Core_Exception $e) {
           // fail silently
         }
 
