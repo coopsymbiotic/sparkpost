@@ -82,7 +82,7 @@ class CRM_Sparkpost {
     }
     // And finaly returm what was asked for ...
     if (!empty($setting)) {
-      return CRM_Utils_Array::value($setting, $settings);
+      return $settings[$setting] ?? NULL;
     }
     else {
       return $settings;
@@ -436,8 +436,8 @@ class CRM_Sparkpost {
       $params['bounce_reason'] = $event['reason'] ?: 'Message has been flagged as Spam by the recipient';
     }
     elseif ($event['type'] == 'bounce') {
-      $sparkpost_bounce = CRM_Utils_Array::value($event['bounce_class'], self::$_sparkpost_bounce_types);
-      $params['bounce_type_id'] = CRM_Utils_Array::value($sparkpost_bounce[3], self::$_civicrm_bounce_types);
+      $sparkpost_bounce = self::$_sparkpost_bounce_types[$event['bounce_class']] ?? NULL;
+      $params['bounce_type_id'] = self::$_civicrm_bounce_types[$sparkpost_bounce[3]] ?? NULL;
       $params['bounce_reason'] = $event['reason'];
     }
     elseif ($event['type'] == 'open' || $event['type'] == 'click') {
