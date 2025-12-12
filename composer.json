@@ -1,4 +1,7 @@
 {
+    "name": "civicrm/sparkpost",
+    "type": "civicrm-ext",
+    "description": "Allows CiviCRM to send emails and process bounces through the SparkPost service. Fork maintained by Symbiotic.",
     "require": {
         "sparkpost/sparkpost": "dev-symbiotic",
         "php-http/guzzle6-adapter": "^1.1"
