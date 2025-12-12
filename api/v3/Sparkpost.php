@@ -9,7 +9,7 @@
  *
  * @param array $params
  * @return array API result descriptor
- * @throws API_Exception
+ * @throws CRM_Core_Exception
  */
 function civicrm_api3_sparkpost_event($params) {
   $result = [
@@ -70,7 +70,7 @@ function civicrm_api3_sparkpost_event($params) {
  *
  * @param array $params
  * @return array API result descriptor
- * @throws API_Exception
+ * @throws CRM_Core_Exception
  */
 function civicrm_api3_sparkpost_suppression($params) {
   $result = [
@@ -118,7 +118,7 @@ function civicrm_api3_sparkpost_suppression($params) {
  *
  * @param array $params
  * @return array API result descriptor
- * @throws API_Exception
+ * @throws CRM_Core_Exception
  */
 function civicrm_api3_sparkpost_create_transactional_mailing($params) {
   $result = [
