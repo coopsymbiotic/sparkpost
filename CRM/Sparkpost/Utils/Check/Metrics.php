@@ -1,8 +1,6 @@
 <?php
 
 use SparkPost\SparkPost;
-use GuzzleHttp\Client;
-use Http\Adapter\Guzzle6\Client as GuzzleAdapter;
 use CRM_Sparkpost_ExtensionUtil as E;
 
 class CRM_Sparkpost_Utils_Check_Metrics {
@@ -24,7 +22,7 @@ class CRM_Sparkpost_Utils_Check_Metrics {
       return;
     }
 
-    $httpClient = new GuzzleAdapter(new Client());
+    $httpClient = new \GuzzleHttp\Client();
     $sparky = new SparkPost($httpClient, ['key' => $api_key, 'async' => FALSE, 'host' => "api.$api_host"]);
 
     // FIXME Add cycle roll day setting

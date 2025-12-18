@@ -1,8 +1,6 @@
 <?php
 
 use SparkPost\SparkPost;
-use GuzzleHttp\Client;
-use Http\Adapter\Guzzle6\Client as GuzzleAdapter;
 use CRM_Sparkpost_ExtensionUtil as E;
 
 class CRM_Sparkpost {
@@ -332,7 +330,7 @@ class CRM_Sparkpost {
     if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
       require_once __DIR__ . '/../vendor/autoload.php';
     }
-    $httpClient = new GuzzleAdapter(new Client());
+    $httpClient = new \GuzzleHttp\Client();
     $sparky = new SparkPost($httpClient, ['key' => $api_key, 'async' => FALSE, 'host' => "api.$api_host"]);
 
     // Admitedly not ideal, since it assumes that the caller will not forget about paging
