@@ -30,8 +30,6 @@
 require_once 'Mail/RFC822.php';
 
 use SparkPost\SparkPost;
-use GuzzleHttp\Client;
-use Http\Adapter\Guzzle6\Client as GuzzleAdapter;
 use CRM_Sparkpost_ExtensionUtil as E;
 
 class Mail_sparkpost extends Mail {
@@ -79,7 +77,7 @@ class Mail_sparkpost extends Mail {
     }
 
     // Prepare to send the email
-    $httpClient = new GuzzleAdapter(new Client());
+    $httpClient = new \GuzzleHttp\Client();
     $sparky = new SparkPost($httpClient, ['key' => $api_key, 'async' => FALSE, 'host' => "api.$api_host"]);
 
     // Sanitize and prepare headers for transmission
