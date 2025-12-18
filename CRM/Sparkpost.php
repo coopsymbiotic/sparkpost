@@ -327,7 +327,11 @@ class CRM_Sparkpost {
     $api_key = CRM_Sparkpost::getSetting('sparkpost_apiKey');
     $api_host = Civi::settings()->get('sparkpost_host');
 
-    require_once __DIR__ . '/../vendor/autoload.php';
+    // Not required if the platform is managed by composer, in which case the
+    // extension is in web/vendor
+    if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
+      require_once __DIR__ . '/../vendor/autoload.php';
+    }
     $httpClient = new GuzzleAdapter(new Client());
     $sparky = new SparkPost($httpClient, ['key' => $api_key, 'async' => FALSE, 'host' => "api.$api_host"]);
 

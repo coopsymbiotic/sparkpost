@@ -67,7 +67,9 @@ class Mail_sparkpost extends Mail {
       throw new Exception('No API key defined for SparkPost');
     }
 
-    require_once __DIR__ . '/../vendor/autoload.php';
+    if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
+      require_once __DIR__ . '/../vendor/autoload.php';
+    }
 
     // Verify if the sending domain is valid
     if (!empty($headers['From'])) {
