@@ -6,11 +6,6 @@
         "sparkpost/sparkpost": "dev-symbiotic",
         "php-http/guzzle6-adapter": "^1.1"
     },
-    "replace": {
-      "guzzlehttp/guzzle": "^6.0",
-      "guzzlehttp/promises": "^1.0",
-      "guzzlehttp/psr7": "^1.0"
-    },
     "repositories": [
         {
             "type": "vcs",
