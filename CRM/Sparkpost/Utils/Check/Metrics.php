@@ -49,9 +49,10 @@ class CRM_Sparkpost_Utils_Check_Metrics {
           'label' => E::ts('Messages Sent:'),
         ],
         'count_bounce' => [
-          'quota_pct' => 10,
+          'quota_pct' => Civi::settings()->get('sparkpost_bounce_rate'),
           'label' => E::ts('Bounces:'),
         ],
+        // "Total number of Bounced messages due to admin bounce classification reasons, also includes Rejected"
         'count_admin_bounce' => [
           'quota_pct' => Civi::settings()->get('sparkpost_bounce_rate'),
           'label' => E::ts('Bounced by Sparkpost:'),
