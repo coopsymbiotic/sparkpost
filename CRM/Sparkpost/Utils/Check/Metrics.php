@@ -26,6 +26,7 @@ class CRM_Sparkpost_Utils_Check_Metrics {
     $sparky = new SparkPost($httpClient, ['key' => $api_key, 'async' => FALSE, 'host' => "api.$api_host"]);
 
     // Fetch stats for the past 30 days
+    $date = new DateTime();
     $date->modify('-30 days');
 
     // Metrics by Sending Domain
