@@ -25,17 +25,8 @@ class CRM_Sparkpost_Utils_Check_Metrics {
     $httpClient = new \GuzzleHttp\Client();
     $sparky = new SparkPost($httpClient, ['key' => $api_key, 'async' => FALSE, 'host' => "api.$api_host"]);
 
-    // FIXME Add cycle roll day setting
-    // If it's before the 27th, then we search Y-[m-1]-27
-    // otherwise we check Y-m-27.
-    $date = new DateTime();
-    $date->setDate($date->format('Y'), $date->format('m'), 27);
-
-    $current_day = date('d');
-
-    if ($current_day <= 27) {
-      $date->setDate($date->format('Y'), $date->format('m') - 1, 27);
-    }
+    // Fetch stats for the past 30 days
+    $date->modify('-30 days');
 
     // Metrics by Sending Domain
     try {
@@ -58,9 +49,10 @@ class CRM_Sparkpost_Utils_Check_Metrics {
           'label' => E::ts('Messages Sent:'),
         ],
         'count_bounce' => [
-          'quota_pct' => 10,
+          'quota_pct' => Civi::settings()->get('sparkpost_bounce_rate'),
           'label' => E::ts('Bounces:'),
         ],
+        // "Total number of Bounced messages due to admin bounce classification reasons, also includes Rejected"
         'count_admin_bounce' => [
           'quota_pct' => Civi::settings()->get('sparkpost_bounce_rate'),
           'label' => E::ts('Bounced by Sparkpost:'),
@@ -112,6 +104,32 @@ class CRM_Sparkpost_Utils_Check_Metrics {
 
         $output .= '<p>' . E::ts('Domain:') . ' ' . $val['sending_domain'] . '</p><ul>' . implode('', $stats) . '</ul>';
       }
+
+      // CiviMail: past 30 days
+      $output .= '<p>CiviMail Stats:</p>';
+      $output .= '<ul>';
+
+      $sent = CRM_Core_DAO::singleValueQuery('SELECT COUNT(*) FROM civicrm_mailing_event_delivered WHERE time_stamp > NOW() - INTERVAL 30 DAY');
+      if ($sent > $sending_quota) {
+        $log_level = \Psr\Log\LogLevel::CRITICAL;
+        $output .= '<li><strong>' . E::ts('CiviMail Sent - past 30 days: %1', [1 => Civi::format()->number($sent)]) . '</strong></li>';
+      }
+      else {
+        $output .= '<li>' . E::ts('CiviMail Sent - past 30 days: %1', [1 => Civi::format()->number($sent)]) . '</li>';
+      }
+
+      // CiviMail: this month
+      $sent = CRM_Core_DAO::singleValueQuery('SELECT COUNT(*) FROM civicrm_mailing_event_delivered WHERE YEAR(time_stamp) = YEAR(CURDATE()) AND MONTH(time_stamp) = MONTH(CURDATE())');
+      if ($sent_past_30_days > $sending_quota) {
+        $log_level = \Psr\Log\LogLevel::CRITICAL;
+        $output .= '<li><strong>' . E::ts('CiviMail Sent - this calendar month: %1', [1 => Civi::format()->number($sent)]) . '</strong></li>';
+      }
+      else {
+        $output .= '<li>' . E::ts('CiviMail Sent - this calendar month: %1', [1 => Civi::format()->number($sent)]) . '</li>';
+      }
+
+      $output .= '<li>' . E::ts('Monthly Quota: %1', [1 => Civi::format()->number($sending_quota)]) . '</li>';
+      $output .= '</ul>';
 
       $messages[] = new CRM_Utils_Check_Message(
         'sparkpost_metrics',
