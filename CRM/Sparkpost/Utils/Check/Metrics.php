@@ -25,17 +25,8 @@ class CRM_Sparkpost_Utils_Check_Metrics {
     $httpClient = new \GuzzleHttp\Client();
     $sparky = new SparkPost($httpClient, ['key' => $api_key, 'async' => FALSE, 'host' => "api.$api_host"]);
 
-    // FIXME Add cycle roll day setting
-    // If it's before the 27th, then we search Y-[m-1]-27
-    // otherwise we check Y-m-27.
-    $date = new DateTime();
-    $date->setDate($date->format('Y'), $date->format('m'), 27);
-
-    $current_day = date('d');
-
-    if ($current_day <= 27) {
-      $date->setDate($date->format('Y'), $date->format('m') - 1, 27);
-    }
+    // Fetch stats for the past 30 days
+    $date->modify('-30 days');
 
     // Metrics by Sending Domain
     try {
