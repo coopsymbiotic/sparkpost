@@ -121,7 +121,7 @@ class CRM_Sparkpost_Utils_Check_Metrics {
 
       // CiviMail: this month
       $sent = CRM_Core_DAO::singleValueQuery('SELECT COUNT(*) FROM civicrm_mailing_event_delivered WHERE YEAR(time_stamp) = YEAR(CURDATE()) AND MONTH(time_stamp) = MONTH(CURDATE())');
-      if ($sent_past_30_days > $sending_quota) {
+      if ($sent > $sending_quota) {
         $log_level = \Psr\Log\LogLevel::CRITICAL;
         $output .= '<li><strong>' . E::ts('CiviMail Sent - this calendar month: %1', [1 => Civi::format()->number($sent)]) . '</strong></li>';
       }
