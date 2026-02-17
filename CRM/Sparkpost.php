@@ -15,6 +15,8 @@ class CRM_Sparkpost {
     // Soft, retry 30 times
     'Away' => 2,
     // Soft, retry 3 times
+    'Full' => 8,
+    // Soft, retry 3 times
     'Relay' => 9,
     // Hard, retry 1 time
     'Invalid' => 6,
@@ -33,7 +35,7 @@ class CRM_Sparkpost {
     10 => ['Invalid Recipient', 'The recipient is invalid.', 'Hard', 'Invalid'],
     20 => ['Soft Bounce', 'The message soft bounced.', 'Soft', 'Relay'],
     21 => ['DNS Failure', 'The message bounced due to a DNS failure.', 'Soft', 'Relay'],
-    22 => ['Mailbox Full', 'The message bounced due to the remote mailbox being over quota.', 'Soft', 'Away'],
+    22 => ['Mailbox Full', 'The message bounced due to the remote mailbox being over quota.', 'Soft', 'Full'],
     23 => ['Too Large', 'The message bounced because it was too large for the recipient.', 'Soft', 'Away'],
     24 => ['Timeout', 'The message timed out.', 'Soft', 'Relay'],
     25 => ['Admin Failure', 'The message was failed by SparkPost\'s configured policies.', 'Admin', 'Invalid'],
