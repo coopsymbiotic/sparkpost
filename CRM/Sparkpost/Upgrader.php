@@ -52,4 +52,35 @@ class CRM_Sparkpost_Upgrader extends CRM_Extension_Upgrader_Base {
     return TRUE;
   }
 
+  public function upgrade_1103() {
+    $this->ctx->log->info('Applying update 1102 - fix mailbox full classification');
+
+    // fix classification for older bounce
+    CRM_Core_DAO::executeQuery("
+UPDATE civicrm_mailing_event_bounce SET bounce_type_id = 8
+WHERE (bounce_reason LIKE '%is full%' OR bounce_reason LIKE '%over quota%')");
+
+    $datetime = new \DateTime();
+    $datetime->modify('-6 months');
+    $maxDate = $datetime->format('Y-m-d');
+
+    // disable email that have more than 3 quota bounce
+    $today = date('Y-m-d');
+    $dao =  CRM_Core_DAO::executeQuery("
+SELECT e.id as id
+FROM civicrm_mailing_event_bounce meb
+  INNER JOIN civicrm_mailing_event_queue meq ON meb.event_queue_id = meq.id
+  INNER JOIN civicrm_email e ON e.id = meq.email_id
+WHERE bounce_type_id = 8 AND e.on_hold = 0
+GROUP BY email_id HAVING count(*) > 3 AND max(meb.time_stamp) > {$maxDate}");
+    while ($dao->fetch()) {
+      CRM_Core_DAO::executeQuery("UPDATE civicrm_email SET on_hold = 1, hold_date = %1 WHERE id = %2", [
+        1 => [$today, 'String'],
+        2 => [$dao->id, 'Integer']
+      ]);
+    }
+
+    return TRUE;
+  }
+
 }
