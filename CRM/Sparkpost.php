@@ -489,15 +489,7 @@ class CRM_Sparkpost {
         ]);
 
         if (!empty($contact_id)) {
-          try {
-            \Civi\Api4\Contact::update(FALSE)
-              ->addValue('is_opt_out', TRUE)
-              ->addWhere('id', '=', $contact_id)
-              ->execute();
-          }
-          catch (Exception $e) {
-            Civi::log()->error("Sparkpost: failed to set is_opt_out=1 for contact_id={$contact_id}: " . $e->getMessage());
-          }
+          CRM_Mailing_Event_BAO_MailingEventUnsubscribe::unsub_from_domain($header['job_id'], $header['event_queue_id'], $header['hash']);
         }
         else {
           Civi::log()->error("Sparkpost: failed to find valid contact_id for civicrm_mailing_event_queue {$params['event_queue_id']}");
