@@ -17,17 +17,17 @@
   <version>1.9.2</version>
   <develStage>stable</develStage>
   <compatibility>
-    <ver>5.65</ver>
+    <ver>6.4</ver>
   </compatibility>
   <comments/>
   <civix>
     <namespace>CRM/Sparkpost</namespace>
-    <format>23.02.1</format>
+    <format>25.01.1</format>
   </civix>
   <mixins>
     <mixin>menu-xml@1.0.0</mixin>
     <mixin>setting-php@1.0.0</mixin>
-    <mixin>smarty-v2@1.0.1</mixin>
+    <mixin>smarty@1.0.3</mixin>
   </mixins>
   <classloader>
     <psr0 prefix="CRM_" path="."/>
