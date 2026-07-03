@@ -16,7 +16,6 @@ class CRM_Sparkpost_Utils_Check_Environment {
         \Psr\Log\LogLevel::CRITICAL,
         'fa-envelope'
       );
-
       return;
     }
 
@@ -26,14 +25,20 @@ class CRM_Sparkpost_Utils_Check_Environment {
     ]);
 
     if (empty($result['values'])) {
-      $messages[] = new CRM_Utils_Check_Message(
+      $message = new CRM_Utils_Check_Message(
         'sparkpost_environment_tracking',
-        E::ts('The special Mailing for tracking transactional emails is missing. Disable/Enable the Sparkpost extension to re-create it.'),
+        E::ts('The special Mailing for tracking transactional emails is missing. Click the button below to re-create it.'),
         E::ts('SparkPost - Environment'),
         \Psr\Log\LogLevel::WARNING,
         'fa-envelope'
       );
-
+      $message->addAction(
+        E::ts('Create the mailing'),
+        NULL,
+        'api3',
+        ['Sparkpost', 'create_transactional_mailing'],
+      );
+      $messages[] = $message;
     }
 
     $messages[] = new CRM_Utils_Check_Message(
