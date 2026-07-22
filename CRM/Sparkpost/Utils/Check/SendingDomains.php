@@ -40,6 +40,16 @@ class CRM_Sparkpost_Utils_Check_SendingDomains {
         $domains[] = '<p>' . $val['domain'] . ': ' . implode(', ', $statuses) . '</p>';
       }
 
+      if (empty($domains)) {
+        $messages[] = new CRM_Utils_Check_Message(
+          'sparkpost_sendingdomains',
+          ts('There are no available sending domains'),
+          ts('SparkPost - No Sending Domains'),
+          \Psr\Log\LogLevel::CRITICAL,
+          'fa-envelope'
+        );
+      }
+
       $output = implode('', $domains);
 
       $messages[] = new CRM_Utils_Check_Message(
