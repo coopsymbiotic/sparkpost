@@ -77,8 +77,7 @@ class Mail_sparkpost extends Mail {
     }
 
     // Prepare to send the email
-    $httpClient = new \GuzzleHttp\Client();
-    $sparky = new SparkPost($httpClient, ['key' => $api_key, 'async' => FALSE, 'host' => "api.$api_host"]);
+    $sparky = new SparkPost(['key' => $api_key, 'async' => FALSE, 'host' => "api.$api_host"]);
 
     // Sanitize and prepare headers for transmission
     if (!is_array($headers)) {

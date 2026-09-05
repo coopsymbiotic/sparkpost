@@ -22,8 +22,7 @@ class CRM_Sparkpost_Utils_Check_Metrics {
       return;
     }
 
-    $httpClient = new \GuzzleHttp\Client();
-    $sparky = new SparkPost($httpClient, ['key' => $api_key, 'async' => FALSE, 'host' => "api.$api_host"]);
+    $sparky = new SparkPost(['key' => $api_key, 'async' => FALSE, 'host' => "api.$api_host"]);
 
     // Fetch stats for the past 30 days
     $date = new DateTime();
