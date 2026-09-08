@@ -382,7 +382,9 @@ class CurlClient implements HttpClientInterface
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_2TLS,
         ];
 
+        // CURLOPT_PROTOCOLS_STR was introduced in PHP 8.3 (for now we support PHP 8.2)
         if (defined('CURLOPT_PROTOCOLS_STR')) {
+            // phpcs:ignore
             $curlOptions[CURLOPT_PROTOCOLS_STR] = 'https,http';
         } else {
             $curlOptions[CURLOPT_PROTOCOLS] = CURLPROTO_HTTPS | CURLPROTO_HTTP;

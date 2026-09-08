@@ -19,6 +19,11 @@
   <compatibility>
     <ver>6.4</ver>
   </compatibility>
+  <php_compatibility mode="list">
+    <ver>8.2</ver>
+    <ver>8.3</ver>
+    <ver>8.4</ver>
+  </php_compatibility>
   <comments/>
   <civix>
     <namespace>CRM/Sparkpost</namespace>
