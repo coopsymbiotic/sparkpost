@@ -1,81 +1,18 @@
-# Based on https://martin-renze.de/posts/gitlab-ci-releases/
-# https://docs.gitlab.com/ee/user/project/releases/release_cicd_examples.html
-# https://about.gitlab.com/blog/2023/11/01/tutorial-automated-release-and-release-notes-with-gitlab/
-stages:
-  - test
-  - prepare
-  - build
-  - release
-
-phpcs:
-  stage: test
-  image: michaelmcandrew/civicrm-buildkit:latest
-  script:
-    - civilint
-    - phpcs-civi --ignore=lib,docs --report-json=gl-code-quality-report-tmp.json --report-full=gl-fullreport.txt --report-junit=gl-report.xml . || true
-    - cat gl-fullreport.txt
-  artifacts:
-    reports:
-      codequality: gl-report.xml
-      junit: gl-report.xml
-
-release_notes:
-  stage: prepare
-  image: alpine:latest
-  rules:
-    - if: $CI_COMMIT_TAG
-  script:
-    - apk add curl jq
-    - 'curl -H "PRIVATE-TOKEN: $CI_API_TOKEN" "$CI_API_V4_URL/projects/$CI_PROJECT_ID/repository/changelog?version=$CI_COMMIT_TAG" | jq -r .notes > release_notes.md'
-    - cat release_notes.md
-  artifacts:
-    paths:
-      - release_notes.md
-  tags:
-    - test-1-docker
-
-build_job:
-  stage: build
-  image: alpine:latest
-  script:
-    - apk add zip
-    - RELEASE_VERSION=$(grep '<version' info.xml | sed -e 's/.*<version>//' -e 's/<\/version>//')
-    - echo "Found version $RELEASE_VERSION"
-    - mkdir build
-    - zip -qr9 --exclude=.git* --exclude=build build/${CI_PROJECT_NAME}-${RELEASE_VERSION}.zip .
-    - echo BUILD_JOB_ID=$CI_JOB_ID >> variables.env
-    - echo BUILD_VERSION=$RELEASE_VERSION >> variables.env
-  artifacts:
-    paths:
-      - build
-    expire_in: 1 year
-    reports:
-      dotenv: variables.env
-  rules:
-    - if: $CI_COMMIT_TAG
-  tags:
-    - test-1-docker
-
-release_job:
-  stage: release
-  image: registry.gitlab.com/gitlab-org/release-cli:latest
-  needs:
-    - job: build_job
-      artifacts: true
-    - job: release_notes
-      artifacts: true
-  rules:
-    - if: $CI_COMMIT_TAG
-  script:
-    - echo "Running release_job for $TAG"
-  release:
-    name: 'Version $CI_COMMIT_TAG'
-    description: release_notes.md
-    tag_name: '$CI_COMMIT_TAG'
-    ref: '$CI_COMMIT_SHA'
-    assets:
-      links:
-        - name: '${CI_PROJECT_NAME}-${CI_COMMIT_TAG}.zip'
-          url: '${CI_PROJECT_URL}/-/jobs/${BUILD_JOB_ID}/artifacts/raw/build/${CI_PROJECT_NAME}-${CI_COMMIT_TAG}.zip'
-  tags:
-    - test-1-docker
+# Pipeline for this extension.
+#
+#   lint.yml      coding standards (civilint) and PHP version compatibility
+#   composer.yml  publishes a tag to the Composer Packages registry
+#
+# Both live in infra/extension-ci and are extension-agnostic, so there is
+# nothing to configure here. See https://lab.civicrm.org/infra/gitlab/-/issues/50
+#
+# PHPUnit is not run from here: it runs in CiviCARROT, dispatched from the merge
+# request. These scans need no CiviCRM, CMS or database, so they run natively on
+# lab.civicrm.org's runners in well under a minute and give a merge request real
+# red/green status rather than only the CARROT bot comment.
+include:
+  - project: 'infra/extension-ci'
+    ref: main
+    file:
+      - '/lint.yml'
+      - '/composer.yml'
