@@ -36,16 +36,18 @@ class CRM_Sparkpost_Page_Events extends CRM_Core_Page {
       FROM civicrm_mailing_event_bounce eb
       LEFT JOIN civicrm_mailing_event_queue eq ON (eq.id = eb.event_queue_id)
       WHERE email_id = %1', [
-      1 => [$email_id, 'Positive'],
-    ]);
+        1 => [$email_id, 'Positive'],
+      ]
+    );
 
     while ($dao->fetch()) {
       $dao2 = CRM_Core_DAO::executeQuery('SELECT j.*, m.subject, m.from_email
         FROM civicrm_mailing_job j
         LEFT JOIN civicrm_mailing m on (m.id = j.mailing_id)
         WHERE j.id = %1', [
-        1 => [$dao->job_id, 'Positive'],
-      ]);
+          1 => [$dao->job_id, 'Positive'],
+        ]
+      );
 
       if ($dao2->fetch()) {
         $errors[] = [

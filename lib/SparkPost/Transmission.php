@@ -3,6 +3,7 @@
 namespace SparkPost;
 
 class Transmission extends ResourceBase {
+
   public function __construct(SparkPost $sparkpost) {
     parent::__construct($sparkpost, 'transmissions');
   }
@@ -28,10 +29,9 @@ class Transmission extends ResourceBase {
    * @return array - the modified request body
    */
   public function formatPayload($payload) {
-    $payload = $this->formatBlindCarbonCopy($payload); //Fixes BCCs into payload
-    $payload = $this->formatCarbonCopy($payload); //Fixes CCs into payload
-    $payload = $this->formatShorthandRecipients($payload); //Fixes shorthand recipients format
-
+    $payload = $this->formatBlindCarbonCopy($payload);
+    $payload = $this->formatCarbonCopy($payload);
+    $payload = $this->formatShorthandRecipients($payload);
     return $payload;
   }
 
@@ -160,7 +160,7 @@ class Transmission extends ResourceBase {
     // convert object to string
     if (!is_string($address)) {
       if (isset($address['name'])) {
-        $address = '"'.$address['name'].'" <'.$address['email'].'>';
+        $address = '"' . $address['name'] . '" <' . $address['email'] . '>';
       }
       else {
         $address = $address['email'];

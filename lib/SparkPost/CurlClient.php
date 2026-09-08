@@ -38,7 +38,7 @@ class CurlClient implements HttpClientInterface {
   const DEFAULT_MAX_CONCURRENCY = 10;
 
   /**
-   * @var CurlClient|null process-wide instance
+   * @var CurlClient|NULL process-wide instance
    */
   private static $shared;
 
@@ -70,9 +70,8 @@ class CurlClient implements HttpClientInterface {
    *
    * @return CurlClient
    */
-  public static function shared()
-  {
-    if (self::$shared === null) {
+  public static function shared() {
+    if (self::$shared === NULL) {
       self::$shared = new self();
     }
 
@@ -129,10 +128,10 @@ class CurlClient implements HttpClientInterface {
   /**
    * {@inheritdoc}
    */
-  public function send(array $request, array $options = [], $debugRequest = null) {
+  public function send(array $request, array $options = [], $debugRequest = NULL) {
     // Back-pressure: keep at most maxConcurrency requests in flight.
     while (count($this->transfers) >= $this->maxConcurrency) {
-      $this->step(true);
+      $this->step(TRUE);
     }
 
     $transfer = new \stdClass();
@@ -167,7 +166,7 @@ class CurlClient implements HttpClientInterface {
         // Nothing left to drive, the promise cannot settle from here.
         return;
       }
-      $this->step(true);
+      $this->step(TRUE);
     }
   }
 
@@ -176,7 +175,7 @@ class CurlClient implements HttpClientInterface {
    */
   public function waitAll() {
     while (!empty($this->transfers)) {
-      $this->step(true);
+      $this->step(TRUE);
     }
   }
 
@@ -186,7 +185,7 @@ class CurlClient implements HttpClientInterface {
    * Useful when interleaving other work with in-flight async requests.
    */
   public function tick() {
-    $this->step(false);
+    $this->step(FALSE);
   }
 
   /**
@@ -204,10 +203,10 @@ class CurlClient implements HttpClientInterface {
       throw new \RuntimeException('curl_multi error: '.curl_multi_strerror($status));
     }
 
-    $completed = false;
-    while (($info = curl_multi_info_read($this->multi)) !== false) {
+    $completed = FALSE;
+    while (($info = curl_multi_info_read($this->multi)) !== FALSE) {
       $this->complete($info['handle'], (int) $info['result']);
-      $completed = true;
+      $completed = TRUE;
     }
 
     if ($block && !$completed && !empty($this->transfers)) {
@@ -265,7 +264,7 @@ class CurlClient implements HttpClientInterface {
 
     $error = curl_error($handle);
 
-    if (in_array($result, self::RETRYABLE_CURL_ERRORS, true) && $transfer->attempts <= $transfer->retries) {
+    if (in_array($result, self::RETRYABLE_CURL_ERRORS, TRUE) && $transfer->attempts <= $transfer->retries) {
       $this->retry($transfer);
       return;
     }
@@ -288,7 +287,7 @@ class CurlClient implements HttpClientInterface {
   private function finish($transfer) {
     unset($this->transfers[spl_object_id($transfer->handle)]);
     $this->releaseHandle($transfer->handle);
-    $transfer->handle = null;
+    $transfer->handle = NULL;
   }
 
   private function resetAttemptState($transfer) {
@@ -302,7 +301,7 @@ class CurlClient implements HttpClientInterface {
    */
   private function acquireHandle() {
     $handle = array_pop($this->idleHandles);
-    if ($handle === null) {
+    if ($handle === NULL) {
       $handle = curl_init();
     }
 
@@ -342,14 +341,14 @@ class CurlClient implements HttpClientInterface {
       CURLOPT_URL => $request['url'],
       CURLOPT_CUSTOMREQUEST => $request['method'],
       CURLOPT_HTTPHEADER => $headers,
-      CURLOPT_RETURNTRANSFER => true,
-      CURLOPT_HEADER => false,
+      CURLOPT_RETURNTRANSFER => TRUE,
+      CURLOPT_HEADER => FALSE,
       CURLOPT_HEADERFUNCTION => function ($handle, $line) use ($transfer) {
         $this->parseHeaderLine($transfer, $line);
 
         return strlen($line);
       },
-      CURLOPT_FOLLOWLOCATION => false,
+      CURLOPT_FOLLOWLOCATION => FALSE,
       CURLOPT_CONNECTTIMEOUT => isset($options['connect_timeout']) ? $options['connect_timeout'] : self::DEFAULT_CONNECT_TIMEOUT,
       CURLOPT_TIMEOUT => isset($options['timeout']) ? $options['timeout'] : self::DEFAULT_TIMEOUT,
       // Accept (and transparently decode) compressed responses.
@@ -373,8 +372,8 @@ class CurlClient implements HttpClientInterface {
       $curlOptions[CURLOPT_PROTOCOLS] = CURLPROTO_HTTPS | CURLPROTO_HTTP;
     }
 
-    $body = isset($request['body']) ? $request['body'] : null;
-    if ($request['method'] !== 'GET' && $request['method'] !== 'HEAD' && $body !== null && $body !== '') {
+    $body = isset($request['body']) ? $request['body'] : NULL;
+    if ($request['method'] !== 'GET' && $request['method'] !== 'HEAD' && $body !== NULL && $body !== '') {
       $curlOptions[CURLOPT_POSTFIELDS] = $body;
     }
 
@@ -411,7 +410,7 @@ class CurlClient implements HttpClientInterface {
     }
 
     $pos = strpos($line, ':');
-    if ($pos === false) {
+    if ($pos === FALSE) {
       return;
     }
 

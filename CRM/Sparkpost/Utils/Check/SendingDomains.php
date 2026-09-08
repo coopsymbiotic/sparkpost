@@ -1,6 +1,6 @@
 <?php
 
-use SparkPost\SparkPost;
+use CRM_Sparkpost_ExtensionUtil as E;
 
 class CRM_Sparkpost_Utils_Check_SendingDomains {
 
@@ -14,8 +14,8 @@ class CRM_Sparkpost_Utils_Check_SendingDomains {
     if (!$api_key) {
       $messages[] = new CRM_Utils_Check_Message(
         'sparkpost_sendingdomains',
-        ts('The Sparkpost API Key is missing'),
-        ts('SparkPost - API Key'),
+        E::ts('The Sparkpost API Key is missing'),
+        E::ts('SparkPost - API Key'),
         \Psr\Log\LogLevel::CRITICAL,
         'fa-envelope'
       );
@@ -41,8 +41,8 @@ class CRM_Sparkpost_Utils_Check_SendingDomains {
       if (empty($domains)) {
         $messages[] = new CRM_Utils_Check_Message(
           'sparkpost_sendingdomains',
-          ts('There are no available sending domains'),
-          ts('SparkPost - No Sending Domains'),
+          E::ts('There are no available sending domains'),
+          E::ts('SparkPost - No Sending Domains'),
           \Psr\Log\LogLevel::CRITICAL,
           'fa-envelope'
         );
@@ -52,8 +52,8 @@ class CRM_Sparkpost_Utils_Check_SendingDomains {
 
       $messages[] = new CRM_Utils_Check_Message(
         'sparkpost_sendingdomains',
-        ts('Available sending domains: %1', [1 => $output]), // FIXME E::ts
-        ts('SparkPost - Sending Domains'),
+        E::ts('Available sending domains: %1', [1 => $output]),
+        E::ts('SparkPost - Sending Domains'),
         \Psr\Log\LogLevel::INFO,
         'fa-envelope'
       );
@@ -64,8 +64,8 @@ class CRM_Sparkpost_Utils_Check_SendingDomains {
 
       $messages[] = new CRM_Utils_Check_Message(
         'sparkpost_sendingdomains',
-        ts('Available sending domains: ERROR: %1, %2', [1 => $code, 2 => print_r($body, 1)]),
-        ts('SparkPost - Sending Domains'),
+        E::ts('Available sending domains: ERROR: %1, %2', [1 => $code, 2 => print_r($body, 1)]),
+        E::ts('SparkPost - Sending Domains'),
         \Psr\Log\LogLevel::CRITICAL,
         'fa-envelope'
       );

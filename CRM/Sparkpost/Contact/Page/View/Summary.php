@@ -3,9 +3,9 @@
 class CRM_Sparkpost_Contact_Page_View_Summary {
 
   /**
-   * @see sparkpost_civicrm_pageRun().
+   * @see sparkpost_civicrm_pageRun()
    */
-  static public function pageRun(&$page) {
+  public static function pageRun(&$page) {
     $smarty = CRM_Core_Smarty::singleton();
     $contact_id = $smarty->get_template_vars()['contactId'];
 

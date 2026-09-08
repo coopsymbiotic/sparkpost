@@ -30,7 +30,7 @@ class SparkPostPromise {
   private $reason;
 
   /**
-   * @var callable|null function ($promise) that blocks until this promise settles
+   * @var callable|NULL function ($promise) that blocks until this promise settles
    */
   private $waitFn;
 
@@ -45,10 +45,10 @@ class SparkPostPromise {
   private $request;
 
   /**
-   * @param callable|null $waitFn  - called with this promise; must drive the transport until the promise settles
-   * @param array|null  $request - the request values sent (debug mode)
+   * @param callable|NULL $waitFn  - called with this promise; must drive the transport until the promise settles
+   * @param array|NULL  $request - the request values sent (debug mode)
    */
-  public function __construct(?callable $waitFn = null, $request = null) {
+  public function __construct(?callable $waitFn = NULL, $request = NULL) {
     $this->waitFn = $waitFn;
     $this->request = $request;
   }
@@ -56,7 +56,7 @@ class SparkPostPromise {
   /**
    * Returns the request values sent.
    *
-   * @return array|null $request
+   * @return array|NULL $request
    */
   public function getRequest() {
     return $this->request;
@@ -65,14 +65,14 @@ class SparkPostPromise {
   /**
    * Registers callbacks and returns a new promise for their outcome.
    *
-   * @param callable|null $onFulfilled - receives the SparkPostResponse
-   * @param callable|null $onRejected  - receives the SparkPostException
+   * @param callable|NULL $onFulfilled - receives the SparkPostResponse
+   * @param callable|NULL $onRejected  - receives the SparkPostException
    *
    * @return SparkPostPromise
    */
-  public function then(?callable $onFulfilled = null, ?callable $onRejected = null) {
+  public function then(?callable $onFulfilled = NULL, ?callable $onRejected = NULL) {
     $child = new self(function () {
-      $this->wait(false);
+      $this->wait(FALSE);
     }, $this->request);
 
     $handler = [$onFulfilled, $onRejected, $child];
@@ -97,14 +97,14 @@ class SparkPostPromise {
   /**
    * Blocks until the promise is settled.
    *
-   * @param bool $unwrap - when true, return the response or throw the rejection reason
+   * @param bool $unwrap - when TRUE, return the response or throw the rejection reason
    *
-   * @return SparkPostResponse|mixed|null
+   * @return SparkPostResponse|mixed|NULL
    *
    * @throws SparkPostException
    */
-  public function wait($unwrap = true) {
-    if ($this->state === self::PENDING && $this->waitFn !== null) {
+  public function wait($unwrap = TRUE) {
+    if ($this->state === self::PENDING && $this->waitFn !== NULL) {
       call_user_func($this->waitFn, $this);
     }
 
@@ -113,7 +113,7 @@ class SparkPostPromise {
     }
 
     if (!$unwrap) {
-      return null;
+      return NULL;
     }
 
     if ($this->state === self::REJECTED) {
@@ -134,7 +134,7 @@ class SparkPostPromise {
     }
     $this->state = self::FULFILLED;
     $this->value = $value;
-    $this->waitFn = null;
+    $this->waitFn = NULL;
     $this->flushHandlers();
   }
 
@@ -149,7 +149,7 @@ class SparkPostPromise {
     }
     $this->state = self::REJECTED;
     $this->reason = $reason;
-    $this->waitFn = null;
+    $this->waitFn = NULL;
     $this->flushHandlers();
   }
 
@@ -166,10 +166,10 @@ class SparkPostPromise {
 
     try {
       if ($this->state === self::FULFILLED) {
-        $result = $onFulfilled !== null ? $onFulfilled($this->value) : $this->value;
+        $result = $onFulfilled !== NULL ? $onFulfilled($this->value) : $this->value;
       }
       else {
-        if ($onRejected === null) {
+        if ($onRejected === NULL) {
           $child->reject($this->reason);
           return;
         }

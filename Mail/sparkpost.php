@@ -212,11 +212,8 @@ class Mail_sparkpost extends Mail {
   /**
    * Prepares a recipient list in the format SparkPost expects.
    *
-   * @param mixed $recipients
-   *   List of recipients, either as a string or an array.
-   *   @see Mail->send().
-   * @return array
-   *   An array of recipients in the format that the SparkPost API expects.
+   * @param mixed $recipients List of recipients, either as a string or an array.
+   * @return array An array of recipients in the format that the SparkPost API expects.
    */
   public function formatRecipients($recipients) {
     // CiviCRM passes the recipients as an array of string, each string potentially containing
@@ -261,7 +258,7 @@ class Mail_sparkpost extends Mail {
 
     return $result;
   }
-  
+
   public static function getMailing($jobId) {
     if (!$jobId) {
       return;

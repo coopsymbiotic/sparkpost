@@ -9,9 +9,9 @@ class CRM_Sparkpost {
   const FALLBACK = 1;
 
   /**
-   * For converting the Sparkpost 'bounce_class' to CiviCRM's codes
+   * @var For converting the Sparkpost 'bounce_class' to CiviCRM's codes
    */
-  static public $_civicrm_bounce_types = [
+  public static $_civicrm_bounce_types = [
     // Soft, retry 30 times
     'Away' => 2,
     // Soft, retry 3 times
@@ -25,11 +25,12 @@ class CRM_Sparkpost {
   ];
 
   /**
+   * @var
    * Source: https://support.sparkpost.com/customer/portal/articles/1929896
    * See also: https://docs.civicrm.org/sysadmin/en/latest/setup/civimail/inbound/
    * The CiviCRM equivalent will have a certain threshold before it flags an email On Hold.
    */
-  static public $_sparkpost_bounce_types = [
+  public static $_sparkpost_bounce_types = [
     // Name, Description, Category, CiviCRM equivalent (see above)
     1 => ['Undetermined', 'The response text could not be identified.', 'Undetermined', ''],
     10 => ['Invalid Recipient', 'The recipient is invalid.', 'Hard', 'Invalid'],
@@ -92,7 +93,7 @@ class CRM_Sparkpost {
   /**
    * Returns the CiviCRM localpart for the current domain.
    */
-  static function getDomainLocalpart() {
+  public static function getDomainLocalpart() {
     $dao = new CRM_Core_DAO_MailSettings();
     $dao->domain_id = CRM_Core_Config::domainID();
     $dao->is_default = TRUE;
@@ -107,7 +108,7 @@ class CRM_Sparkpost {
   /**
    *
    */
-  static function getPartsFromBounceID($civimail_bounce_id) {
+  public static function getPartsFromBounceID($civimail_bounce_id) {
     // Extract CiviMail parameters from header value
     // NB: the localpart might be empty, but the regexp should still work.
     $localpart = static::getDomainLocalpart();
