@@ -20,7 +20,7 @@ class ResourceBase {
    * Sets up the Resource.
    *
    * @param SparkPost $sparkpost - the sparkpost instance that this resource is attached to
-   * @param string  $endpoint  - the endpoint that this resource wraps
+   * @param string $endpoint - the endpoint that this resource wraps
    */
   public function __construct(SparkPost $sparkpost, $endpoint) {
     $this->sparkpost = $sparkpost;
@@ -77,7 +77,7 @@ class ResourceBase {
       $uri = '';
     }
 
-    $uri = $this->endpoint.'/'.$uri;
+    $uri = $this->endpoint . '/' . $uri;
     return $this->sparkpost->request($method, $uri, $payload, $headers);
   }
 

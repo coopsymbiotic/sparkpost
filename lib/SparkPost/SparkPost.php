@@ -19,7 +19,7 @@ class SparkPost {
   private $options;
 
   /**
-   * Default options for requests that can be overridden with the setOptions function.
+   * @var Array Default options for requests that can be overridden with the setOptions function
    */
   private static $defaultOptions = [
     'host' => 'api.sparkpost.com',
@@ -46,24 +46,10 @@ class SparkPost {
   /**
    * Sets up the SparkPost instance.
    *
-   * Accepts either:
-   *   new SparkPost($options)
-   *   new SparkPost($httpClient, $options)   // previous signature
-   *
-   * @param array|string|HttpClientInterface|object $options - an array of options, a string API key,
-   *                               or an HTTP client (previous signature)
-   * @param array|string|NULL             $legacyOptions - options when a client is passed first
+   * @param array $options an array of options
    */
-  public function __construct($options, $legacyOptions = NULL) {
+  public function __construct($options) {
     $httpClient = NULL;
-    if (is_object($options)) {
-      // Previous signature: new SparkPost($httpClient, $options). Any
-      // client that is not one of ours (e.g. an HTTPlug adapter) is
-      // ignored and curl is used instead.
-      $httpClient = $options;
-      $options = $legacyOptions;
-    }
-
     $this->setOptions($options === NULL ? [] : $options);
     $this->setHttpClient($httpClient);
     $this->setupEndpoints();
@@ -74,8 +60,8 @@ class SparkPost {
    *
    * @param string $method
    * @param string $uri
-   * @param array  $payload - either used as the request body or url query params
-   * @param array  $headers
+   * @param array $payload - either used as the request body or url query params
+   * @param array $headers
    *
    * @return SparkPostPromise|SparkPostResponse Promise or Response depending on sync or async request
    */
@@ -92,8 +78,8 @@ class SparkPost {
    *
    * @param string $method
    * @param string $uri
-   * @param array  $payload
-   * @param array  $headers
+   * @param array $payload
+   * @param array $headers
    *
    * @return SparkPostResponse
    *
@@ -205,20 +191,18 @@ class SparkPost {
    */
   public function getUrl($path, $params = []) {
     $options = $this->options;
-
     $paramsArray = [];
+
     foreach ($params as $key => $value) {
       if (!is_array($value)) {
         $value = [$value];
       }
       $value = implode(',', array_map('rawurlencode', $value));
-
-      array_push($paramsArray, rawurlencode($key).'='.$value);
+      array_push($paramsArray, rawurlencode($key) . '=' . $value);
     }
 
     $paramsString = implode('&', $paramsArray);
-
-    return $options['protocol'].'://'.$options['host'].($options['port'] ? ':'.$options['port'] : '').'/api/'.$options['version'].'/'.$path.($paramsString ? '?'.$paramsString : '');
+    return $options['protocol'] . '://' . $options['host'] . ($options['port'] ? ':' . $options['port'] : '') . '/api/' . $options['version'] . '/' . $path . ($paramsString ? '?' . $paramsString : '');
   }
 
   /**
