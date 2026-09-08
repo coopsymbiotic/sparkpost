@@ -202,14 +202,14 @@ function sparkpost_civicrm_post($op, $objectName, $objectId, &$objectRef) {
     $date = strtotime($objectRef->reset_date);
 
     // If this just happened then we attempt to remove from the suppression list
-    if (floor(($current - $date)/(60*60*24))) {
+    if (floor(($current - $date) / (60 * 60 * 24))) {
       try {
         $result = CRM_Sparkpost::call('suppression-list/' . $objectRef->email);
       }
       catch (Exception $e) {
         // don't show the error message to users
         // reason being is that errors are returned if they aren't in this list
-        Civi::log()->warning('Sparkpost: Error removing from supression list '.$e->getMessage());
+        Civi::log()->warning('Sparkpost: Error removing from supression list ' . $e->getMessage());
       }
     }
   }
