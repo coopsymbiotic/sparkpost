@@ -12,7 +12,7 @@ phpcs:
   image: michaelmcandrew/civicrm-buildkit:latest
   script:
     - civilint
-    - phpcs-civi --ignore=vendor,docs --report-json=gl-code-quality-report-tmp.json --report-full=gl-fullreport.txt --report-junit=gl-report.xml . || true
+    - phpcs-civi --ignore=lib,docs --report-json=gl-code-quality-report-tmp.json --report-full=gl-fullreport.txt --report-junit=gl-report.xml . || true
     - cat gl-fullreport.txt
   artifacts:
     reports:
@@ -36,9 +36,9 @@ release_notes:
 
 build_job:
   stage: build
-  image: composer
+  image: alpine:latest
   script:
-    - composer install
+    - apk add zip
     - RELEASE_VERSION=$(grep '<version' info.xml | sed -e 's/.*<version>//' -e 's/<\/version>//')
     - echo "Found version $RELEASE_VERSION"
     - mkdir build

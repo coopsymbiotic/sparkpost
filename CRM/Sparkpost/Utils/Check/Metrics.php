@@ -10,9 +10,6 @@ class CRM_Sparkpost_Utils_Check_Metrics {
    */
   public static function check(&$messages) {
     // TODO: Refactor into a more generic function?
-    if (file_exists(__DIR__ . '/../../../../vendor/autoload.php')) {
-      require_once __DIR__ . '/../../../../vendor/autoload.php';
-    }
     $api_key = CRM_Sparkpost::getSetting('sparkpost_apiKey');
     $api_host = Civi::settings()->get('sparkpost_host');
     $sending_quota = Civi::settings()->get('sparkpost_sending_quota');

@@ -8,12 +8,17 @@ https://lab.civicrm.org/extensions/sparkpost-symbiotic
 
 Some of the additional features included in this fork:
 
-* Uses the SparkPost PHP library (and Guzzle), instead of direct Curl calls, which seems to improve performance.
 * Tracks transactional email bounces (based on work by Veda Consulting: https://github.com/cividesk/com.cividesk.email.sparkpost/pull/22)
 * Verify the 'verified sending domain' before sending an email, to provide more helpful errors when sending fails.
 * Implements various CiviCRM 'system checks' to display the list of verified sending domains, and domain metrics, under CiviCRM > Administer > System Status.
 * Notably a system check will warn when the number of emails sent in the current month are over a certain quota (currently hardcoded to 65000! todo: add a setting).
 * Special `sparkpost_bypass` variable that can be used with the `alterMailParams` hook, to use the backup mailer instead (we use this for contacts forms that connect with Gitlab Service Desk)
+
+Initially, this extension used the SparkPost PHP library. Initially this was to
+improve performance, instead of using plain curl calls. However, the Guzzle
+dependencies caused maintenance headaches, so the library was forked and
+simplified to use curl once again (with some optimisations). The library now
+resides in this extension (`lib/Sparkpost`).
 
 Finally, this extension does not automatically create the webhook on Sparkpost,
 because we use a single webhook on our "router" CiviCRM instance. While

@@ -32,6 +32,7 @@
   <classloader>
     <psr0 prefix="CRM_" path="."/>
     <psr4 prefix="Civi\" path="Civi"/>
+    <psr4 prefix="SparkPost\" path="lib/SparkPost"/>
   </classloader>
   <upgrader>CRM_Sparkpost_Upgrader</upgrader>
 </extension>

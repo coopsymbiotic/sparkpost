@@ -326,13 +326,7 @@ class CRM_Sparkpost {
     $api_key = CRM_Sparkpost::getSetting('sparkpost_apiKey');
     $api_host = Civi::settings()->get('sparkpost_host');
 
-    // Not required if the platform is managed by composer, in which case the
-    // extension is in web/vendor
-    if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
-      require_once __DIR__ . '/../vendor/autoload.php';
-    }
-    $httpClient = new \GuzzleHttp\Client();
-    $sparky = new SparkPost($httpClient, ['key' => $api_key, 'async' => FALSE, 'host' => "api.$api_host"]);
+    $sparky = new SparkPost(['key' => $api_key, 'async' => FALSE, 'host' => "api.$api_host"]);
 
     // Admitedly not ideal, since it assumes that the caller will not forget about paging
     // but we are only using this for fetching events for now, so it's not a big deal.

@@ -1,8 +1,6 @@
 <?php
 
 use SparkPost\SparkPost;
-use GuzzleHttp\Client;
-use Http\Adapter\Guzzle6\Client as GuzzleAdapter;
 
 class CRM_Sparkpost_Utils_Check_SendingDomains {
 
