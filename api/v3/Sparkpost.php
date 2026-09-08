@@ -40,8 +40,6 @@ function civicrm_api3_sparkpost_event($params) {
         continue;
       }
 
-      $date = strftime($val['timestamp']);
-
       // Intentionally keeping this short in order to reduce debug noize.
       $result['values'][] = [
         'event_id' => $val['event_id'],
@@ -49,7 +47,7 @@ function civicrm_api3_sparkpost_event($params) {
         'rcpt_to' => $val['rcpt_to'],
         'type' => $val['type'],
         'subject' => $val['subject'],
-        'timestamp' => date('Y-m-d H:i'),
+        'timestamp' => _civicrm_api3_sparkpost_format_date($val['timestamp']),
         'raw_reason' => $val['raw_reason'],
       ];
 
@@ -102,8 +100,8 @@ function civicrm_api3_sparkpost_suppression($params) {
       $continue = count($results) == 10000;
 
       foreach ($results as $key => $val) {
-        $val['created'] = strftime($val['created']);
-        $val['updated'] = strftime($val['updated']);
+        $val['created'] = _civicrm_api3_sparkpost_format_date($val['created']);
+        $val['updated'] = _civicrm_api3_sparkpost_format_date($val['updated']);
         $result['values'][] = $val;
       }
       sleep(1);
@@ -181,4 +179,25 @@ function civicrm_api3_sparkpost_create_webhook($params) {
   ]);
 
   return $results;
+}
+
+/**
+ * Converts an ISO 8601 date string returned by SparkPost
+ * (ex: 2024-01-01T12:00:00.000Z) into a short 'Y-m-d H:i' string.
+ *
+ * @param string|null $date
+ * @return string|null
+ */
+function _civicrm_api3_sparkpost_format_date($date) {
+  if (empty($date)) {
+    return $date;
+  }
+
+  $ts = strtotime($date);
+
+  if ($ts === FALSE) {
+    return $date;
+  }
+
+  return date('Y-m-d H:i', $ts);
 }
