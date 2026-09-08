@@ -143,7 +143,7 @@ class Transmission extends ResourceBase {
         $formatted['email'] = $matches[2];
       }
       else {
-        throw new \Exception('Invalid address format: '.$address);
+        throw new \Exception('Invalid address format: ' . $address);
       }
     }
 
@@ -153,8 +153,7 @@ class Transmission extends ResourceBase {
   /**
    * Takes the longhand form of an email address and converts it to the shorthand form.
    *
-   * @param $address - the longhand form of an email address [ "name" => "John", "email" => "john@exmmple.com" ]
-   * @param string - the shorthand form of an email address "Name <Email address>"
+   * @param $address The longhand form of an email address [ "name" => "John", "email" => "john@exmmple.com" ]
    */
   private function toAddressString($address) {
     // convert object to string
@@ -176,13 +175,11 @@ class Transmission extends ResourceBase {
    * @param string $email - a string that might be an email address
    * @param bool - true if the given string is an email
    */
-  private function isEmail($email) {
+  private function isEmail($email): bool {
     if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-      return true;
+      return TRUE;
     }
-    else {
-      return false;
-    }
+    return FALSE;
   }
 
 }

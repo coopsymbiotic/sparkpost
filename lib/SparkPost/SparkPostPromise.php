@@ -45,8 +45,8 @@ class SparkPostPromise {
   private $request;
 
   /**
-   * @param callable|NULL $waitFn  - called with this promise; must drive the transport until the promise settles
-   * @param array|NULL  $request - the request values sent (debug mode)
+   * @param callable|NULL $waitFn - called with this promise; must drive the transport until the promise settles
+   * @param array|NULL $request - the request values sent (debug mode)
    */
   public function __construct(?callable $waitFn = NULL, $request = NULL) {
     $this->waitFn = $waitFn;

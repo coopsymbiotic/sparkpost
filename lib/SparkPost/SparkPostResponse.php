@@ -48,11 +48,11 @@ class SparkPostResponse {
    * @param int     $statusCode
    * @param array     $headers     - header name => string|string[] value(s)
    * @param string    $body      - raw body
-   * @param array|null  $request     - the request values sent (debug mode)
+   * @param array|NULL  $request     - the request values sent (debug mode)
    * @param string    $reasonPhrase
    * @param string    $protocolVersion
    */
-  public function __construct($statusCode, array $headers = [], $body = '', $request = null, $reasonPhrase = '', $protocolVersion = '1.1') {
+  public function __construct($statusCode, array $headers = [], $body = '', $request = NULL, $reasonPhrase = '', $protocolVersion = '1.1') {
     $this->statusCode = (int) $statusCode;
     $this->body = (string) $body;
     $this->request = $request;
@@ -67,7 +67,7 @@ class SparkPostResponse {
   /**
    * Returns the request values sent.
    *
-   * @return array|null $request
+   * @return array|NULL $request
    */
   public function getRequest() {
     return $this->request;
@@ -76,10 +76,10 @@ class SparkPostResponse {
   /**
    * Returns the body.
    *
-   * @return array|null $body - the json decoded body from the http response
+   * @return array|NULL $body - the json decoded body from the http response
    */
   public function getBody() {
-    return json_decode($this->body, true);
+    return json_decode($this->body, TRUE);
   }
 
   /**
@@ -184,7 +184,8 @@ class SparkPostResponse {
     $key = strtolower($name);
     if (isset($this->headerNames[$key])) {
       $name = $this->headerNames[$key];
-    } else {
+    }
+    else {
       $this->headerNames[$key] = $name;
       $this->headers[$name] = [];
     }
