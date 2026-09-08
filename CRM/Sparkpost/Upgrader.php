@@ -83,4 +83,15 @@ GROUP BY email_id HAVING count(*) > 3 AND max(meb.time_stamp) > {$maxDate}");
     return TRUE;
   }
 
+  /**
+   * The SparkPost PHP library moved from vendor/ to lib/SparkPost and is now
+   * loaded via the psr4 mapping in info.xml. Rebuild the cached classloader
+   * so the new mapping is picked up without a manual cache clear.
+   */
+  public function upgrade_1104() {
+    $this->ctx->log->info('Applying update 1104 - Refresh extension classloader');
+    CRM_Extension_System::singleton()->getClassLoader()->refresh();
+    return TRUE;
+  }
+
 }
